@@ -1,0 +1,335 @@
+/* ======================================= */
+/* SHARED CONTAINERS & STYLES */
+/* ======================================= */
+
+.bills-invoice-container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    color: #1e1e2f;
+}
+
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.page-header p {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.support-top-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+.new-concern-btn {
+    background: #007bff; /* Blue color matching the image */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.new-concern-btn:hover {
+    background: #0056b3;
+}
+
+/* Status colors (Reused) */
+.status-pending { 
+    color: #ffc107; 
+    font-weight: 600; 
+}
+.status-resolved { 
+    color: #28a745; 
+    font-weight: 600; 
+}
+
+
+/* ======================================= */
+/* CONCERN CARD STYLES */
+/* ======================================= */
+
+.concerns-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.concern-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.concern-category {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1e1e2f;
+}
+
+.concern-status {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.concern-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+    margin: 0 0 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+.card-bottom {
+    display: flex;
+    justify-content: flex-start;
+    gap: 40px; 
+}
+
+.concern-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.info-label {
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.info-value {
+    font-weight: 600;
+    color: #1e1e2f;
+}
+
+.date-value {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ======================================= */
+/* NEW CONCERN MODAL STYLES (Same as Payments Modal structure) */
+/* ======================================= */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.concern-modal {
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px; /* Slightly wider modal for forms */
+    color: #1e1e2f;
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.modal-header h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    position: absolute;
+    left: 30px; 
+}
+
+.modal-content {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Form Styles */
+.concern-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+    color: #444;
+}
+
+.form-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-input.textarea {
+    resize: vertical;
+}
+
+/* File Upload Styles */
+.upload-proof {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+.file-info {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.choose-file-btn {
+    background: #f4f6f9;
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: #333;
+}
+
+/* Modal Footer */
+.modal-footer {
+    padding-top: 20px;
+    text-align: center;
+}
+
+.submit-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+    font-size: 1rem;
+}
+
+.submit-btn:hover {
+    background: #0056b3;
+}
+
+/* RESPONSIVE FIX for Modals on Mobile */
+@media (max-width: 480px) {
+    .concern-modal {
+        padding: 15px 20px;
+    }
+    .back-btn {
+        left: 20px;
+    }
+    .upload-proof {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+/* ======================================= */
+/* RESPONSIVE STYLES */
+/* ======================================= */
+
+@media (max-width: 768px) {
+    .bills-invoice-container {
+        padding: 15px;
+    }
+
+    .support-top-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .search-input,
+    .new-concern-btn {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .concern-card {
+        padding: 15px;
+    }
+    
+    .concern-title {
+        font-size: 1rem;
+    }
+
+    .card-bottom {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
