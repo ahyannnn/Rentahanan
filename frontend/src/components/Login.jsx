@@ -12,12 +12,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-<<<<<<< HEAD
-      // Call your backend API for login
-      const response = await fetch("http://localhost:5000/api/login", {
-=======
       const response = await fetch("http://127.0.0.1:5000/api/login", {
->>>>>>> fc2de71f7cd755179b6081a23a6c38460ac387f3
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -30,32 +25,6 @@ const Login = () => {
         return;
       }
 
-<<<<<<< HEAD
-      // Example response:
-      // { role: "Tenant", applicationStatus: "Pending" }
-
-      const { role, applicationStatus } = data;
-
-      if (role.toLowerCase() === "owner") {
-        navigate("/owner-dashboard");
-      } else if (role.toLowerCase() === "tenant") {
-        switch (applicationStatus) {
-          case "Pending":
-            navigate("/tenant-pending");
-            break;
-          case "Approved":
-            navigate("/tenant-dashboard");
-            break;
-          case "Rejected":
-            navigate("/tenant-rejected");
-            break;
-          default:
-            navigate("/tenant-dashboard");
-        }
-      } else {
-        navigate("/landing");
-      }
-=======
       if (!data.user) {
         alert("Unexpected server response. Please try again.");
         return;
@@ -84,7 +53,6 @@ const Login = () => {
         navigate("/landing");
       }
 
->>>>>>> fc2de71f7cd755179b6081a23a6c38460ac387f3
     } catch (error) {
       console.error("Login error:", error);
       alert("Something went wrong. Please try again.");
@@ -157,8 +125,4 @@ const Login = () => {
   );
 };
 
-<<<<<<< HEAD
 export default Login;
-=======
-export default Login;
->>>>>>> fc2de71f7cd755179b6081a23a6c38460ac387f3

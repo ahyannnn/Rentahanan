@@ -2,21 +2,14 @@ from flask import Blueprint, request, jsonify
 from extensions import db
 from models.users_model import User
 from models.applications_model import Application
-<<<<<<< HEAD
-from werkzeug.security import generate_password_hash
-=======
 from werkzeug.security import generate_password_hash, check_password_hash
->>>>>>> fc2de71f7cd755179b6081a23a6c38460ac387f3
 from datetime import datetime
 
 auth_bp = Blueprint("auth_bp", __name__)
 
-<<<<<<< HEAD
-=======
 # ==============================
 # REGISTER
 # ==============================
->>>>>>> fc2de71f7cd755179b6081a23a6c38460ac387f3
 @auth_bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
@@ -66,8 +59,6 @@ def register():
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": f"Registration failed: {str(e)}"}), 500
-<<<<<<< HEAD
-=======
 
 
 # ==============================
@@ -111,4 +102,3 @@ def login():
             "application_status": application_status
         }
     }), 200
->>>>>>> fc2de71f7cd755179b6081a23a6c38460ac387f3
