@@ -5,23 +5,59 @@ import { Link, useNavigate } from "react-router-dom";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // 👁️ new state
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Temporary dummy login (replace with your backend API)
-    if (email === "test@gmail.com" && password === "1234") {
-      navigate("/landing");
-    } else {
-      alert("Invalid credentials!");
+    try {
+      // Call your backend API for login
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Login failed!");
+        return;
+      }
+
+      // Example response:
+      // { role: "Tenant", applicationStatus: "Pending" }
+
+      const { role, applicationStatus } = data;
+
+      if (role.toLowerCase() === "owner") {
+        navigate("/owner-dashboard");
+      } else if (role.toLowerCase() === "tenant") {
+        switch (applicationStatus) {
+          case "Pending":
+            navigate("/tenant-pending");
+            break;
+          case "Approved":
+            navigate("/tenant-dashboard");
+            break;
+          case "Rejected":
+            navigate("/tenant-rejected");
+            break;
+          default:
+            navigate("/tenant-dashboard");
+        }
+      } else {
+        navigate("/landing");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Something went wrong. Please try again.");
     }
   };
 
   return (
     <div className="auth-page">
-      {/* Left Side */}
       <div className="auth-left">
         <div className="overlay"></div>
         <div className="auth-left-content">
@@ -33,7 +69,6 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Right Side */}
       <div className="auth-right">
         <div className="auth-card">
           <form onSubmit={handleLogin}>
@@ -48,7 +83,6 @@ const Login = () => {
               />
             </div>
 
-            {/* Password Input with Show/Hide */}
             <div className="form-group password-group">
               <label>Password</label>
               <div className="password-wrapper">
@@ -74,9 +108,8 @@ const Login = () => {
             </button>
 
             <span className="or-text">OR</span>
-
             <div className="social-login">
-              <button>Login with Google</button>
+              <button type="button">Login with Google</button>
             </div>
 
             <div className="bottom-text">
