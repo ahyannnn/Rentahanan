@@ -1,12 +1,16 @@
 /* --- General --- */
-body {
+/* --- General --- */
+html, body {
     margin: 0;
+    padding: 0;
+    width: 100%;
     font-family: 'Poppins', sans-serif;
     background-color: #E8ECF3;
     color: #061A53;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 /* --- Navbar --- */
@@ -173,18 +177,16 @@ body {
 /* --- Hero --- */
 .hero {
     position: relative;
-    width: 100%;
+    width: 100vw; /* full viewport width */
     height: 60vh;
-    /* almost full viewport height */
     background-image: url("/images/hero.png");
-    /* your uploaded file path */
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
+    margin: 0;
 }
 
 .hero-overlay {
@@ -394,15 +396,7 @@ body {
 }
 
 
-@media (max-width: 850px) {
-    .hero h1 {
-        font-size: 2rem;
-    }
 
-    .house-card {
-        max-width: 95%;
-    }
-}
 
 
 /* 🌟 FEATURES SECTION — Clean Version */
@@ -501,21 +495,36 @@ body {
     font-weight: 400;
 }
 
-@media screen and (max-width: 768px) {
-    .navbar {
-        padding: 1rem 0.75rem;
+/* --- Media Queries --- */
+@media (max-width: 1024px) {
+    .house-container {
+        gap: 1.5rem;
     }
+    .features-container {
+        gap: 25px;
+    }
+}
 
-    .nav-links {
-        font-size: 5px;
-    }
+@media (max-width: 850px) {
+    .hero h1 { font-size: 2rem; }
+    .house-card { max-width: 95%; }
+    .features-container { gap: 20px; }
+}
 
-    .nav-btn {
-        padding: 0.4rem 0.8rem;
-        border-radius: 5px;
-    }
+@media (max-width: 768px) {
+    .navbar { padding: 1rem 1rem; }
+    .nav-links { font-size: 0.9rem; gap: 0.5rem; }
+    .nav-btn { padding: 0.4rem 0.8rem; }
+    .nav-brand { font-size: 1.2rem; }
+    .hero { height: 50vh; }
+    .hero-content { padding: 0 10px; }
+    .houses-section { padding: 2rem 10px; }
+    .features-container { padding: 0 10px; gap: 15px; }
+}
 
-    .nav-brand {
-        font-size: 15px;
-    }
+@media (max-width: 480px) {
+    .hero h1 { font-size: 1.5rem; }
+    .hero p { font-size: 1rem; }
+    .house-card { max-width: 100%; }
+    .features-container { grid-template-columns: 1fr; gap: 15px; }
 }

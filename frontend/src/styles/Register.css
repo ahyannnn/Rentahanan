@@ -104,7 +104,7 @@ body {
 }
 
 .auth-card::before {
-    content: "Register"; 
+    content: "Login"; 
     display: block;
     font-size: 2rem;
     font-weight: 700;
