@@ -1,0 +1,502 @@
+.bills-invoice-container {
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  color: #1e1e2f;
+}
+
+.page-header {
+  margin-bottom: 25px;
+}
+
+.page-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.page-header p {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.top-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-btn {
+  background: transparent;
+  border: none;
+  color: #555;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.filter-btn:hover {
+  color: #0a2d8d;
+}
+
+.filter-btn.active {
+  color: #0a2d8d;
+  border-bottom: 2px solid #0a2d8d;
+}
+
+.bills-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 25px;
+}
+
+.bills-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.bills-table th,
+.bills-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+}
+
+.bills-table tr:hover {
+  background: rgba(0, 0, 0, 0.03);
+  transition: 0.2s;
+}
+
+.status-unpaid { color: #dc3545; font-weight: 600; }
+.status-paid { color: #28a745; font-weight: 600; }
+.status-pending { color: #ffc107; font-weight: 600; }
+
+.action-link {
+  color: #0a2d8d;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.bill-type-combined {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+}
+
+.bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 35px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.total-selected span {
+  color: #0a2d8d;
+  font-weight: 700;
+}
+
+.proceed-btn {
+  background: #0a2d8d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.proceed-btn:hover {
+  background: #031c5d;
+}
+
+.summary-section h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.summary-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.summary-card {
+  flex: 1;
+  min-width: 160px;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  color: white;
+}
+
+.summary-card p {
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.summary-card h4 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* Card Colors */
+.summary-card.unpaid { 
+    background: #dc3545; /* Red/Unpaid */
+}
+.summary-card.pending { 
+    background: #ffc107; /* Orange/Pending */
+}
+.summary-card.due { 
+    background: #0a2d8d; /* Blue/Due */
+}
+
+
+/* MODAL STYLES */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.payments-modal {
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 450px;
+    color: #1e1e2f;
+    position: relative; /* Para sa back button */
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.modal-header h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    position: absolute;
+    left: 30px; 
+}
+
+.modal-content {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.bill-summary {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #eee;
+}
+
+.bill-list .bill-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+}
+
+.total-amount-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    margin-top: 10px;
+}
+
+.payment-method-section p {
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.radio-option {
+    display: block;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    position: relative;
+}
+
+.radio-option input[type="radio"] {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    margin: 0;
+}
+
+.radio-option span {
+    font-weight: 600;
+    margin-left: 25px;
+    display: block;
+    margin-bottom: 10px;
+    color: #0a2d8d;
+}
+
+.detail-text {
+    font-size: 0.9rem;
+    color: #555;
+    margin-left: 25px;
+}
+
+.ref-input {
+    border: 1px solid #ccc;
+    padding: 5px 8px;
+    border-radius: 4px;
+    width: 100px;
+    margin-left: 5px;
+    font-size: 0.9rem;
+}
+
+.upload-proof {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.choose-file-btn {
+    background: #f4f6f9;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.modal-footer {
+    padding-top: 20px;
+    text-align: center;
+}
+
+.submit-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+.submit-btn:hover {
+    background: #0a2d8d;
+}
+
+/* RESPONSIVE STYLES */
+
+@media (max-width: 900px) {
+    .main {
+        overflow-x: hidden; 
+    }
+    
+    .bills-invoice-container {
+        box-sizing: border-box; 
+        width: 100%;
+        max-width: 100%;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .bills-invoice-container {
+        padding: 15px;
+    }
+
+    .page-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .top-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin-right: 0; 
+        margin-left: 0;
+    }
+
+    .search-input {
+        width: 100%;
+        min-width: unset;
+        order: 1;
+        box-sizing: border-box;
+    }
+
+    .filter-tabs {
+        justify-content: space-around;
+        width: 100%;
+        order: 2;
+        gap: 5px; 
+    }
+
+    .bills-table-wrapper {
+        overflow-x: hidden;
+    }
+
+    .bills-table, .bills-table thead, .bills-table tbody, .bills-table th, .bills-table td, .bills-table tr {
+        display: block;
+    }
+
+    .bills-table thead {
+        display: none;
+    }
+
+    .bills-table tr {
+        background: white;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        padding: 12px;
+        border: 1px solid #eee;
+    }
+    
+    .bills-table td {
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 10px;
+        font-size: 14px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .bills-table td:last-child {
+        border-bottom: none;
+    }
+
+    .bills-table td[data-label]:not([data-label="Bill Type"])::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #444;
+        flex-basis: 40%;
+        text-align: left;
+    }
+
+    /* Combined Bill Type Column Fixes */
+    .bills-table td[data-label="Bill Type"]::before {
+        content: none; 
+    }
+    
+    .bills-table td[data-label="Bill Type"] {
+        display: block; 
+        border-bottom: 1px solid #eee; 
+    }
+    
+    .bills-table td[data-label="Bill Type"] .bill-type-combined {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .bills-table td:first-child {
+        display: block;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+        text-align: left; 
+    }
+    
+    .bottom-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin-right: 0; 
+        margin-left: 0;
+    }
+
+    .proceed-btn {
+        width: 100%;
+        order: 1; 
+    }
+    
+    .total-selected {
+        order: 2;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    /* Summary Card MOBILE Fix - Horizontal Scroll */
+    .summary-cards {
+        display: flex;
+        flex-direction: row; /* Para magtabi */
+        overflow-x: auto; /* Para mag-scroll horizontally */
+        gap: 10px;
+        padding-bottom: 10px; /* Dagdag space para hindi ma-cut ang shadow */
+        margin-right: 0; 
+        margin-left: 0;
+    }
+
+    .summary-card {
+        min-width: 120px; /* Liitan ang minimum width para mas makita ang tatlo */
+        width: unset; /* Tanggalin ang 100% width */
+        flex-shrink: 0; /* Huwag liitan ang cards */
+        padding: 10px;
+    }
+    
+    .summary-card p {
+        font-size: 0.7rem; /* Liitan ang font */
+    }
+
+    .summary-card h4 {
+        font-size: 1.1rem; /* Liitan ang font */
+    }
+}
