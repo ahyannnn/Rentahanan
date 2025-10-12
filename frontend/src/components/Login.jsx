@@ -12,8 +12,12 @@ const Login = () => {
     e.preventDefault();
 
     try {
+<<<<<<< HEAD
       // Call your backend API for login
       const response = await fetch("http://localhost:5000/api/login", {
+=======
+      const response = await fetch("http://127.0.0.1:5000/api/login", {
+>>>>>>> fc2de71f7cd755179b6081a23a6c38460ac387f3
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -26,6 +30,7 @@ const Login = () => {
         return;
       }
 
+<<<<<<< HEAD
       // Example response:
       // { role: "Tenant", applicationStatus: "Pending" }
 
@@ -50,6 +55,36 @@ const Login = () => {
       } else {
         navigate("/landing");
       }
+=======
+      if (!data.user) {
+        alert("Unexpected server response. Please try again.");
+        return;
+      }
+
+      const { role, application_status } = data.user;
+
+      if (!role) {
+        alert("User role not found.");
+        return;
+      }
+
+      // ✅ Save role and applicationStatus to localStorage for later use
+      localStorage.setItem("userRole", role);
+      if (role.toLowerCase() === "tenant") {
+        localStorage.setItem("applicationStatus", application_status || "Pending");
+        console.log("Application Status:", application_status);
+      }
+
+      // ✅ Navigate based on role
+      if (role.toLowerCase() === "owner") {
+        navigate("/owner-dashboard");
+      } else if (role.toLowerCase() === "tenant") {
+        navigate("/tenant");
+      } else {
+        navigate("/landing");
+      }
+
+>>>>>>> fc2de71f7cd755179b6081a23a6c38460ac387f3
     } catch (error) {
       console.error("Login error:", error);
       alert("Something went wrong. Please try again.");
@@ -122,4 +157,8 @@ const Login = () => {
   );
 };
 
+<<<<<<< HEAD
 export default Login;
+=======
+export default Login;
+>>>>>>> fc2de71f7cd755179b6081a23a6c38460ac387f3
