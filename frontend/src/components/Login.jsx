@@ -30,19 +30,21 @@ const Login = () => {
         return;
       }
 
-      const { role, application_status } = data.user;
+      const { role, application_status, userid, fullname, email: userEmail, phone } = data.user;
 
-      if (!role) {
-        alert("User role not found.");
-        return;
-      }
-
-      // ✅ Save role and applicationStatus to localStorage for later use
+      // ✅ Save all user info to localStorage
+      localStorage.setItem("userId", userid);
+      localStorage.setItem("fullName", fullname);
+      localStorage.setItem("email", email);
+      localStorage.setItem("email", userEmail);
+      localStorage.setItem("phone", phone);
       localStorage.setItem("userRole", role);
+
       if (role.toLowerCase() === "tenant") {
         localStorage.setItem("applicationStatus", application_status || "Pending");
         console.log("Application Status:", application_status);
       }
+
 
       // ✅ Navigate based on role
       if (role.toLowerCase() === "owner") {
