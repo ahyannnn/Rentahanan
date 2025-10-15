@@ -69,66 +69,67 @@ const Layout = () => {
     links.find((link) => link.to === location.pathname)?.name || "Dashboard";
 
   return (
-    <div className="container">
-      {/* SIDEBAR */}
-      <div className={`sidebar ${sidebarOpen ? "show" : ""}`} id="sidebar">
-        <div className="logotitle">
-          <img src="" alt="LOGO" />
-          <h1>PHOME</h1>
-        </div>
+    
+      <div className="container">
+        {/* SIDEBAR */}
+        <div className={`sidebar ${sidebarOpen ? "show" : ""}`} id="sidebar">
+          <div className="logotitle">
+            <img src="" alt="LOGO" />
+            <h1>PHOME</h1>
+          </div>
 
-        <div className="linkholderbody">
-          {links.map((link, index) => (
-            <div
-              key={index}
-              className={`linkholder ${
-                location.pathname === link.to ? "active" : ""
-              }`}
-            >
-              <Link to={link.to} onClick={closeSidebar}>
-                {link.name}
-              </Link>
-            </div>
-          ))}
-        </div>
+          <div className="linkholderbody">
+            {links.map((link, index) => (
+              <div
+                key={index}
+                className={`linkholder ${location.pathname === link.to ? "active" : ""
+                  }`}
+              >
+                <Link to={link.to} onClick={closeSidebar}>
+                  {link.name}
+                </Link>
+              </div>
+            ))}
+          </div>
 
-        <button id="logout" onClick={handleLogout}>
-          Log out
-        </button>
-      </div>
-
-      {/* OVERLAY */}
-      <div
-        id="overlay"
-        className={sidebarOpen ? "show" : ""}
-        onClick={closeSidebar}
-      ></div>
-
-      {/* HEADER */}
-      <div className="header">
-        <button className="menu-btn" onClick={toggleSidebar}>
-          &#9776;
-        </button>
-        <h3>{pageTitle}</h3>
-        <div className="notifprofile">
-          <button className="notif-btn">
-            <img src="" alt="Notif" />
+          <button id="logout" onClick={handleLogout}>
+            Log out
           </button>
-          <img
-            src=""
-            alt="Profile"
-            width="40"
-            height="40"
-            style={{ borderRadius: "50%", background: "#ccc" }}
-          />
+        </div>
+
+        {/* OVERLAY */}
+        <div
+          id="overlay"
+          className={sidebarOpen ? "show" : ""}
+          onClick={closeSidebar}
+        ></div>
+
+        {/* HEADER */}
+        <div className="header">
+          <button className="menu-btn" onClick={toggleSidebar}>
+            &#9776;
+          </button>
+          <h3>{pageTitle}</h3>
+          <div className="notifprofile">
+            <button className="notif-btn">
+              <img src="" alt="Notif" />
+            </button>
+            <img
+              src=""
+              alt="Profile"
+              width="40"
+              height="40"
+              style={{ borderRadius: "50%", background: "#ccc" }}
+            />
+          </div>
+        </div>
+
+        {/* MAIN CONTENT */}
+        <div className="main">
+          <Outlet />
         </div>
       </div>
-
-      {/* MAIN CONTENT */}
-      <div className="main">
-        <Outlet />
-      </div>
-    </div>
+    
   );
 };
 
