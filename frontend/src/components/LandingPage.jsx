@@ -19,7 +19,7 @@ function LandingPage() {
     <div>
       {/* Navbar */}
       <nav className="navbar">
-        <div className="nav-brand">🏡 Rentahanan Ni Carlos</div>
+        <div className="nav-brand">🏡 RenTahanan</div>
         <div className="nav-links">
           <Link to="/login" className="nav-btn login">Login</Link>
           <Link to="/register" className="nav-btn register">Register</Link>

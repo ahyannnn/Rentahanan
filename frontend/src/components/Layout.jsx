@@ -1,3 +1,4 @@
+// pages/Layout.jsx
 import React, { useState, useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import "../styles/tenant/Layout.css";
@@ -7,13 +8,13 @@ const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ✅ Get applicationStatus from localStorage (persistent)
   const [applicationStatus, setApplicationStatus] = useState(
     localStorage.getItem("applicationStatus") || "Pending"
   );
 
+  const userRole = localStorage.getItem("userRole") || "tenant"; // or "owner"
+
   useEffect(() => {
-    // Optional: refresh data from localStorage in case it changes
     const storedStatus = localStorage.getItem("applicationStatus");
     if (storedStatus && storedStatus !== applicationStatus) {
       setApplicationStatus(storedStatus);
@@ -29,8 +30,8 @@ const Layout = () => {
     navigate("/");
   };
 
-  // ✅ Sidebar links based on status
-  const linksByStatus = {
+  // ✅ Links for each role
+  const tenantLinksByStatus = {
     Pending: [
       { name: "Dashboard", to: "/tenant" },
       { name: "Browse Units", to: "/tenant/browse-units" },
@@ -49,7 +50,21 @@ const Layout = () => {
     ],
   };
 
-  const links = linksByStatus[applicationStatus] || [];
+  const ownerLinks = [
+    { name: "Dashboard", to: "/owner" },
+    { name: "Tenants", to: "/owner/tenants" },
+    { name: "Units", to: "/owner/units" },
+    { name: "Transactions", to: "/owner/transactions" },
+    { name: "Billing", to: "/owner/billing" },
+    { name: "Transactions", to: "/owner/transactions" },
+    { name: "User Management", to: "/owner/user" },
+  ];
+
+  const links =
+    userRole === "owner"
+      ? ownerLinks
+      : tenantLinksByStatus[applicationStatus] || [];
+
   const pageTitle =
     links.find((link) => link.to === location.pathname)?.name || "Dashboard";
 
@@ -82,7 +97,7 @@ const Layout = () => {
         </button>
       </div>
 
-      {/* OVERLAY for mobile */}
+      {/* OVERLAY */}
       <div
         id="overlay"
         className={sidebarOpen ? "show" : ""}
@@ -91,7 +106,7 @@ const Layout = () => {
 
       {/* HEADER */}
       <div className="header">
-        <button className="menu-btn" id="menu-btn" onClick={toggleSidebar}>
+        <button className="menu-btn" onClick={toggleSidebar}>
           &#9776;
         </button>
         <h3>{pageTitle}</h3>
