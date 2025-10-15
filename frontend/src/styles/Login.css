@@ -26,6 +26,15 @@ body {
   background-color: #fff;
 }
 
+.auth-wrapper {
+  display: flex;
+  justify-content: center; 
+  align-items: center;     
+  min-height: 100vh;
+  width: 100%;
+  background-color: #E8ECF3;
+}
+
 /* --- Left Side --- */
 .auth-left {
   flex: 1;
@@ -103,15 +112,7 @@ body {
   display: none; 
 }
 
-.auth-card::before {
-    content: "Login"; 
-    display: block;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #061A53;
-    margin-bottom: 2rem;
-    text-align: center;
-}
+
 
 /* --- Inputs --- */
 .form-group {
