@@ -47,7 +47,9 @@ def register():
         email=email,
         phone=phone,
         unitid=None,
-        status="Pending",
+        userid=new_user.userid,
+        valid_id=None,
+        status="Registered",
         submissiondate=datetime.utcnow()
     )
 
@@ -95,7 +97,7 @@ def login():
     return jsonify({
         "message": "Login successful",
         "user": {
-            "id": user.userid,
+            "userid": user.userid,
             "name": user.fullname,
             "email": user.email,
             "role": user.role,

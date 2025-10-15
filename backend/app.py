@@ -5,6 +5,7 @@ from extensions import db
 from models.units_model import House
 import os
 from routes.auth_route import auth_bp
+from routes.application_route import application_bp
 
 # Load environment variables
 load_dotenv()
@@ -18,11 +19,18 @@ CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
+app.config["UPLOAD_FOLDER"] = "uploads/valid_ids"
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
 # Initialize extensions
 db.init_app(app)
 
 # Register blueprints
 app.register_blueprint(auth_bp, url_prefix="/api")
+app.register_blueprint(application_bp, url_prefix="/api")
+
+
+
 
 # Example routes
 @app.route("/api/houses", methods=["GET"])
@@ -33,6 +41,11 @@ def get_houses():
 @app.route("/api/ping")
 def ping():
     return jsonify({"message": "pong"})
+
+@app.route("/")
+def home():
+    return jsonify({"message": "Flask backend is running!"})
+
 
 if __name__ == "__main__":
     with app.app_context():

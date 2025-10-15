@@ -9,8 +9,12 @@ class Application(db.Model):
     email = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     unitid = db.Column(db.Integer, nullable=True)
-    status = db.Column(db.String(50), default="Pending")
+    status = db.Column(db.String(50), default="Registered")
     submissiondate = db.Column(db.DateTime, default=datetime.utcnow)
+    userid = db.Column(db.Integer, db.ForeignKey("Users.userid", ondelete="CASCADE"), nullable=False)
+    valid_id = db.Column(db.String(255), nullable=True)
+
+    user = db.relationship("User", backref=db.backref("Applications", lazy=True))
 
     def to_dict(self):
         return {
@@ -21,4 +25,6 @@ class Application(db.Model):
             "unitid": self.unitid,
             "status": self.status,
             "submissiondate": self.submissiondate.strftime("%Y-%m-%d %H:%M:%S"),
+            "userid": self.userid,
+            "valid_id": self.valid_id
         }
