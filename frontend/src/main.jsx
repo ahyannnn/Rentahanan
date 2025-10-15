@@ -10,12 +10,21 @@ import Register from "./components/Register";
 import Layout from "./components/Layout";
 
 // Tenant Pages
-import Dashboard from "./pages/tenant/Dashboard";
+import TenantDashboard from "./pages/tenant/Dashboard"; // Changed name for clarity
 import BrowseUnits from "./pages/tenant/BrowseUnits";
 import MyBills from "./pages/tenant/MyBills";
 import Payment from "./pages/tenant/Payment";
 import Contract from "./pages/tenant/Contract";
-import Support from "./pages/tenant/Support";
+import TenantSupport from "./pages/tenant/Support"; // Changed name for clarity
+
+// ✅ OWNER Pages (Import these)
+import OwnerDashboard from "./pages/owner/Dashboard";
+import Units from "./pages/owner/Units";
+import Tenants from "./pages/owner/Tenants";
+import Transactions from "./pages/owner/Transactions";
+import Billing from "./pages/owner/Billing";
+import Notification from "./pages/owner/Notification";
+import User from "./pages/owner/User";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -29,12 +38,23 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
         {/* 👥 Tenant Routes with Layout */}
         <Route path="/tenant" element={<Layout />}>
-          <Route index element={<Dashboard />} /> {/* /tenant */}
-          <Route path="browse-units" element={<BrowseUnits />} /> {/* /tenant/browse-units */}
-          <Route path="bills" element={<MyBills />} /> {/* /tenant/bills */}
-          <Route path="payment" element={<Payment />} /> {/* /tenant/payment */}
-          <Route path="contract" element={<Contract />} /> {/* /tenant/contract */}
-          <Route path="support" element={<Support />} /> {/* /tenant/support */}
+          <Route index element={<TenantDashboard />} /> 
+          <Route path="browse-units" element={<BrowseUnits />} /> 
+          <Route path="bills" element={<MyBills />} /> 
+          <Route path="payment" element={<Payment />} /> 
+          <Route path="contract" element={<Contract />} /> 
+          <Route path="support" element={<TenantSupport />} /> 
+        </Route>
+        
+        {/* 🧑‍💼 OWNER Routes with Layout (✅ IDAGDAG MO ITO) */}
+        <Route path="/owner" element={<Layout />}>
+          <Route index element={<OwnerDashboard />} /> {/* /owner */}
+          <Route path="units" element={<Units />} />           {/* /owner/units */}
+          <Route path="tenants" element={<Tenants />} />       {/* /owner/tenants */}
+          <Route path="transactions" element={<Transactions />} /> {/* /owner/transactions */}
+          <Route path="billing" element={<Billing />} />       {/* /owner/billing */}
+          <Route path="notifications" element={<Notification />} /> {/* /owner/notifications */}
+          <Route path="user" element={<User />} />             {/* /owner/user */}
         </Route>
 
       </Routes>
