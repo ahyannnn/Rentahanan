@@ -1,0 +1,581 @@
+/* Base container para mag-match sa overall layout */
+.billing-page-container {
+    padding: 20px;
+    background-color: #f7f9fc; /* Light background for the whole area */
+    min-height: 100vh;
+}
+
+/* Common Card Style (White box na ginagamit sa Tenants/Units) */
+.content-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    margin-bottom: 20px;
+}
+
+.header-card h2 {
+    color: #1a202c;
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+.header-card p {
+    color: #6a6a6a;
+    font-size: 1rem;
+}
+
+/* --- Control Bar (Search and Create Invoice) --- */
+.invoice-area {
+    padding-top: 20px;
+}
+
+.invoice-control-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+/* Search Box Styling */
+.search-box {
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex-grow: 1;
+    max-width: 400px; /* Limit search bar width */
+}
+
+.search-box input {
+    border: 1px solid #e0eeef;
+    border-radius: 8px;
+    padding: 10px 15px 10px 40px; /* Space for icon */
+    font-size: 0.9rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-box input:focus {
+    border-color: #3182ce;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    color: #999;
+}
+
+/* Create Invoice Button */
+.create-invoice-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #3182ce; /* Primary blue color */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.create-invoice-btn:hover {
+    background-color: #2c6fbb;
+    box-shadow: 0 4px 8px rgba(49, 130, 206, 0.4);
+}
+
+/* --- Table Styles --- */
+.invoice-table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    text-align: left;
+}
+
+thead th {
+    color: #6a6a6a;
+    font-weight: 600;
+    padding: 15px;
+    border-bottom: 2px solid #e0e0e0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tbody td {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-unpaid {
+    background-color: #fff3e0; /* Light Orange */
+    color: #ff9800; /* Dark Orange */
+}
+
+.status-paid {
+    background-color: #e8f5e9; /* Light Green */
+    color: #4caf50; /* Dark Green */
+}
+
+/* Action Buttons (Mark Paid / View) */
+.action-btn {
+    border: 1px solid;
+    padding: 6px 15px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.mark-paid-btn {
+    border-color: #3182ce;
+    color: #3182ce;
+    background-color: white;
+}
+
+.mark-paid-btn:hover {
+    background-color: #3182ce;
+    color: white;
+}
+
+.view-btn {
+    border-color: #999;
+    color: #666;
+    background-color: white;
+}
+
+.view-btn:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+/* Table hover effect */
+tbody tr:hover {
+  background-color: #f9fafb;
+  transition: background-color 0.2s;
+}
+
+/* Slight shadow sa table rows */
+tbody tr {
+  transition: all 0.2s;
+}
+
+/* Center the action buttons vertically */
+td:last-child {
+  text-align: center;
+}
+
+/* ===== MODAL STYLES ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  backdrop-filter: blur(3px);
+}
+
+.add-invoice-modal {
+  background: white;
+  width: 450px;
+  max-width: 95%;
+  border-radius: 16px;
+  padding: 25px 30px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  animation: popIn 0.25s ease;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #1a202c;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #e53e3e;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-body label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.modal-body input,
+.modal-body select,
+.modal-body textarea {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.modal-body textarea {
+  resize: none;
+  height: 70px;
+}
+
+.modal-body input:focus,
+.modal-body select:focus,
+.modal-body textarea:focus {
+  border-color: #3182ce;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.save-btn {
+  background-color: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.save-btn:hover {
+  background-color: #2563eb;
+}
+
+.cancel-btn {
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.cancel-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.view-invoice-modal {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Mas prominent na shadow */
+    width: 90%; /* Responsive width */
+    max-width: 500px; /* Maximum width para hindi masyadong malaki */
+    padding: 30px;
+    position: relative;
+    animation: fadeInScale 0.3s ease-out forwards; /* Smooth entry animation */
+}
+
+/* Animation para sa paglabas ng modal */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Modal Header: Invoice Details at Close Button */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.modal-header h3 {
+    color: #1a202c;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.modal-header .close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6a6a6a;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.modal-header .close-btn:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+/* Modal Body: Para sa Invoice details */
+.modal-body p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #4a5568;
+    margin-bottom: 10px;
+}
+
+.modal-body p strong {
+    color: #1a202c;
+    font-weight: 600;
+    width: 120px; /* Consistent width para sa labels */
+    display: inline-block;
+}
+
+/* Para sa Status Badge sa loob ng modal, gagamitin ang existing styles */
+.modal-body .status-badge {
+    /* Ang styles nito ay galing sa .status-unpaid at .status-paid */
+    display: inline-block;
+    vertical-align: middle; /* Para mag align sa text */
+    margin-left: 5px; /* Konting spacing */
+}
+
+/* Modal Footer: Para sa Close button sa ibaba */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end; /* I-align ang button sa kanan */
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 20px;
+}
+
+.modal-footer .close-btn-2 {
+    background-color: #e2e8f0; /* Light gray background */
+    color: #4a5568;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.modal-footer .close-btn-2:hover {
+    background-color: #cbd5e0; /* Darker gray on hover */
+    color: #2d3748;
+}
+
+/* ----- Existing CSS (Baka sakaling nalimutan niyo, isama ko na) ----- */
+/* Base container para mag-match sa overall layout */
+.billing-page-container {
+    padding: 20px;
+    background-color: #f7f9fc; /* Light background for the whole area */
+    min-height: 100vh;
+}
+
+/* Common Card Style */
+.content-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    margin-bottom: 20px;
+}
+
+.header-card h2 {
+    color: #1a202c;
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+.header-card p {
+    color: #6a6a6a;
+    font-size: 1rem;
+}
+
+.invoice-area {
+    padding-top: 20px;
+}
+
+.invoice-control-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex-grow: 1;
+    max-width: 400px;
+}
+
+.search-box input {
+    border: 1px solid #e0eeef;
+    border-radius: 8px;
+    padding: 10px 15px 10px 40px;
+    font-size: 0.9rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-box input:focus {
+    border-color: #3182ce;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    color: #999;
+}
+
+.create-invoice-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #3182ce;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.create-invoice-btn:hover {
+    background-color: #2c6fbb;
+    box-shadow: 0 4px 8px rgba(49, 130, 206, 0.4);
+}
+
+.invoice-table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    text-align: left;
+}
+
+thead th {
+    color: #6a6a6a;
+    font-weight: 600;
+    padding: 15px;
+    border-bottom: 2px solid #e0e0e0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tbody td {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-unpaid {
+    background-color: #fff3e0;
+    color: #ff9800;
+}
+
+.status-paid {
+    background-color: #e8f5e9;
+    color: #4caf50;
+}
+
+.action-btn {
+    border: 1px solid;
+    padding: 6px 15px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.mark-paid-btn {
+    border-color: #3182ce;
+    color: #3182ce;
+    background-color: white;
+}
+
+.mark-paid-btn:hover {
+    background-color: #3182ce;
+    color: white;
+}
+
+.view-btn {
+    border-color: #999;
+    color: #666;
+    background-color: white;
+}
+
+.view-btn:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
