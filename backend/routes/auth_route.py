@@ -41,8 +41,11 @@ def register():
         datecreated=datetime.utcnow()
     )
 
-    # Create default application
-    new_application = Application(
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        
+        new_application = Application(
         fullname=fullname,
         email=email,
         phone=phone,
@@ -50,11 +53,10 @@ def register():
         userid=new_user.userid,
         valid_id=None,
         status="Registered",
-        submissiondate=datetime.utcnow()
+        submissiondate=None,
+        brgy_clearance=None,
+        proof_of_income=None
     )
-
-    try:
-        db.session.add(new_user)
         db.session.add(new_application)
         db.session.commit()
         return jsonify({"message": "User registered and application created!"}), 201
