@@ -1,294 +1,387 @@
-/* ===== General Styles ===== */
-.dashboard-content {
+
+
+
+/* ===== Dashboard Container ===== */
+.dashboard-container {
     padding: 30px;
-    background-color: #fff;
-    color: #1e1e2f;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    min-height: 100vh;
 }
 
-/* ===== Header Section ===== */
+/* ===== Welcome Header ===== */
 .welcome-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: 30px;
-    font-size: 18px;
+}
+
+.welcome-header p {
+    font-size: 1.4rem;
     font-weight: 600;
 }
 
 .welcome-header span {
-    color: #0a2d8d;
+    color: #0b3c91;
+    font-weight: 700;
 }
 
-.unit-lease-info span {
-    margin-left: 20px;
-    font-weight: 500;
-    font-size: 15px;
-    color: #666;
+.unit-lease-info {
+    display: flex;
+    gap: 20px;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #555;
 }
 
 /* ===== Overview Cards ===== */
 .bills-overview-cards {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 20px;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
 .card {
-    flex: 1;
-    padding: 25px;
-    color: white;
-    border-radius: 12px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px;
     text-align: center;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
-.blue-card { background: linear-gradient(135deg, #007bff, #0a2d8d); }
-.yellow-card { background: linear-gradient(135deg, #ffc107, #ffb300); color: #333; }
-.red-card { background: linear-gradient(135deg, #dc3545, #a50018); }
+.blue-card { background-color: #e6f0ff; color: #0b3c91; }
+.yellow-card { background-color: #fff4e6; color: #d97706; }
+.red-card { background-color: #ffe6e6; color: #dc2626; }
 
-/* ===== Table Section ===== */
-.current-bills-section {
-    margin-bottom: 40px;
-    padding: 20px;
-    background-color: #f4f6f9;
-    border-radius: 12px;
-}
-
-.current-bills-section h3 {
-    margin-bottom: 15px;
-    font-size: 20px;
+.card h2 {
+    margin-top: 8px;
+    font-size: 28px;
     font-weight: 700;
-    color: #0a2d8d;
+}
+
+/* ===== Current Bills Table ===== */
+.current-bills-section {
+    margin-bottom: 30px;
 }
 
 .bills-table {
     width: 100%;
     border-collapse: collapse;
-    text-align: left;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
 .bills-table th, .bills-table td {
-    padding: 12px;
-    border-bottom: 1px solid #e0e0e0;
-    font-size: 15px;
+    padding: 12px 15px;
+    text-align: left;
 }
 
 .bills-table th {
-    color: #555;
+    background-color: #f8f9fa;
     font-weight: 600;
+    color: #333;
 }
 
-/* ===== Status Colors ===== */
-.status-paid { color: #28a745; font-weight: 600; }
-.status-unpaid { color: #dc3545; font-weight: 600; }
-.status-pending { color: #ffc107; font-weight: 600; }
+.bills-table tr:hover {
+    background-color: #eef4ff;
+}
 
-/* ===== Action Buttons ===== */
+.status-paid { color: green; font-weight: 600; }
+.status-unpaid { color: red; font-weight: 600; }
+.status-pending { color: orange; font-weight: 600; }
+
 .action-link {
     text-decoration: none;
-    font-weight: 600;
-    color: #0a2d8d;
-    transition: color 0.2s ease, text-shadow 0.2s ease;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: 0.2s;
 }
 
-.action-link:hover {
-    color: #153ea3;
-    text-shadow: 0 0 6px rgba(21, 62, 163, 0.4);
-}
+.action-pay-now { background: #0b3c91; color: #fff; }
+.action-pay-now:hover { background: #072d6d; }
+
+.action-receipt { background: #16a34a; color: #fff; }
+.action-receipt:hover { background: #0d7b33; }
+
+.action-view { background: #fbbf24; color: #fff; }
+.action-view:hover { background: #b45309; }
 
 /* ===== Transaction Overview ===== */
-.transaction-overview-section {
+.transaction-overview-section .chart-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.chart-bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chart-bar {
+    width: 40px;
+    background: #0b3c91;
+    border-radius: 6px 6px 0 0;
+    transition: 0.3s;
+}
+
+.chart-bar-wrapper p {
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+/* ===== Tenant Section ===== */
+.tenants-container {
+    padding: 25px;
+    min-height: 100vh;
+    font-family: "Poppins", sans-serif;
+    color: #1e1e2f;
+}
+
+.tenant-card {
+    background: #fff;
+    border-radius: 16px;
     padding: 20px;
-    background-color: #f4f6f9;
-    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.tenant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.tenant-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #cfd9e7;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.view-profile-btn {
+    background-color: #0b3c91;
+    color: #fff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.view-profile-btn:hover {
+    background-color: #072d6d;
+}
+
+
+/* ===== TABLE STYLING ===== */
+.bills-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.bills-table th,
+.bills-table td {
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: middle; /* Ensure vertical alignment */
+}
+
+.bills-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.bills-table tr:hover {
+    background-color: #eef4ff;
+}
+
+.bills-table th.action-header,
+.bills-table td.action-cell {
+  /* Aligns the header text */
+  text-align: center; 
+}
+
+/* 3. CARD ENHANCEMENT WITH LUCIDE ICONS */
+.bills-overview-cards .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    border-radius: 8px;
+    color: white; /* Ensure text is white for better contrast on dark backgrounds */
+}
+
+/* Darker Blue */
+.blue-card {
+  background-color: #2a3d66; /* Darker shade of blue */
+}
+
+/* Darker Yellow/Orange */
+.yellow-card {
+  background-color: #d19a00; /* Darker, more golden yellow/orange */
+}
+
+/* Darker Red */
+.red-card {
+  background-color: #b71c1c; /* Darker, more saturated red */
+}
+
+
+/* Make sure these are also present from previous steps for icon placement */
+.bills-overview-cards .card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.bills-overview-cards .card .card-header p {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Ensure icons are white for dark cards */
+.bills-overview-cards .card svg {
+    color: white; 
+}
+
+
+/* Also, ensure your table styles for Action buttons are still correct: */
+.bills-table th.action-header,
+.bills-table td.action-cell {
+  text-align: center; 
+}
+
+/* If you want the actual buttons darker too: */
+.action-link.action-pay-now {
+    background-color: #007bff; /* Darker blue */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.action-link.action-receipt {
+    background-color: #28a745; /* Darker green */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.action-link.action-view {
+    background-color: #6c757d; /* Darker gray */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.blue-card svg { color: white; }
+.yellow-card svg { color: white; }
+.red-card svg { color: white; }
+
+
+/* Align Action buttons */
+.bills-table td a.action-link {
+    display: inline-block;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 6px;
+    background-color: #0b3c91;
+    color: #fff;
+    text-decoration: none;
+    text-align: center;
+    vertical-align: middle; /* aligns with header */
+    transition: 0.2s;
+}
+
+.bills-table td a.action-link:hover {
+    background-color: #072d6d;
+}
+
+/* Optional: fix Action header alignment */
+.bills-table th[data-label="Action"] {
+    text-align: center; /* aligns with button in cell */
+}
+
+
+transaction-overview-section {
+    margin-bottom: 30px;
 }
 
 .transaction-overview-section h3 {
     margin-bottom: 15px;
-    font-size: 20px;
-    font-weight: 700;
-    color: #0a2d8d;
 }
 
-.chart-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-end;
-    height: 180px;
-    padding: 15px 0;
-    border-bottom: 1px solid #ddd;
+.transaction-overview-section .chart-container {
+    /* FIX: Ensure this is Flexbox to show bars in a row */
+    display: flex; 
+    gap: 40px; 
+    align-items: flex-end; 
+    padding: 20px 10px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    min-height: 150px; 
 }
 
 .chart-bar-wrapper {
-    text-align: center;
-    width: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0; 
 }
 
 .chart-bar {
-    width: 100%;
-    background: linear-gradient(180deg, #007bff, #0a2d8d);
-    margin-bottom: 5px;
+    width: 40px;
+    background: #0b3c91;
     border-radius: 6px 6px 0 0;
-    transition: height 0.3s ease;
-}
-
-.chart-bar:hover {
-    height: 120px !important;
+    transition: 0.3s;
 }
 
 .chart-bar-wrapper p {
-    font-size: 13px;
-    color: #333;
-}
-
-/* ===== Responsive Design ===== */
-/* ===== Responsive Design - FINALIZED ===== */
-
-@media (max-width: 1024px) {
-    .dashboard-content {
-        padding: 20px;
-    }
-
-    .bills-overview-cards {
-        justify-content: space-between; /* Pwedeng ibalik sa space-between */
-        gap: 15px; 
-    }
-
-    .card {
-        /* Flex basis para maging pantay ang hati ng 3 cards */
-        flex: 1 1 calc(33.33% - 10px); 
-        
-        /* Gawing square ang card gamit ang aspect-ratio */
-        aspect-ratio: 1 / 1; 
-        
-        /* Bawasan ang padding at gawing flexible */
-        padding: 15px; 
-        
-        /* Center content vertically and horizontally */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .card p {
-        font-size: 14px; /* Bawasan ang font size */
-        margin-bottom: 0;
-    }
-
-    .card h2 {
-        font-size: 25px; /* Bawasan ang font size */
-        margin-top: 5px;
-        margin-bottom: 0;
-    }
-    
-    .welcome-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .unit-lease-info span {
-        margin-left: 0;
-        margin-right: 15px;
-    }
-}
-
-@media (max-width: 900px) {
-    /* Ito ang importanteng rule para mawala ang horizontal scroll */
-    .main {
-        overflow-x: hidden; 
-    }
-
-    .dashboard-content {
-        padding: 10px; /* Mas maliit na padding */
-        max-width: 100%; 
-    }
-
-    .bills-overview-cards {
-        gap: 8px; /* Mas maliit na gap */
-        flex-wrap: nowrap;
-    }
-
-    .card {
-        padding: 8px; /* Mas maliit na padding */
-    }
-    
-    .card p {
-        font-size: 11px; /* Mas maliit pa ang font size */
-    }
-
-    .card h2 {
-        font-size: 15px; /* Mas maliit pa ang font size */
-    }
-
-    .bills-table {
-        /* I-scroll na lang ang table mismo kung hindi kasya */
-        display: block;
-        overflow-x: auto; 
-    }
-    
-    .bills-table th, .bills-table td {
-        padding: 8px;
-        font-size: 12px;
-        white-space: nowrap; 
-    }
-    
-    .chart-bar-wrapper p {
-        font-size: 11px;
-    }
-}
-
-@media (max-width: 768px) {
-  .bills-table,
-  .bills-table thead,
-  .bills-table tbody,
-  .bills-table th,
-  .bills-table td,
-  .bills-table tr {
-    display: block;
-  }
-
-  .bills-table thead {
-    display: none; /* Hide headers */
-  }
-
-  .bills-table tr {
-    background: white;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    padding: 12px;
-  }
-
-  .bills-table td {
-    border: none;
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 10px;
+    margin-top: 5px;
     font-size: 14px;
-    border-bottom: 1px solid #eee;
-  }
+    color: #555;
+    text-align: center;
+}
 
-  .bills-table td:last-child {
-    border-bottom: none;
-  }
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+    .dashboard-container, .tenants-container { padding: 15px; }
 
-  .bills-table td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: #444;
-    flex-basis: 50%;
-    text-align: left;
-  }
+    .bills-overview-cards { grid-template-columns: 1fr; }
+
+    .chart-container { flex-direction: row; gap: 10px; }
+
+    .unit-lease-info { flex-direction: column; gap: 5px; }
+
+    .bills-table th, .bills-table td { padding: 8px 10px; }
 }
