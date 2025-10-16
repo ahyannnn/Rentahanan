@@ -1,6 +1,8 @@
-
 # Python cache
-__pycache__/\n*.pyc
+__pycache__/
+*.pyc
+
 # Ignore Python cache in backend
 backend/**/__pycache__/
 backend/**/*.pyc
+
