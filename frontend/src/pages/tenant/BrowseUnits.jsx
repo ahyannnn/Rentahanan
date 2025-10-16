@@ -73,14 +73,45 @@ const BrowseUnits = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+
+    // Validate selected unit
+    if (!selectedUnit) {
+      alert("Please select a unit to apply for.");
+      return;
+    }
+
+    // Validate tenant hasn't already applied
+    if (hasApplied) {
+      alert("You have already applied for a unit.");
+      return;
+    }
+
+    // Validate files
+    const validIdFile = document.querySelector('input[name="validId"]').files[0];
+    const brgyClearanceFile = document.querySelector('input[name="brgyClearance"]').files[0];
+    const proofOfIncomeFile = document.querySelector('input[name="proofOfIncome"]').files[0];
+
+    if (!validIdFile || !brgyClearanceFile || !proofOfIncomeFile) {
+      alert("All required documents must be uploaded.");
+      return;
+    }
+
+    // Optional: Validate file type
+    const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+    if (![validIdFile, brgyClearanceFile, proofOfIncomeFile].every(f => allowedTypes.includes(f.type))) {
+      alert("Files must be JPEG, PNG, or PDF.");
+      return;
+    }
+
+    // Prepare form data
+    const formData = new FormData();
     formData.append("tenant_id", tenantId);
     formData.append("unit_id", selectedUnit.id);
-    formData.append("validId", document.querySelector('input[name="validId"]').files[0]);
-    formData.append("brgyClearance", document.querySelector('input[name="brgyClearance"]').files[0]);
-    formData.append("proofOfIncome", document.querySelector('input[name="proofOfIncome"]').files[0]);
+    formData.append("validId", validIdFile);
+    formData.append("brgyClearance", brgyClearanceFile);
+    formData.append("proofOfIncome", proofOfIncomeFile);
 
-
+    // Submit
     fetch("http://localhost:5000/api/apply", {
       method: "POST",
       body: formData,
@@ -90,10 +121,11 @@ const BrowseUnits = () => {
         alert(data.message || "Application submitted successfully!");
         setShowApplyForm(false);
         setSelectedUnit(null);
-        setHasApplied(true); // ✅ Disable all Apply buttons after submission
+        setHasApplied(true); // Disable apply button
       })
       .catch((err) => console.error("Error submitting application:", err));
   };
+
 
   return (
     <div className="browse-units-container">

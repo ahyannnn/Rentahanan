@@ -9,63 +9,68 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const response = await fetch("http://127.0.0.1:5000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  // Basic input validation
+  if (!email || !password) {
+    alert("Please fill in both email and password.");
+    return;
+  }
 
-      const data = await response.json();
+  // Email format check
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
 
-      if (!response.ok) {
-        alert(data.message || "Login failed!");
-        return;
-      }
+  try {
+    const response = await fetch("http://127.0.0.1:5000/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-      if (!data.user) {
-        alert("Unexpected server response. Please try again.");
-        return;
-      }
+    const data = await response.json();
 
-      const { role, application_status, userid, fullname, email: userEmail, phone, unitid } = data.user;
-
-      // ✅ Save all user info to localStorage
-      localStorage.setItem("userId", userid);
-      localStorage.setItem("fullName", fullname);
-      localStorage.setItem("email", email);
-      localStorage.setItem("email", userEmail);
-      localStorage.setItem("phone", phone);
-      localStorage.setItem("userRole", role);
-      localStorage.setItem("unitId", unitid || "");
-      if (role.toLowerCase() === "tenant") {
-        localStorage.setItem("applicationStatus", application_status || "Registered");
-        console.log("Application Status:", application_status);
-      }
-
-
-      // ✅ Navigate based on role
-      if (role.toLowerCase() === "owner") {
-        navigate("/owner-dashboard");
-      } else if (role.toLowerCase() === "tenant") {
-        if (application_status === "Registered") {
-          navigate("/tenant/browse-units");
-        }
-        else{
-          navigate("/tenant");
-        }
-       
-      } else {
-        navigate("/landing");
-      }
-
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Something went wrong. Please try again.");
+    if (!response.ok) {
+      alert(data.message || "Login failed!");
+      return;
     }
-  };
+
+    if (!data.user) {
+      alert("Unexpected server response. Please try again.");
+      return;
+    }
+
+    const { role, application_status, userid, fullname, email: userEmail, phone, unitid } = data.user;
+
+    // Save user info to localStorage
+    localStorage.setItem("userId", userid);
+    localStorage.setItem("fullName", fullname);
+    localStorage.setItem("email", userEmail);
+    localStorage.setItem("phone", phone);
+    localStorage.setItem("userRole", role);
+    localStorage.setItem("unitId", unitid || "");
+    if (role.toLowerCase() === "tenant") {
+      localStorage.setItem("applicationStatus", application_status || "Registered");
+    }
+
+    // Navigate based on role
+    if (role.toLowerCase() === "owner") {
+      navigate("/owner");
+    } else if (role.toLowerCase() === "tenant") {
+      navigate(application_status === "Registered" ? "/tenant/browse-units" : "/tenant");
+    } else {
+      navigate("/landing");
+    }
+
+  } catch (error) {
+    console.error("Login error:", error);
+    alert("Something went wrong. Please try again.");
+  }
+};
+
 
   return (
     <div className="auth-wrapper">

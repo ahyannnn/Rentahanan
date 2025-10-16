@@ -6,6 +6,7 @@ from models.units_model import House
 import os
 from routes.auth_route import auth_bp
 from routes.application_route import application_bp
+from routes.tenant_route import tenant_bp
 
 # Load environment variables
 load_dotenv()
@@ -33,6 +34,8 @@ db.init_app(app)
 # Register blueprints
 app.register_blueprint(auth_bp, url_prefix="/api")
 app.register_blueprint(application_bp, url_prefix="/api")
+app.register_blueprint(tenant_bp, url_prefix="/api")
+
 
 
 

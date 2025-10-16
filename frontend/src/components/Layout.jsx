@@ -18,18 +18,32 @@ const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // ✅ Reactive user role
+  const [userRole, setUserRole] = useState(localStorage.getItem("userRole") || "tenant");
+
   const [applicationStatus, setApplicationStatus] = useState(
-    localStorage.getItem("applicationStatus") || "Pending"
+    userRole === "tenant"
+      ? localStorage.getItem("applicationStatus") || "Pending"
+      : null // owners don't have applicationStatus
   );
 
-  const userRole = localStorage.getItem("userRole") || "tenant";
 
   useEffect(() => {
-    const storedStatus = localStorage.getItem("applicationStatus");
-    if (storedStatus && storedStatus !== applicationStatus) {
-      setApplicationStatus(storedStatus);
-    }
-  }, [applicationStatus]);
+    const handleStorageChange = () => {
+      const role = localStorage.getItem("userRole") || "tenant";
+      setUserRole(role);
+
+      if (role === "tenant") {
+        setApplicationStatus(localStorage.getItem("applicationStatus") || "Pending");
+      } else {
+        setApplicationStatus(null); // owners don't need it
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
@@ -39,8 +53,18 @@ const Layout = () => {
     localStorage.removeItem("applicationStatus");
     navigate("/");
   };
+  // Owner links
+  const ownerLinks = [
+    { name: "Dashboard", to: "/owner", icon: Home },
+    { name: "Tenants", to: "/owner/tenants", icon: Users },
+    { name: "Units", to: "/owner/units", icon: Building2 },
+    { name: "Transactions", to: "/owner/transactions", icon: FileText },
+    { name: "Billing", to: "/owner/billing", icon: CreditCard },
+    { name: "Notifications", to: "/owner/notifications", icon: Bell },
+    { name: "User Management", to: "/owner/user", icon: UserCog },
+  ];
 
-  // ✅ Tenant links by status
+  // Tenant links by application status
   const tenantLinksByStatus = {
     Pending: [
       { name: "Dashboard", to: "/tenant", icon: Home },
@@ -60,19 +84,10 @@ const Layout = () => {
     ],
   };
 
-  // ✅ Owner links (7 items)
-  const ownerLinks = [
-    { name: "Dashboard", to: "/owner", icon: Home },
-    { name: "Tenants", to: "/owner/tenants", icon: Users },
-    { name: "Units", to: "/owner/units", icon: Building2 },
-    { name: "Transactions", to: "/owner/transactions", icon: FileText },
-    { name: "Billing", to: "/owner/billing", icon: CreditCard },
-    { name: "Notifications", to: "/owner/notifications", icon: Bell },
-    { name: "User Management", to: "/owner/user", icon: UserCog },
-  ];
 
+  // ✅ Correct links logic: owners always see ownerLinks, tenants see tenantLinksByStatus
   const links =
-    userRole === "owner"
+    userRole === "Owner"
       ? ownerLinks
       : tenantLinksByStatus[applicationStatus] || [];
 
@@ -94,9 +109,8 @@ const Layout = () => {
             return (
               <div
                 key={index}
-                className={`linkholder ${
-                  location.pathname === link.to ? "active" : ""
-                }`}
+                className={`linkholder ${location.pathname === link.to ? "active" : ""
+                  }`}
               >
                 <Link to={link.to} onClick={closeSidebar}>
                   <Icon size={18} style={{ marginRight: "8px" }} />
