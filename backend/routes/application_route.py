@@ -39,39 +39,48 @@ def apply_unit():
         unique_filename = f"{user_id}_{prefix}_{timestamp}_{filename}"
         file_path = os.path.join(folders[folder_key], unique_filename)
         file.save(file_path)
-        # Return relative path for database
         return f"{folders[folder_key]}/{unique_filename}"
 
-    valid_id_path = save_file(valid_id_file, "valid_id", "validid")
-    brgy_path = save_file(brgy_file, "brgy", "brgy") if brgy_file else None
-    proof_path = save_file(proof_file, "proof", "proof") if proof_file else None
+    try:
+        valid_id_path = save_file(valid_id_file, "valid_id", "validid")
+        brgy_path = save_file(brgy_file, "brgy", "brgy") if brgy_file else None
+        proof_path = save_file(proof_file, "proof", "proof") if proof_file else None
 
-    # Check if application already exists
-    application = Application.query.filter_by(userid=user_id).first()
+        # Check if application already exists
+        application = Application.query.filter_by(userid=user_id).first()
 
-    if application:
-        application.unitid = unit_id
-        application.valid_id = valid_id_path
-        application.brgy_clearance = brgy_path
-        application.proof_of_income = proof_path
-        application.status = "Pending"
-        application.updated_at = datetime.utcnow()
-    else:
-        application = Application(
-            fullname="",  # optionally get from frontend
-            email="",
-            phone="",
-            unitid=unit_id,
-            userid=user_id,
-            valid_id=valid_id_path,
-            brgy_clearance=brgy_path,
-            proof_of_income=proof_path,
-            status="Pending"
-        )
-        db.session.add(application)
+        if application:
+            application.unitid = unit_id
+            application.valid_id = valid_id_path
+            application.brgy_clearance = brgy_path
+            application.proof_of_income = proof_path
+            application.status = "Pending"
+            application.updated_at = datetime.utcnow()
+        else:
+            application = Application(
+                fullname="",  # optionally get from frontend
+                email="",
+                phone="",
+                unitid=unit_id,
+                userid=user_id,
+                valid_id=valid_id_path,
+                brgy_clearance=brgy_path,
+                proof_of_income=proof_path,
+                status="Pending"
+            )
+            db.session.add(application)
 
-    db.session.commit()
-    return jsonify({"message": "Application submitted successfully!"})
+        db.session.commit()
+        return jsonify({"message": "Application submitted successfully!"})
+
+    except Exception as e:
+        db.session.rollback()  # ✅ Rollback on error
+        # Optionally, remove saved files if something failed
+        for path in [valid_id_path, brgy_path, proof_path]:
+            if path and os.path.exists(path):
+                os.remove(path)
+        return jsonify({"error": f"Failed to submit application: {str(e)}"}), 500
+
 
 
 # ✅ Fetch application details
