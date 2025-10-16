@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from extensions import db
 from models.users_model import User
 from models.applications_model import Application
+from models.tenants_model import Tenant
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
@@ -20,50 +21,65 @@ def register():
     email = data.get("email")
     phone = data.get("phone")
     password = data.get("password")
+    dateofbirth = data.get("dob")
+    address = data.get("address")
 
-    if not all([fullname, email, phone, password]):
+    if not all([fullname, email, phone, password, dateofbirth, address]):
         return jsonify({"message": "All fields are required"}), 400
 
     # Check if email already exists
     if User.query.filter_by(email=email).first():
         return jsonify({"message": "Email already registered"}), 400
 
-    # Hash password
-    hashed_password = generate_password_hash(password)
-
-    # Create user
-    new_user = User(
-        fullname=fullname,
-        email=email,
-        phone=phone,
-        password=hashed_password,
-        role="Tenant",
-        datecreated=datetime.utcnow()
-    )
-
     try:
-        db.session.add(new_user)
-        db.session.commit()
-        
-        new_application = Application(
-        fullname=fullname,
-        email=email,
-        phone=phone,
-        unitid=None,
-        userid=new_user.userid,
-        valid_id=None,
-        status="Registered",
-        submissiondate=None,
-        brgy_clearance=None,
-        proof_of_income=None
-    )
-        db.session.add(new_application)
-        db.session.commit()
-        return jsonify({"message": "User registered and application created!"}), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"message": f"Registration failed: {str(e)}"}), 500
+        # Hash password
+        hashed_password = generate_password_hash(password)
 
+        # Create user
+        new_user = User(
+            fullname=fullname,
+            email=email,
+            phone=phone,
+            password=hashed_password,
+            role="Tenant",
+            datecreated=datetime.utcnow()
+        )
+        db.session.add(new_user)
+        db.session.flush()  # flush to get new_user.userid
+
+        # Create application
+        new_application = Application(
+            fullname=fullname,
+            email=email,
+            phone=phone,
+            unitid=None,
+            userid=new_user.userid,
+            valid_id=None,
+            status="Registered",
+            submissiondate=None,
+            brgy_clearance=None,
+            proof_of_income=None
+        )
+        db.session.add(new_application)
+        db.session.flush()  # flush to get new_application.applicationid
+
+        # Create tenant
+        new_tenant = Tenant(
+            userid=new_user.userid,                 # match Tenant model column
+            dateofbirth=dateofbirth,
+            address=address,
+            applicationid=new_application.applicationid
+        )
+        db.session.add(new_tenant)
+
+        # Commit all three at once
+        db.session.commit()
+
+        return jsonify({"message": "User, application, and tenant created successfully!"}), 201
+
+    except Exception as e:
+        db.session.rollback()  # rollback all changes if any error occurs
+        return jsonify({"message": f"Registration failed: {str(e)}"}), 500
 
 # ==============================
 # LOGIN
