@@ -19,8 +19,13 @@ CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
-app.config["UPLOAD_FOLDER"] = "uploads/valid_ids"
+# Base folder for all uploads
+app.config["UPLOAD_FOLDER"] = "uploads"
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
+# You can optionally pre-create subfolders
+for sub in ["valid_ids", "brgy_clearances", "proof_of_income"]:
+    os.makedirs(os.path.join(app.config["UPLOAD_FOLDER"], sub), exist_ok=True)
 
 # Initialize extensions
 db.init_app(app)

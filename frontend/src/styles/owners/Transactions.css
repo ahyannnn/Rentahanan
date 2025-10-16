@@ -1,0 +1,199 @@
+.transactions-page-container {
+  padding: 20px;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+/* --- Card Wrapper --- */
+.content-card {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 25px 30px;
+  margin-bottom: 20px;
+}
+
+.content-card h2 {
+  color: #1a1a1a;
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+
+.content-card p {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 0;
+}
+
+/* --- Tabs and Search --- */
+.transaction-tabs {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.tab-item {
+  background: none;
+  border: none;
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  color: #666;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-item.active {
+  color: #0b3c91;
+  border-color: #0b3c91;
+  font-weight: 600;
+}
+
+.tab-item:hover {
+  color: #0b3c91;
+}
+
+.search-box {
+  position: relative;
+}
+
+.search-box input {
+  border: 1px solid #d9e1f2;
+  border-radius: 8px;
+  padding: 8px 10px 8px 35px;
+  font-size: 0.9rem;
+  width: 220px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.search-box input:focus {
+  border-color: #0b3c91;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  color: #888;
+}
+
+/* --- Table --- */
+.transaction-table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+thead th {
+  text-align: left;
+  padding: 12px 15px;
+  color: #555;
+  border-bottom: 2px solid #e5e7eb;
+  font-weight: 600;
+  background-color: #f9fafb;
+}
+
+tbody td {
+  padding: 14px 15px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+}
+
+tr:hover {
+  background-color: #f7faff;
+}
+
+/* --- Status Styles --- */
+.status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status.pending {
+  background-color: #fff4cc;
+  color: #8a6d1c;
+}
+
+.status.approved {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* --- Proof Link --- */
+.proof-link {
+  color: #0b3c91;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.proof-link:hover {
+  text-decoration: underline;
+}
+
+/* --- Action Buttons --- */
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.action-buttons button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.action-approve {
+  color: #48bb78;
+}
+
+.action-reject {
+  color: #f56565;
+}
+
+.action-approve:hover {
+  background-color: rgba(72, 187, 120, 0.15);
+  transform: scale(1.1);
+}
+
+.action-reject:hover {
+  background-color: rgba(245, 101, 101, 0.15);
+  transform: scale(1.1);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .transaction-tabs {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-box input {
+    width: 100%;
+  }
+
+  table {
+    font-size: 0.85rem;
+  }
+}

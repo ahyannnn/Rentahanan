@@ -9,7 +9,7 @@ const Layout = () => {
   const navigate = useNavigate();
 
   const [applicationStatus, setApplicationStatus] = useState(
-    localStorage.getItem("applicationStatus") || "Pending"
+    localStorage.getItem("applicationStatus") || "Registered"
   );
 
   const userRole = localStorage.getItem("userRole") || "tenant"; // or "owner"
@@ -32,10 +32,13 @@ const Layout = () => {
 
   // ✅ Links for each role
   const tenantLinksByStatus = {
+    Registered: [
+      { name: "Browse Units", to: "/tenant/browse-units" }
+    ],
     Pending: [
       { name: "Dashboard", to: "/tenant" },
       { name: "Browse Units", to: "/tenant/browse-units" },
-      { name: "Support", to: "/tenant/support" },
+      { name: "My Bills", to: "/tenant/bills" },
     ],
     Approved: [
       { name: "Dashboard", to: "/tenant" },
@@ -75,7 +78,7 @@ const Layout = () => {
         <div className={`sidebar ${sidebarOpen ? "show" : ""}`} id="sidebar">
           <div className="logotitle">
             <img src="" alt="LOGO" />
-            <h1>PHOME</h1>
+            <h1>RenTahanan</h1>
           </div>
 
           <div className="linkholderbody">
