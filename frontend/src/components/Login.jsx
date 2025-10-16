@@ -30,7 +30,7 @@ const Login = () => {
         return;
       }
 
-      const { role, application_status, userid, fullname, email: userEmail, phone } = data.user;
+      const { role, application_status, userid, fullname, email: userEmail, phone, unitid } = data.user;
 
       // ✅ Save all user info to localStorage
       localStorage.setItem("userId", userid);
@@ -39,9 +39,9 @@ const Login = () => {
       localStorage.setItem("email", userEmail);
       localStorage.setItem("phone", phone);
       localStorage.setItem("userRole", role);
-
+      localStorage.setItem("unitId", unitid || "");
       if (role.toLowerCase() === "tenant") {
-        localStorage.setItem("applicationStatus", application_status || "Pending");
+        localStorage.setItem("applicationStatus", application_status || "Registered");
         console.log("Application Status:", application_status);
       }
 
@@ -50,7 +50,13 @@ const Login = () => {
       if (role.toLowerCase() === "owner") {
         navigate("/owner-dashboard");
       } else if (role.toLowerCase() === "tenant") {
-        navigate("/tenant");
+        if (application_status === "Registered") {
+          navigate("/tenant/browse-units");
+        }
+        else{
+          navigate("/tenant");
+        }
+       
       } else {
         navigate("/landing");
       }
