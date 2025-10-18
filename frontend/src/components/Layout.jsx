@@ -93,7 +93,7 @@ const Layout = () => {
   ];
   // ✅ Correct links logic: owners always see ownerLinks, tenants see tenantLinksByStatus
   const links =
-  userRole === "Owner"
+  userRole.toLowerCase() === "owner"
     ? ownerLinks
     : tenantLinksByStatus[applicationStatus || "Pending"] || [];
 
@@ -108,7 +108,7 @@ const Layout = () => {
       <div className={`sidebar ${sidebarOpen ? "show" : ""}`} id="sidebar">
         <div className="logotitle">
           <img src="" alt="LOGO" />
-          <h1>PHOME</h1>
+          <h1>RenTahan</h1>
         </div>
 
         <div className="linkholderbody">

@@ -55,6 +55,28 @@ const Tenants = () => {
       </div>
     ));
 
+  const handleApprove = async (userId) => {
+    if (window.confirm("Are you sure you want to approve this application?")) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/tenants/approve/${userId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (response.ok) {
+          alert("Application approved successfully!");
+          closeModal();
+          setApplicants((prev) => prev.filter((a) => a._id !== userId)); // Remove from list
+        } else {
+          alert("Failed to approve application.");
+        }
+      } catch (error) {
+        console.error("Error approving application:", error);
+        alert("An error occurred while approving the application.");
+      }
+    }
+  };
+
   return (
     <div className="tenants-container">
       <h2 className="tenants-title">TENANTS</h2>
@@ -72,7 +94,7 @@ const Tenants = () => {
             className={activeTab === "applications" ? "tab active" : "tab"}
             onClick={() => setActiveTab("applications")}
           >
-            Applications
+            Applicant
           </button>
         </div>
         <input
@@ -94,78 +116,95 @@ const Tenants = () => {
       {/* Modal */}
       {selectedUser && (
         <div className="modal-overlay" onClick={closeModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
 
-              {/* HEADER: Dito magkasama ang Pangalan at ang Close button */}
-              <div className="modal-header-fixed">
-                <h2>{selectedUser.fullname}</h2>
-                <button className="close-btn" onClick={closeModal}>
-                  Close
-                </button>
-              </div>
-
-              {/* CONTENT: Walang scrollbar sa loob */}
-              <p><strong>Email:</strong> {selectedUser.email}</p>
-              <p><strong>Phone:</strong> {selectedUser.phone}</p>
-              <p><strong>Unit:</strong> {selectedUser.unit_name || "N/A"}</p>
-              <p><strong>DOB:</strong> {selectedUser.dateofbirth}</p>
-              <p><strong>Address:</strong> {selectedUser.address}</p>
-
-              {activeTab === "active" && (
-                <>
-                  <p><strong>Unit Price:</strong> {selectedUser.unit_price}</p>
-                  <p className="document-row">
-                    <strong>Valid ID:</strong>
-                    <button className="document-btn action-primary"
-                      onClick={() => console.log('View Valid ID:', selectedUser.valid_id)}>
-                      {selectedUser.valid_id ? "View Document" : "View"}
-                    </button>
-                  </p>
-                  <p className="document-row">
-                    <strong>Clearance:</strong>
-                    <button className="document-btn action-primary"
-                      onClick={() => console.log('View Clearance:', selectedUser.brgy_clearance)}>
-                      {selectedUser.brgy_clearance ? "View Document" : "View"}
-                    </button>
-                  </p>
-                  <p className="document-row">
-                    <strong>Income:</strong>
-                    <button className="document-btn action-primary"
-                      onClick={() => console.log('View Proof of Income:', selectedUser.proof_of_income)}>
-                      {selectedUser.proof_of_income ? "View Document" : "View"}
-                    </button>
-                  </p>
-                </>
-              )}
-
-              {activeTab === "applications" && (
-                <>
-                  <p className="document-row">
-                    <strong>Valid ID:</strong>
-                    <button className="document-btn action-primary"
-                      onClick={() => console.log('Review Valid ID:', selectedUser.valid_id)}>
-                      {selectedUser.valid_id ? "Review Document" : "View"}
-                    </button>
-                  </p>
-                  <p className="document-row">
-                    <strong>Clearance:</strong>
-                    <button className="document-btn action-primary"
-                      onClick={() => console.log('Review Clearance:', selectedUser.brgy_clearance)}>
-                      {selectedUser.brgy_clearance ? "Review Document" : "View"}
-                    </button>
-                  </p>
-                  <p className="document-row">
-                    <strong>Income:</strong>
-                    <button className="document-btn action-primary"
-                      onClick={() => console.log('Review Proof of Income:', selectedUser.proof_of_income)}>
-                      {selectedUser.proof_of_income ? "Review Document" : "View"}
-                    </button>
-                  </p>
-                </>
-              )}
-
+            {/* HEADER: Dito magkasama ang Pangalan at ang Close button */}
+            <div className="modal-header-fixed">
+              <h2>{selectedUser.fullname}</h2>
+              <button className="close-btn" onClick={closeModal}>
+                Close
+              </button>
             </div>
+
+            {/* CONTENT: Walang scrollbar sa loob */}
+            <p><strong>Email:</strong> {selectedUser.email}</p>
+            <p><strong>Phone:</strong> {selectedUser.phone}</p>
+            <p><strong>Unit:</strong> {selectedUser.unit_name || "N/A"}</p>
+            <p><strong>DOB:</strong> {selectedUser.dateofbirth}</p>
+            <p><strong>Address:</strong> {selectedUser.address}</p>
+
+            {activeTab === "active" && (
+              <>
+                <p><strong>Unit Price:</strong> {selectedUser.unit_price}</p>
+                <p className="document-row">
+                  <strong>Valid ID:</strong>
+                  <button className="document-btn action-primary"
+                    onClick={() => console.log('View Valid ID:', selectedUser.valid_id)}>
+                    {selectedUser.valid_id ? "View Document" : "View"}
+                  </button>
+                </p>
+                <p className="document-row">
+                  <strong>Clearance:</strong>
+                  <button className="document-btn action-primary"
+                    onClick={() => console.log('View Clearance:', selectedUser.brgy_clearance)}>
+                    {selectedUser.brgy_clearance ? "View Document" : "View"}
+                  </button>
+                </p>
+                <p className="document-row">
+                  <strong>Income:</strong>
+                  <button className="document-btn action-primary"
+                    onClick={() => console.log('View Proof of Income:', selectedUser.proof_of_income)}>
+                    {selectedUser.proof_of_income ? "View Document" : "View"}
+                  </button>
+                </p>
+              </>
+            )}
+
+            {activeTab === "applications" && (
+              <>
+                <p className="document-row">
+                  <strong>Valid ID:</strong>
+                  <button
+                    className="document-btn action-primary"
+                    onClick={() => console.log('Review Valid ID:', selectedUser.valid_id)}
+                  >
+                    {selectedUser.valid_id ? "Review Document" : "View"}
+                  </button>
+                </p>
+                <p className="document-row">
+                  <strong>Clearance:</strong>
+                  <button
+                    className="document-btn action-primary"
+                    onClick={() => console.log('Review Clearance:', selectedUser.brgy_clearance)}
+                  >
+                    {selectedUser.brgy_clearance ? "Review Document" : "View"}
+                  </button>
+                </p>
+                <p className="document-row">
+                  <strong>Income:</strong>
+                  <button
+                    className="document-btn action-primary"
+                    onClick={() => console.log('Review Proof of Income:', selectedUser.proof_of_income)}
+                  >
+                    {selectedUser.proof_of_income ? "Review Document" : "View"}
+                  </button>
+                </p>
+
+                {/* BIG APPROVE BUTTON */}
+                <div className="approve-section">
+                  <button
+                    className="approve-btn"
+                    onClick={() => handleApprove(selectedUser._id)}
+                  >
+                    APPROVE APPLICATION
+                  </button>
+                </div>
+              </>
+            )}
+
+
           </div>
+        </div>
       )}
     </div>
   );

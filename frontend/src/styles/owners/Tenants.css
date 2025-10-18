@@ -26,6 +26,27 @@
     display: block; 
     /* TINANGGAL LAHAT NG HEIGHT/SCROLL RULES */
 }
+.approve-section {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.approve-btn {
+  background-color: #28a745;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 15px 40px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.approve-btn:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
 
 /* --- HEADER FIX (Full Name + Close Button) --- */
 .modal-header-fixed {

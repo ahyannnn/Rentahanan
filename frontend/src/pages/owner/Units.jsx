@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Home, MapPin, DollarSign, Plus, X, Image as ImageIcon } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Home, DollarSign, Plus, X, Image as ImageIcon } from "lucide-react";
 import "../../styles/owners/Units.css";
 
 function Units() {
@@ -7,6 +7,22 @@ function Units() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [previewImages, setPreviewImages] = useState([]);
+  const [units, setUnits] = useState([]);
+  const [selectedUnit, setSelectedUnit] = useState(null);
+
+  // ✅ Deployment-friendly API URL
+  const API_URL =
+    (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) ||
+    (typeof process !== "undefined" && process.env?.REACT_APP_API_URL) ||
+    "http://localhost:5000";
+
+  // ✅ Fetch all houses
+  useEffect(() => {
+    fetch(`${API_URL}/api/houses`)
+      .then((res) => res.json())
+      .then((data) => setUnits(data))
+      .catch((err) => console.error("Error fetching units:", err));
+  }, []);
 
   // --- handle upload preview (limit to 4)
   const handleImageUpload = (e) => {
@@ -19,7 +35,16 @@ function Units() {
     setShowAddModal(false);
     setShowViewModal(false);
     setPreviewImages([]);
+    setSelectedUnit(null);
   };
+
+  // --- filter units by tab
+  const filteredUnits =
+    activeTab === "All"
+      ? units
+      : units.filter(
+          (unit) => unit.status.toLowerCase() === activeTab.toLowerCase()
+        );
 
   return (
     <div className="units-page-container">
@@ -43,61 +68,48 @@ function Units() {
         </button>
       </div>
 
-      {/* --- Sample Cards --- */}
+      {/* --- Units Grid (Dynamic) --- */}
       <div className="units-grid small">
-        {/* Available Unit */}
-        <div className="unit-card small">
-          <div className="unit-image-placeholder small">
-            <Home size={32} className="unit-icon" />
-            <div className="unit-name-tag small">Unit A - Studio</div>
-          </div>
+        {filteredUnits.length > 0 ? (
+          filteredUnits.map((unit, index) => (
+            <div key={unit.id} className="unit-card small">
+              <div className="unit-image-placeholder small">
+                <Home size={32} className="unit-icon" />
+                <div className="unit-name-tag small">{unit.name}</div>
+              </div>
 
-          <div className="unit-details small">
-            <span className="status-badge status-available">Available</span>
-            <p className="unit-location">
-              <MapPin size={14} className="info-icon" />
-              Ground Floor, Bldg A
-            </p>
-            <p className="unit-price-block">
-              <DollarSign size={16} className="info-icon price-icon" />
-              <span className="unit-price">12,000</span>
-              <span className="unit-price-suffix">/month</span>
-            </p>
-            <button
-              className="view-details-btn small"
-              onClick={() => setShowViewModal(true)}
-            >
-              View Details
-            </button>
-          </div>
-        </div>
-
-        {/* Occupied Unit */}
-        <div className="unit-card small">
-          <div className="unit-image-placeholder small">
-            <Home size={32} className="unit-icon" />
-            <div className="unit-name-tag small">Unit B - 1 BR</div>
-          </div>
-
-          <div className="unit-details small">
-            <span className="status-badge status-occupied">Occupied</span>
-            <p className="unit-location">
-              <MapPin size={14} className="info-icon" />
-              2nd Floor, Bldg B
-            </p>
-            <p className="unit-price-block">
-              <DollarSign size={16} className="info-icon price-icon" />
-              <span className="unit-price">18,500</span>
-              <span className="unit-price-suffix">/month</span>
-            </p>
-            <button
-              className="view-details-btn small"
-              onClick={() => setShowViewModal(true)}
-            >
-              View Details
-            </button>
-          </div>
-        </div>
+              <div className="unit-details small">
+                <span
+                  className={`status-badge ${
+                    unit.status.toLowerCase() === "available"
+                      ? "status-available"
+                      : "status-occupied"
+                  }`}
+                >
+                  {unit.status}
+                </span>
+                <p className="unit-price-block">
+                  <DollarSign size={16} className="info-icon price-icon" />
+                  <span className="unit-price">
+                    {unit.price?.toLocaleString()}
+                  </span>
+                  <span className="unit-price-suffix">/month</span>
+                </p>
+                <button
+                  className="view-details-btn small"
+                  onClick={() => {
+                    setSelectedUnit(unit);
+                    setShowViewModal(true);
+                  }}
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="no-units-text">No units found.</p>
+        )}
       </div>
 
       {/* --- Add Unit Modal --- */}
@@ -117,9 +129,6 @@ function Units() {
 
               <label>Price (₱)</label>
               <input type="number" placeholder="e.g. 15000" />
-
-              <label>Location</label>
-              <input type="text" placeholder="e.g. Ground Floor, Bldg A" />
 
               <label>Status</label>
               <select>
@@ -153,7 +162,7 @@ function Units() {
       )}
 
       {/* --- View Details Modal --- */}
-      {showViewModal && (
+      {showViewModal && selectedUnit && (
         <div className="modal-overlay">
           <div className="view-details-modal">
             <div className="modal-header">
@@ -165,10 +174,16 @@ function Units() {
 
             <div className="modal-body">
               <div className="unit-info">
-                <p><strong>Name:</strong> Unit A - Studio</p>
-                <p><strong>Price:</strong> ₱12,000 / month</p>
-                <p><strong>Location:</strong> Ground Floor, Bldg A</p>
-                <p><strong>Status:</strong> Available</p>
+                <p>
+                  <strong>Name:</strong> {selectedUnit.name}
+                </p>
+                <p>
+                  <strong>Price:</strong> ₱
+                  {selectedUnit.price?.toLocaleString()} / month
+                </p>
+                <p>
+                  <strong>Status:</strong> {selectedUnit.status}
+                </p>
               </div>
 
               <div className="photo-gallery">
