@@ -94,33 +94,78 @@ const Tenants = () => {
       {/* Modal */}
       {selectedUser && (
         <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>{selectedUser.fullname}</h2>
-            <p>Email: {selectedUser.email}</p>
-            <p>Phone: {selectedUser.phone}</p>
-            <p>Unit: {selectedUser.unit_name || "N/A"}</p>
-            <p>DOB: {selectedUser.dateofbirth}</p>
-            <p>Address: {selectedUser.address}</p>
-            {activeTab === "active" && (
-              <>
-                <p>Unit Price: {selectedUser.unit_price}</p>
-                <p>Valid ID: {selectedUser.valid_id}</p>
-                <p>Clearance: {selectedUser.brgy_clearance}</p>
-                <p>Income: {selectedUser.proof_of_income}</p>
-              </>
-            )}
-            {activeTab === "applications" && (
-              <>
-                <p>Valid ID: {selectedUser.valid_id}</p>
-                <p>Clearance: {selectedUser.brgy_clearance}</p>
-                <p>Income: {selectedUser.proof_of_income}</p>
-              </>
-            )}
-            <button className="close-btn" onClick={closeModal}>
-              Close
-            </button>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+
+              {/* HEADER: Dito magkasama ang Pangalan at ang Close button */}
+              <div className="modal-header-fixed">
+                <h2>{selectedUser.fullname}</h2>
+                <button className="close-btn" onClick={closeModal}>
+                  Close
+                </button>
+              </div>
+
+              {/* CONTENT: Walang scrollbar sa loob */}
+              <p><strong>Email:</strong> {selectedUser.email}</p>
+              <p><strong>Phone:</strong> {selectedUser.phone}</p>
+              <p><strong>Unit:</strong> {selectedUser.unit_name || "N/A"}</p>
+              <p><strong>DOB:</strong> {selectedUser.dateofbirth}</p>
+              <p><strong>Address:</strong> {selectedUser.address}</p>
+
+              {activeTab === "active" && (
+                <>
+                  <p><strong>Unit Price:</strong> {selectedUser.unit_price}</p>
+                  <p className="document-row">
+                    <strong>Valid ID:</strong>
+                    <button className="document-btn action-primary"
+                      onClick={() => console.log('View Valid ID:', selectedUser.valid_id)}>
+                      {selectedUser.valid_id ? "View Document" : "View"}
+                    </button>
+                  </p>
+                  <p className="document-row">
+                    <strong>Clearance:</strong>
+                    <button className="document-btn action-primary"
+                      onClick={() => console.log('View Clearance:', selectedUser.brgy_clearance)}>
+                      {selectedUser.brgy_clearance ? "View Document" : "View"}
+                    </button>
+                  </p>
+                  <p className="document-row">
+                    <strong>Income:</strong>
+                    <button className="document-btn action-primary"
+                      onClick={() => console.log('View Proof of Income:', selectedUser.proof_of_income)}>
+                      {selectedUser.proof_of_income ? "View Document" : "View"}
+                    </button>
+                  </p>
+                </>
+              )}
+
+              {activeTab === "applications" && (
+                <>
+                  <p className="document-row">
+                    <strong>Valid ID:</strong>
+                    <button className="document-btn action-primary"
+                      onClick={() => console.log('Review Valid ID:', selectedUser.valid_id)}>
+                      {selectedUser.valid_id ? "Review Document" : "View"}
+                    </button>
+                  </p>
+                  <p className="document-row">
+                    <strong>Clearance:</strong>
+                    <button className="document-btn action-primary"
+                      onClick={() => console.log('Review Clearance:', selectedUser.brgy_clearance)}>
+                      {selectedUser.brgy_clearance ? "Review Document" : "View"}
+                    </button>
+                  </p>
+                  <p className="document-row">
+                    <strong>Income:</strong>
+                    <button className="document-btn action-primary"
+                      onClick={() => console.log('Review Proof of Income:', selectedUser.proof_of_income)}>
+                      {selectedUser.proof_of_income ? "Review Document" : "View"}
+                    </button>
+                  </p>
+                </>
+              )}
+
+            </div>
           </div>
-        </div>
       )}
     </div>
   );

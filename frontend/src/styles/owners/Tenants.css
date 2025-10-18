@@ -1,166 +1,132 @@
-/* Apply Inter font, though Tailwind config handles it, this is good practice */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 15px;
+    overflow: hidden; /* No page scroll */
+}
 
-/* Your provided CSS for the tenant list component */
-.tenants-container {
-    padding: 25px;
-    min-height: 100vh;
+.modal-content {
+    background: #fff;
+    border-radius: 16px;
+    padding: 25px 30px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
     font-family: "Poppins", sans-serif;
-    color: #1e1e2f;
-    background-color: #f3f4f6; /* Added a subtle background for the page */
+    text-align: left; 
+    display: block; 
+    /* TINANGGAL LAHAT NG HEIGHT/SCROLL RULES */
 }
 
-.tenants-title {
-    font-size: 1.5rem; /* Increased title size for better desktop/mobile view */
-    font-weight: 600;
-    color: #0b3c91;
-    margin-bottom: 20px;
-    padding-left: 15px;
-}
-
-/* ==== Tabs + Search ==== */
-.tenants-header {
+/* --- HEADER FIX (Full Name + Close Button) --- */
+.modal-header-fixed {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    background: #ffffffc7;
-    border-radius: 12px;
-    padding: 10px 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    backdrop-filter: blur(5px); /* Added subtle blur for frosted glass effect */
+    align-items: center; 
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
 }
 
-.tabs {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap; /* Added for better mobile wrap */
+.modal-content h2 {
+    margin: 0; /* Remove default margin for h2 */
+    font-size: 1.5rem;
+    color: #0b3c91;
+    text-align: left; 
 }
 
-.tab {
-    background: transparent;
-    border: none;
-    font-size: 14px;
+/* --- CLOSE BUTTON (Final, Guaranteed Style) --- */
+/* --- CLOSE BUTTON (Final Style with Color Fixes) --- */
+.close-btn {
+    /* Padding at Font Size - Dapat nagwo-work na ito */
+    padding: 7px 15px !important; 
+    font-size: 13px !important; 
     font-weight: 500;
-    color: #555;
-    cursor: pointer;
-    padding: 6px 14px;
+    border: none;
     border-radius: 8px;
+    cursor: pointer;
     transition: 0.2s ease;
-    outline: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    
+    /* FIX FOR BACKGROUND AND TEXT COLOR */
+    background-color: #f0f0f0 !important; /* Siguraduhin natin na aabutan ang background */
+    color: #0b3c91 !important;           /* Siguraduhin natin ang text color */
 }
 
-.tab.active {
+.close-btn:hover {
+    background-color: #0b3c91 !important; /* Siguraduhin ang hover background */
+    color: #fff !important;               /* Siguraduhin ang hover text color (Puti) */
+    box-shadow: 0 2px 5px rgba(11, 60, 145, 0.4);
+}
+/* --- CONTENT STYLING --- */
+.modal-content p {
+    font-size: 14px;
+    color: #333;
+    margin: 8px 0; 
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-content p strong {
+    font-weight: 600; 
+    color: #0b3c91;
+    display: inline-block;
+    min-width: 110px;
+    flex-shrink: 0;
+    margin-right: 5px; 
+}
+
+.document-row {
+    margin: 10px 0;
+}
+
+/* Document Button Styling */
+.document-btn {
+    background-color: #f0f0f0; 
+    color: #0b3c91;
+    border: 1px solid #ccc;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.document-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.document-btn.action-primary {
     background-color: #0b3c91;
     color: #fff;
-    box-shadow: 0 2px 8px rgba(11, 60, 145, 0.3);
-}
-
-.tab:hover:not(.active) {
-    background-color: #0b3c9120;
-}
-
-/* === FIX FOR SEARCH INPUT WIDTH ON DESKTOP === */
-.search-input {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 5px 8px;
-    font-size: 13px;
-    width: 160px; /* maliit na width */
-    transition: border-color 0.2s;
-    outline: none;
-    
-    /* The Fix: Prevent Flexbox from overriding the fixed width */
-    flex-grow: 0;
-    flex-shrink: 0;
-}
-
-.search-input:focus {
     border-color: #0b3c91;
 }
 
-/* ==== Cards Grid ==== */
-.tenants-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-}
-
-.tenant-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.tenant-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Avatar placeholder - Used inline SVG for better control */
-.tenant-avatar {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: #cfd9e7;
-    margin: 0 auto 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.tenant-avatar svg {
-    color: #0b3c91;
-}
-
-.tenant-info h4 {
-    margin: 5px 0;
-    font-size: 15px;
-    color: #0b3c91;
-    font-weight: 600;
-}
-
-.tenant-info p {
-    margin: 3px 0;
-    font-size: 13px;
-    color: #444;
-}
-
-.view-profile-btn {
-    margin-top: 15px; /* Increased margin for spacing */
-    background-color: #0b3c91;
-    color: #fff;
-    border: none;
-    padding: 7px 16px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: 0.2s ease;
-    box-shadow: 0 2px 5px rgba(11, 60, 145, 0.4);
-}
-
-.view-profile-btn:hover {
+.document-btn.action-primary:hover {
     background-color: #072d6d;
-    box-shadow: 0 4px 10px rgba(11, 60, 145, 0.5);
 }
 
-/* ==== Responsive ==== */
+/* --- RESPONSIVE FIXES --- */
 @media (max-width: 600px) {
-    .tenants-header {
+    .modal-header-fixed {
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
     }
-
-    .search-input {
-        width: 100%; /* Take full width on mobile for better usability */
-        max-width: none; /* Override any max-width if present */
-    }
     
-    .tabs {
-        justify-content: center;
+    .close-btn {
+        width: 100%;
+        max-width: none;
     }
 }
