@@ -18,8 +18,10 @@ const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ✅ Reactive user role
-  const [userRole, setUserRole] = useState(localStorage.getItem("userRole") || "tenant");
+  const [userRole, setUserRole] = useState(
+    (localStorage.getItem("userRole") || "tenant").toLowerCase()
+  );
+
 
   const [applicationStatus, setApplicationStatus] = useState(
     userRole === "tenant"
@@ -53,19 +55,14 @@ const Layout = () => {
     localStorage.removeItem("applicationStatus");
     navigate("/");
   };
-  // Owner links
-  const ownerLinks = [
-    { name: "Dashboard", to: "/owner", icon: Home },
-    { name: "Tenants", to: "/owner/tenants", icon: Users },
-    { name: "Units", to: "/owner/units", icon: Building2 },
-    { name: "Transactions", to: "/owner/transactions", icon: FileText },
-    { name: "Billing", to: "/owner/billing", icon: CreditCard },
-    { name: "Notifications", to: "/owner/notifications", icon: Bell },
-    { name: "User Management", to: "/owner/user", icon: UserCog },
-  ];
 
+  console.log("User Role:", userRole);
+  console.log("Application Status:", applicationStatus);
   // Tenant links by application status
   const tenantLinksByStatus = {
+    Registered: [
+      { name: "Browse Units", to: "/tenant/browse-units", icon: Building2 },
+    ],
     Pending: [
       { name: "Dashboard", to: "/tenant", icon: Home },
       { name: "Browse Units", to: "/tenant/browse-units", icon: Building2 },
@@ -84,12 +81,23 @@ const Layout = () => {
     ],
   };
 
-
+  // Owner links
+  const ownerLinks = [
+    { name: "Dashboard", to: "/owner", icon: Home },
+    { name: "Tenants", to: "/owner/tenants", icon: Users },
+    { name: "Units", to: "/owner/units", icon: Building2 },
+    { name: "Transactions", to: "/owner/transactions", icon: FileText },
+    { name: "Billing", to: "/owner/billing", icon: CreditCard },
+    { name: "Notifications", to: "/owner/notifications", icon: Bell },
+    { name: "User Management", to: "/owner/user", icon: UserCog },
+  ];
   // ✅ Correct links logic: owners always see ownerLinks, tenants see tenantLinksByStatus
   const links =
-    userRole === "Owner"
-      ? ownerLinks
-      : tenantLinksByStatus[applicationStatus] || [];
+  userRole === "Owner"
+    ? ownerLinks
+    : tenantLinksByStatus[applicationStatus || "Pending"] || [];
+
+
 
   const pageTitle =
     links.find((link) => link.to === location.pathname)?.name || "Dashboard";
