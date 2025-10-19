@@ -3,111 +3,48 @@ import { Link } from "react-router-dom";
 import "./../styles/Register.css";
 
 const Register = () => {
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    firstname: "",
-    middlename: "",
-    lastname: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirm: "",
-    dob: "",
-    street: "",
-    barangay: "",
-    city: "",
-    province: "",
-    zipcode: "",
+    firstname: "", middlename: "", lastname: "", dob: "",
+    email: "", phone: "", street: "", barangay: "",
+    city: "", province: "", zipcode: "",
+    password: "", confirm: "",
   });
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const handleNext = () => {
+    // Basic validation before next step
+    if (step === 1 && (!formData.firstname || !formData.lastname || !formData.dob)) {
+      return alert("Please fill in all personal information.");
+    }
+    if (step === 2 && (!formData.email || !formData.phone || !formData.street || !formData.barangay || !formData.city || !formData.province || !formData.zipcode)) {
+      return alert("Please fill in all contact/address information.");
+    }
+    setStep(step + 1);
+  };
+
+  const handlePrev = () => setStep(step - 1);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check all required fields
-    const requiredFields = [
-      "firstname", "lastname", "email", "phone", "password", "confirm",
-      "dob", "street", "barangay", "city", "province", "zipcode"
-    ];
+    if (!formData.password || !formData.confirm) return alert("Fill password fields.");
+    if (formData.password !== formData.confirm) return alert("Passwords do not match.");
 
-    for (const field of requiredFields) {
-      if (!formData[field]) {
-        alert(`Please fill in the ${field.replace(/_/g, " ")} field.`);
-        return;
-      }
-    }
+    // Password strength check (optional)
+    if (formData.password.length < 8) return alert("Password must be at least 8 characters.");
 
-    // Check email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      alert("Invalid email address.");
-      return;
-    }
-
-    // Check phone format (10–15 digits)
-    const phoneRegex = /^[0-9]{10,15}$/;
-    if (!phoneRegex.test(formData.phone)) {
-      alert("Invalid phone number. Must be 10–15 digits.");
-      return;
-    }
-
-    // Check password match
-    if (formData.password !== formData.confirm) {
-      alert("Passwords do not match!");
-      return;
-    }
-
-    // Password strength check
-    const password = formData.password;
-    const passwordErrors = [];
-    if (password.length < 8) passwordErrors.push("at least 8 characters");
-    if (!/[A-Z]/.test(password)) passwordErrors.push("an uppercase letter");
-    if (!/[a-z]/.test(password)) passwordErrors.push("a lowercase letter");
-    if (!/[0-9]/.test(password)) passwordErrors.push("a number");
-    if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password)) passwordErrors.push("a special character");
-
-    if (passwordErrors.length > 0) {
-      alert("Password must contain " + passwordErrors.join(", ") + ".");
-      return;
-    }
-
-    // Date of birth check
-    const today = new Date();
-    const dob = new Date(formData.dob);
-    if (dob >= today) {
-      alert("Date of birth cannot be in the future.");
-      return;
-    }
-
-    // If all validations pass, send request
     try {
       const res = await fetch("http://127.0.0.1:5000/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstname: formData.firstname,
-          middlename: formData.middlename,
-          lastname: formData.lastname,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password,
-          dob: formData.dob,
-          street: formData.street,
-          barangay: formData.barangay,
-          city: formData.city,
-          province: formData.province,
-          zipcode: formData.zipcode,
-        }),
+        body: JSON.stringify(formData),
       });
-
       const data = await res.json();
 
       if (res.status === 201) {
@@ -117,114 +54,119 @@ const Register = () => {
         alert(data.message);
       }
     } catch (error) {
+      alert("Something went wrong.");
       console.error(error);
-      alert("Something went wrong. Please try again later.");
     }
   };
 
   return (
     <div className="auth-wrapper">
       <div className="auth-page">
-        {/* LEFT SIDE */}
         <div className="auth-left">
           <div className="overlay"></div>
           <div className="auth-left-content">
-            <h1>
-              Join <span>PHOME</span>
-            </h1>
+            <h1>Join <span>PHOME</span></h1>
             <p>Start your journey — whether you’re a tenant or an owner, we’ve got you covered.</p>
           </div>
         </div>
 
-        {/* RIGHT SIDE */}
         <div className="auth-right">
           <div className="auth-card">
-            <h2
-              style={{
-                fontSize: "2rem",
-                fontWeight: 700,
-                color: "#061A53",
-                marginBottom: "2rem",
-                textAlign: "center",
-              }}
-            >
-              Register
+            <h2 className="auth-title">
+              {step === 1 && "Personal Information"}
+              {step === 2 && "Contact & Address"}
+              {step === 3 && "Create Password"}
             </h2>
 
             <form onSubmit={handleSubmit}>
-              {[
-                { label: "First Name", name: "firstname" },
-                { label: "Middle Name (optional)", name: "middlename" },
-                { label: "Last Name", name: "lastname" },
-                { label: "Email", name: "email", type: "email" },
-                { label: "Phone", name: "phone", type: "tel" },
-                { label: "Date of Birth", name: "dob", type: "date" },
-                { label: "Street", name: "street" },
-                { label: "Barangay", name: "barangay" },
-                { label: "City", name: "city" },
-                { label: "Province", name: "province" },
-                { label: "Zip Code", name: "zipcode" },
-              ].map((field) => (
-                <div className="form-group" key={field.name}>
-                  <label>{field.label}</label>
-                  <input
-                    type={field.type || "text"}
-                    name={field.name}
-                    placeholder={`Enter your ${field.label.toLowerCase()}`}
-                    value={formData[field.name]}
-                    onChange={handleChange}
-                    required={field.name !== "middlename"}
-                  />
-                </div>
-              ))}
+              {step === 1 && (
+                <>
+                  <div className="form-group">
+                    <label>First Name</label>
+                    <input name="firstname" value={formData.firstname} onChange={handleChange} />
+                  </div>
+                  <div className="form-group">
+                    <label>Middle Name</label>
+                    <input name="middlename" value={formData.middlename} onChange={handleChange} />
+                  </div>
+                  <div className="form-group">
+                    <label>Last Name</label>
+                    <input name="lastname" value={formData.lastname} onChange={handleChange} />
+                  </div>
+                  <div className="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" name="dob" value={formData.dob} onChange={handleChange} />
+                  </div>
+                </>
+              )}
 
-              {/* Password */}
-              <div className="form-group password-group">
-                <label>Password</label>
-                <div className="password-wrapper">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="show-btn"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? "Hide" : "Show"}
-                  </button>
+              {step === 2 && (
+                <div className="two-columns">
+                  <div className="column">
+                    <div className="form-group">
+                      <label>Email</label>
+                      <input type="email" name="email" value={formData.email} onChange={handleChange} />
+                    </div>
+                    <div className="form-group">
+                      <label>Phone</label>
+                      <input name="phone" value={formData.phone} onChange={handleChange} />
+                    </div>
+                    <div className="form-group">
+                      <label>Street</label>
+                      <input name="street" value={formData.street} onChange={handleChange} />
+                    </div>
+                    <div className="form-group">
+                      <label>Barangay</label>
+                      <input name="barangay" value={formData.barangay} onChange={handleChange} />
+                    </div>
+                  </div>
+                  <div className="column">
+                    <div className="form-group">
+                      <label>City</label>
+                      <input name="city" value={formData.city} onChange={handleChange} />
+                    </div>
+                    <div className="form-group">
+                      <label>Province</label>
+                      <input name="province" value={formData.province} onChange={handleChange} />
+                    </div>
+                    <div className="form-group">
+                      <label>Zip Code</label>
+                      <input name="zipcode" value={formData.zipcode} onChange={handleChange} />
+                    </div>
+                  </div>
                 </div>
+              )}
+
+
+              {step === 3 && (
+                <>
+                  <div className="form-group password-group">
+                    <label>Password</label>
+                    <div className="password-wrapper">
+                      <input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} />
+                      <button type="button" className="show-btn" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? "Hide" : "Show"}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="form-group password-group">
+                    <label>Confirm Password</label>
+                    <div className="password-wrapper">
+                      <input type={showConfirm ? "text" : "password"} name="confirm" value={formData.confirm} onChange={handleChange} />
+                      <button type="button" className="show-btn" onClick={() => setShowConfirm(!showConfirm)}>
+                        {showConfirm ? "Hide" : "Show"}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div className="form-buttons">
+                {step > 1 && <button type="button" onClick={handlePrev} className="btn secondary">Back</button>}
+                {step < 3 && <button type="button" onClick={handleNext} className="btn">Next</button>}
+                {step === 3 && <button type="submit" className="btn">Create Account</button>}
               </div>
 
-              {/* Confirm Password */}
-              <div className="form-group password-group">
-                <label>Confirm Password</label>
-                <div className="password-wrapper">
-                  <input
-                    type={showConfirm ? "text" : "password"}
-                    name="confirm"
-                    placeholder="Confirm your password"
-                    value={formData.confirm}
-                    onChange={handleChange}
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="show-btn"
-                    onClick={() => setShowConfirm(!showConfirm)}
-                  >
-                    {showConfirm ? "Hide" : "Show"}
-                  </button>
-                </div>
-              </div>
-
-              <button type="submit" className="btn">
-                Register
-              </button>
               <p className="bottom-text">
                 Already have an account? <Link to="/login">Login</Link>
               </p>
