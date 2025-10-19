@@ -26,6 +26,7 @@ import Transactions from "./pages/owner/Transactions";
 import Billing from "./pages/owner/Billing";
 import Notification from "./pages/owner/Notification";
 import User from "./pages/owner/User";
+import OwnerContract from "./pages/owner/Contract";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -55,6 +56,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route path="tenants" element={<Tenants />} />       {/* /owner/tenants */}
           <Route path="transactions" element={<Transactions />} /> {/* /owner/transactions */}
           <Route path="billing" element={<Billing />} />       {/* /owner/billing */}
+          <Route path="contract" element={<OwnerContract />} />     {/* /owner/contract */}
           <Route path="notifications" element={<Notification />} /> {/* /owner/notifications */}
           <Route path="user" element={<User />} />             {/* /owner/user */}
         </Route>

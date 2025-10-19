@@ -1,144 +1,230 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Plus, X } from "lucide-react";
 import "../../styles/owners/Billing.css";
 
 function Billing() {
-
+    const [activeTab, setActiveTab] = useState("tenants"); // "tenants" | "applicants"
     const [showAddModal, setShowAddModal] = useState(false);
-    const [showViewModal, setShowViewModal] = useState(false);
+    const [tenants, setTenants] = useState([]);
+    const [applicants, setApplicants] = useState([]);
+    const [selectedApplicant, setSelectedApplicant] = useState(null);
+    const [formData, setFormData] = useState({
+        tenantId: "",
+        invoiceNo: "",
+        billType: "Security Deposit & Advance Payment",
+        amount: "",
+        description: "",
+        issuedDate: "",
+        dueDate: ""
+    });
+
+    // ✅ Get today's date in YYYY-MM-DD format
+    const getTodayDate = () => {
+        const today = new Date();
+        return today.toISOString().split("T")[0];
+    };
+
+    // Fetch tenants and applicants
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [tenantsRes, applicantsRes] = await Promise.all([
+                    fetch("http://localhost:5000/api/billing/bills"),
+                    fetch("http://localhost:5000/api/applicants/for-billing")
+                ]);
+                const tenantsData = await tenantsRes.json();
+                const applicantsData = await applicantsRes.json();
+                setTenants(tenantsData);
+                setApplicants(applicantsData);
+            } catch (error) {
+                console.error("Error fetching billing data:", error);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    // ✅ Open invoice modal with pre-filled data
+    const openInvoiceModal = (applicant) => {
+        setSelectedApplicant(applicant);
+
+        const today = getTodayDate();
+
+        setFormData({
+            tenantId: applicant.applicationid,
+            invoiceNo: `INV-${Date.now()}`, // optional: auto-generate invoice number
+            billType: "Security Deposit & Advance Payment",
+            amount: applicant.unit_price * 3 || "",
+            description: `Initial payment for ${applicant.fullname} (${applicant.unit_name})`,
+            issuedDate: today,
+            dueDate: "" // leave empty to be chosen by user
+        });
+
+        setShowAddModal(true);
+    };
+
+    const handleSaveInvoice = async () => {
+        if (!formData.tenantId || !formData.amount) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:5000/api/billing/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                alert("Initial payment invoice issued successfully!");
+                setShowAddModal(false);
+                setFormData({
+                    tenantId: "",
+                    invoiceNo: "",
+                    billType: "Security Deposit & Advance Payment",
+                    amount: "",
+                    description: "",
+                    issuedDate: "",
+                    dueDate: ""
+                });
+            } else {
+                alert("Failed to create invoice.");
+            }
+        } catch (error) {
+            console.error("Error creating invoice:", error);
+            alert("An error occurred while creating the invoice.");
+        }
+    };
 
     return (
         <div className="billing-page-container">
             {/* Header */}
             <div className="content-card header-card">
                 <h2>Billing & Invoicing</h2>
-                <p>Generate and manage monthly bills, send invoices, and track payments.</p>
+                <p>Manage monthly tenant invoices and issue initial payments for applicants.</p>
             </div>
 
-            {/* Invoice Area */}
-            <div className="content-card invoice-area">
-                <div className="invoice-control-bar">
-                    <div className="search-box">
-                        <Search size={18} className="search-icon" />
-                        <input type="text" placeholder="Search Invoice No., Name, or Status" />
-                    </div>
+            {/* Tabs */}
+            <div className="tabs">
+                <button
+                    className={activeTab === "tenants" ? "tab active" : "tab"}
+                    onClick={() => setActiveTab("tenants")}
+                >
+                    Tenant Invoices
+                </button>
+                <button
+                    className={activeTab === "applicants" ? "tab active" : "tab"}
+                    onClick={() => setActiveTab("applicants")}
+                >
+                    Applicant Initial Payments
+                </button>
+            </div>
 
-                    <button
-                        className="create-invoice-btn"
-                        onClick={() => setShowAddModal(true)}
-                    >
-                        <Plus size={18} />
-                        Create Invoice
-                    </button>
-                </div>
-
-                {/* Static Table */}
-                <div className="invoice-table-wrapper">
+            {/* Applicant Initial Payments */}
+            {activeTab === "applicants" && (
+                <div className="content-card applicant-area">
+                    <h3>Applicants Requiring Initial Payment</h3>
                     <table>
                         <thead>
                             <tr>
-                                <th>Invoice No.</th>
-                                <th>Name</th>
-                                <th>Issued Date</th>
-                                <th>Due Date</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th>Applicant</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Unit</th>
+                                <th>Monthly Rent</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>202501</td>
-                                <td>Juan Dela Cruz</td>
-                                <td>2025-10-01</td>
-                                <td>2025-10-15</td>
-                                <td>₱1,500</td>
-                                <td><span className="status-badge status-unpaid">Unpaid</span></td>
-                                <td>
-                                    <button
-                                        className="action-btn view-btn"
-                                        onClick={() => setShowViewModal(true)}
-                                    >
-                                        View
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>202502</td>
-                                <td>Maria Santos</td>
-                                <td>2025-10-01</td>
-                                <td>2025-10-15</td>
-                                <td>₱3,000</td>
-                                <td><span className="status-badge status-paid">Paid</span></td>
-                                <td>
-                                    <button
-                                        className="action-btn view-btn"
-                                        onClick={() => setShowViewModal(true)}
-                                    >
-                                        View
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>202503</td>
-                                <td>Pedro Cruz</td>
-                                <td>2025-09-01</td>
-                                <td>2025-09-15</td>
-                                <td>₱18,500</td>
-                                <td><span className="status-badge status-unpaid">Unpaid</span></td>
-                                <td>
-                                    <button
-                                        className="action-btn view-btn"
-                                        onClick={() => setShowViewModal(true)}
-                                    >
-                                        View
-                                    </button>
-                                </td>
-                            </tr>
+                            {applicants.map((app, i) => (
+                                <tr key={i}>
+                                    <td>{app.fullname}</td>
+                                    <td>{app.email}</td>
+                                    <td>{app.phone}</td>
+                                    <td>{app.unit_name}</td>
+                                    <td>₱{app.unit_price}</td>
+                                    <td>
+                                        <button
+                                            className="action-btn"
+                                            onClick={() => openInvoiceModal(app)}
+                                        >
+                                            Issue Initial Payment
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
-            </div>
+            )}
 
             {/* Add Invoice Modal */}
             {showAddModal && (
                 <div className="modal-overlay">
                     <div className="add-invoice-modal">
                         <div className="modal-header">
-                            <h3>Create New Invoice</h3>
+                            <h3>Issue Initial Payment Invoice</h3>
                             <button className="close-btn" onClick={() => setShowAddModal(false)}>
                                 <X size={20} />
                             </button>
                         </div>
 
                         <div className="modal-body">
-                            <label>Tenant Name</label>
-                            <input type="text" placeholder="e.g. Juan Dela Cruz" />
+                            <p><strong>Applicant:</strong> {selectedApplicant?.fullname}</p>
+                            <p><strong>Unit:</strong> {selectedApplicant?.unit_name}</p>
 
-                            <label>Invoice No.</label>
-                            <input type="text" placeholder="e.g. 202505" />
-
-                            <label>Issued Date</label>
-                            <input type="date" />
-
-                            <label>Due Date</label>
-                            <input type="date" />
-
-                            <label>Amount (₱)</label>
-                            <input type="number" placeholder="e.g. 15000" />
-
-                            <label>Status</label>
-                            <select>
-                                <option>Unpaid</option>
-                                <option>Paid</option>
+                            <label>Bill Type</label>
+                            <select
+                                name="billType"
+                                value={formData.billType}
+                                onChange={handleInputChange}
+                            >
+                                <option>Security Deposit & Advance Payment</option>
+                                <option>Advance Rent Only</option>
+                                <option>Security Deposit Only</option>
                             </select>
 
-                            <label>Bill Description</label>
-                            <textarea placeholder="e.g. Monthly Rent for October 2025"></textarea>
+                            <label>Amount (₱)</label>
+                            <input
+                                type="number"
+                                name="amount"
+                                value={formData.amount}
+                                onChange={handleInputChange}
+                            />
+
+                            <label>Issued Date</label>
+                            <input
+                                type="date"
+                                name="issuedDate"
+                                value={formData.issuedDate}
+                                onChange={handleInputChange}
+                            />
+
+                            <label>Due Date</label>
+                            <input
+                                type="date"
+                                name="dueDate"
+                                value={formData.dueDate}
+                                onChange={handleInputChange}
+                            />
+
+                            <label>Description</label>
+                            <textarea
+                                name="description"
+                                value={formData.description}
+                                onChange={handleInputChange}
+                            />
                         </div>
 
                         <div className="modal-footer">
-                            <button className="save-btn">Save</button>
+                            <button className="save-btn" onClick={handleSaveInvoice}>
+                                Save
+                            </button>
                             <button className="cancel-btn" onClick={() => setShowAddModal(false)}>
                                 Cancel
                             </button>
@@ -146,36 +232,8 @@ function Billing() {
                     </div>
                 </div>
             )}
-
-            {/* View Invoice Modal */}
-            {showViewModal && (
-                <div className="modal-overlay">
-                    <div className="view-invoice-modal">
-                        <div className="modal-header">
-                            <h3>Invoice Details</h3>
-                            <button className="close-btn" onClick={() => setShowViewModal(false)}>
-                                <X size={20} />
-                            </button>
-                        </div>
-
-                        <div className="modal-body">
-                            <p><strong>Invoice No:</strong> 202501</p>
-                            <p><strong>Tenant Name:</strong> Juan Dela Cruz</p>
-                            <p><strong>Issued Date:</strong> 2025-10-01</p>
-                            <p><strong>Due Date:</strong> 2025-10-15</p>
-                            <p><strong>Amount:</strong> ₱1,500</p>
-                            <p><strong>Status:</strong> <span className="status-badge status-unpaid">Unpaid</span></p>
-                            <p><strong>Description:</strong> Monthly Rent for October 2025</p>
-                        </div>
-
-                        <div className="modal-footer">
-                            <button className="close-btn-2" onClick={() => setShowViewModal(false)}>Close</button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
-
+    
 export default Billing;

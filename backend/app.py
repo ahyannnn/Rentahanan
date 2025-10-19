@@ -7,6 +7,8 @@ import os
 from routes.auth_route import auth_bp
 from routes.application_route import application_bp
 from routes.tenant_route import tenant_bp
+from routes.bill_route import bill_bp
+from routes.contract_route import contract_bp
 
 # Load environment variables
 load_dotenv()
@@ -35,6 +37,8 @@ db.init_app(app)
 app.register_blueprint(auth_bp, url_prefix="/api")
 app.register_blueprint(application_bp, url_prefix="/api")
 app.register_blueprint(tenant_bp, url_prefix="/api")
+app.register_blueprint(bill_bp, url_prefix="/api")
+app.register_blueprint(contract_bp, url_prefix="/api")
 
 
 
