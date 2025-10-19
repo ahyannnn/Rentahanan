@@ -26,6 +26,7 @@ def send_code():
         return jsonify({"message": "Failed to send verification code"}), 500
 
 
+
 # ==============================
 # VERIFY CODE
 # ==============================
