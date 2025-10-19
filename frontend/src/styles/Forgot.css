@@ -1,5 +1,5 @@
 * {
-  font-family: "Poppins", sans-serif !important;
+    font-family: "Poppins", sans-serif !important;
 }
 
 .forgot-container {
@@ -187,6 +187,15 @@
 
 .resend-link:hover {
     text-decoration: underline;
+}
+
+
+.forgot-input {
+    margin: 10px;
+}
+
+.forgot-btn{
+    margin-left: 10px;
 }
 
 /* ======================================= */

@@ -4,27 +4,24 @@ import "./../styles/Forgot.css";
 
 const Forgot = () => {
   const [email, setEmail] = useState("");
-  const [step, setStep] = useState(1); // 1 = email form, 2 = enter code
+  const [step, setStep] = useState(1); // 1=email, 2=code, 3=new password
   const [code, setCode] = useState(Array(6).fill(""));
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   // --- Handle email submission ---
   const handleForgot = async (e) => {
     e.preventDefault();
-
-    if (!email) {
-      alert("Please enter your email address.");
-      return;
-    }
+    if (!email) return alert("Please enter your email.");
 
     try {
       setLoading(true);
-      const response = await fetch("http://127.0.0.1:5000/forgot-password", {
+      const response = await fetch("http://127.0.0.1:5000/api/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-
       const data = await response.json();
       setLoading(false);
 
@@ -36,7 +33,7 @@ const Forgot = () => {
       }
     } catch (error) {
       setLoading(false);
-      alert("Error connecting to the server. Check your backend.");
+      alert("Error connecting to the server.");
     }
   };
 
@@ -49,38 +46,64 @@ const Forgot = () => {
     }
   };
 
-  const handleResend = async () => {
-    if (!email) return alert("Missing email address.");
+  // --- Verify code ---
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    const enteredCode = code.join("");
+    if (enteredCode.length !== 6) return alert("Please enter the complete 6-digit code.");
+
     try {
       setLoading(true);
-      const response = await fetch("http://127.0.0.1:5000/forgot-password", {
+      const response = await fetch("http://127.0.0.1:5000/api/verify-code", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, code: enteredCode }),
       });
-
       const data = await response.json();
       setLoading(false);
 
       if (response.ok) {
-        alert("New verification code sent to your email!");
+        alert("Code verified successfully!");
+        setStep(3); // ✅ Move to New Password modal
       } else {
-        alert(data.message || "Failed to resend code.");
+        alert(data.message || "Invalid code.");
       }
     } catch (error) {
       setLoading(false);
-      alert("Error connecting to the server. Check your backend.");
+      alert("Error connecting to the server.");
     }
   };
 
-  const handleVerify = (e) => {
+  // --- Reset password ---
+  const handleResetPassword = async (e) => {
     e.preventDefault();
-    const enteredCode = code.join("");
-    if (enteredCode.length !== 6) {
-      alert("Please enter the complete 6-digit code.");
-      return;
+    if (!password || !confirmPassword) return alert("Please fill both password fields.");
+    if (password !== confirmPassword) return alert("Passwords do not match.");
+
+    try {
+      setLoading(true);
+      const response = await fetch("http://127.0.0.1:5000/api/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, confirm_password: confirmPassword }),
+      });
+      const data = await response.json();
+      setLoading(false);
+
+      if (response.ok) {
+        alert("Password reset successfully!");
+        setStep(1); // back to email form
+        setEmail("");
+        setCode(Array(6).fill(""));
+        setPassword("");
+        setConfirmPassword("");
+      } else {
+        alert(data.message || "Failed to reset password.");
+      }
+    } catch (error) {
+      setLoading(false);
+      alert("Error connecting to the server.");
     }
-    alert("Preview mode: Code submitted!");
   };
 
   return (
@@ -89,17 +112,14 @@ const Forgot = () => {
         <div className="forgot-left">
           <div className="forgot-text">
             <h1>Forgot Password?</h1>
-            <p>
-              Don’t worry — we’ve got you covered. Enter your{" "}
-              <span>email address</span> below, and we’ll send you a link to
-              reset your password.
-            </p>
+            <p>Don’t worry — we’ve got you covered. Follow the steps to reset your password.</p>
           </div>
         </div>
 
         <div className="forgot-right">
           <div className="forgot-card">
-            {step === 1 ? (
+            {/* Step 1: Enter email */}
+            {step === 1 && (
               <>
                 <h2 className="forgot-title">Reset Password</h2>
                 <form onSubmit={handleForgot}>
@@ -113,30 +133,23 @@ const Forgot = () => {
                       required
                     />
                   </div>
-
                   <button type="submit" className="forgot-btn" disabled={loading}>
                     {loading ? "Sending..." : "Send Code"}
                   </button>
-
                   <div className="forgot-bottom-text">
                     Remembered password? <Link to="/login">Back to Login</Link>
                   </div>
                 </form>
               </>
-            ) : (
+            )}
+
+            {/* Step 2: Enter verification code */}
+            {step === 2 && (
               <>
                 <h2 className="forgot-title">Enter Verification Code</h2>
-                <p
-                  style={{
-                    textAlign: "center",
-                    marginBottom: "1.5rem",
-                    color: "#000", // ✅ black text
-                    fontFamily: "Poppins, sans-serif",
-                  }}
-                >
+                <p style={{ textAlign: "center", marginBottom: "1.5rem" }}>
                   Please enter the 6-digit code sent to your email.
                 </p>
-
                 <form onSubmit={handleVerify}>
                   <div className="code-input-group">
                     {code.map((digit, index) => (
@@ -145,29 +158,45 @@ const Forgot = () => {
                         type="text"
                         maxLength="1"
                         value={digit}
-                        onChange={(e) =>
-                          handleCodeChange(e.target.value, index)
-                        }
+                        onChange={(e) => handleCodeChange(e.target.value, index)}
                         className="code-input"
                       />
                     ))}
                   </div>
-
-                  <button
-                    type="submit"
-                    className="forgot-btn"
-                    style={{ marginTop: "1.5rem" }}
-                    disabled={loading}
-                  >
+                  <button type="submit" className="forgot-btn" disabled={loading}>
                     {loading ? "Verifying..." : "Verify Code"}
                   </button>
-
                   <div className="forgot-bottom-text">
-                    Didn’t receive code?{" "}
-                    <span onClick={handleResend} className="resend-link">
-                      Resend it
-                    </span>
+                    Didn’t receive code? <span onClick={() => handleForgot()} className="resend-link">Resend it</span>
                   </div>
+                </form>
+              </>
+            )}
+
+            {/* Step 3: New password */}
+            {step === 3 && (
+              <>
+                <h2 className="forgot-title">Set New Password</h2>
+                <form onSubmit={handleResetPassword}>
+                  <input
+                    type="password"
+                    placeholder="New Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="forgot-input"
+                    required
+                  />
+                  <input
+                    type="password"
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="forgot-input"
+                    required
+                  />
+                  <button type="submit" className="forgot-btn" disabled={loading}>
+                    {loading ? "Resetting..." : "Reset Password"}
+                  </button>
                 </form>
               </>
             )}
