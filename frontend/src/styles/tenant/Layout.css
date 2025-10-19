@@ -28,6 +28,7 @@ body {
     width: 100%;
     transition: all 0.3s ease;
 }
+
 /* ===== Sidebar ===== */
 .sidebar {
     /* Tanggalin ang grid-area: sidebar; */
@@ -36,15 +37,18 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    
+
     /* ***** ITONG TATLONG LINYA ANG IMPORTANTE ***** */
-    position: fixed; /* Gawing fixed sa viewport */
+    position: fixed;
+    /* Gawing fixed sa viewport */
     top: 0;
     left: 0;
     /* ********************************************* */
-    
-    width: 260px; /* Ibalik ang fixed width na tinanggal sa grid */
-    height: 100vh; /* Siguraduhin na buong taas ng viewport */
+
+    width: 260px;
+    /* Ibalik ang fixed width na tinanggal sa grid */
+    height: 100vh;
+    /* Siguraduhin na buong taas ng viewport */
     padding-top: 25px;
     transition: transform 0.3s ease-in-out;
     box-shadow: 3px 0 8px rgba(0, 0, 0, 0.15);
@@ -109,8 +113,10 @@ body {
 
 /* ===== Super Transparent Active Link Style ===== */
 .linkholder.active {
-    background: rgba(255, 255, 255, 0.08); /* lighter transparent white */
-    box-shadow: 0 0 6px rgba(255, 255, 255, 0.15); /* softer glow */
+    background: rgba(255, 255, 255, 0.08);
+    /* lighter transparent white */
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.15);
+    /* softer glow */
     backdrop-filter: blur(4px);
     opacity: 1;
     transform: translateX(3px);
@@ -231,11 +237,259 @@ body {
 }
 
 .header h3 {
-  transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease;
 }
 
 .header h3.enter {
-  opacity: 0;
+    opacity: 0;
+}
+
+/* Modal Overlay */
+/* --- PROFILE MODAL BASE STYLES --- */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    /* Adjusted opacity for better background visibility */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.profile-modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    /* Adjusted radius for modern look */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 350px;
+    /* Adjusted max width */
+    position: relative;
+    animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.modal-header h2 {
+    font-size: 1.3rem;
+    /* Adjusted font size */
+    margin: 0;
+    color: #333;
+}
+
+/* Close Text Button Style */
+.modal-header .close-text-btn {
+    background: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    color: #555;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.modal-header .close-text-btn:hover {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+/* --- MODAL BODY AND USER DETAILS --- */
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Profile Picture Holder and Circular Style */
+.current-pic-holder {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.current-pic-holder img {
+    border: 4px solid #f0f0f0;
+    border-radius: 50%;
+    /* Ensures it's circular */
+    background: #ccc;
+    object-fit: cover;
+    transition: transform 0.2s;
+}
+
+/* Profile Picture Upload Icon Overlay */
+.upload-btn-icon-label {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s;
+}
+
+.upload-btn-icon-label:hover {
+    background-color: #0056b3;
+}
+
+/* User Name and Role */
+.modal-body .user-full-name {
+    margin: 15px 0 5px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #071b63;
+}
+
+.modal-body .user-role-label {
+    margin-bottom: 25px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6c757d;
+    padding: 3px 10px;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+}
+
+/* Details List */
+.user-details-list {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 25px;
+    padding: 10px 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.detail-icon {
+    color: #0a2d8d;
+    margin-right: 12px;
+    min-width: 18px;
+}
+
+/* Editable Input Fields */
+.detail-item .editable-input {
+    flex-grow: 1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 0.95rem;
+    color: #333;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.detail-item .editable-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+
+/* --- ACTION BUTTONS (Edit, Save, Cancel) --- */
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 15px;
+}
+
+.modal-actions button {
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, transform 0.2s;
+    border: 1px solid transparent;
+}
+
+/* Edit Profile Button */
+.btn-edit {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-edit:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+/* Save Changes Button */
+.btn-save {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-save:hover {
+    background-color: #1e7e34;
+}
+
+/* Cancel Button */
+.btn-cancel {
+    background-color: white;
+    color: #6c757d;
+    border-color: #adb5bd;
+}
+
+.btn-cancel:hover {
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+/* File upload tip */
+.modal-tip {
+    font-size: 0.75rem;
+    color: #a0a0a0;
+    margin-top: 5px;
+    text-align: center;
+    width: 100%;
 }
 
 
