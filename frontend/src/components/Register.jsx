@@ -4,13 +4,19 @@ import "./../styles/Register.css";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    firstname: "",
+    middlename: "",
+    lastname: "",
     email: "",
     phone: "",
     password: "",
     confirm: "",
-    dob: "",       // New: Date of Birth
-    address: "",   // New: Address
+    dob: "",
+    street: "",
+    barangay: "",
+    city: "",
+    province: "",
+    zipcode: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -27,9 +33,16 @@ const Register = () => {
     e.preventDefault();
 
     // Check all required fields
-    if (!formData.name || !formData.email || !formData.phone || !formData.password || !formData.confirm || !formData.dob || !formData.address) {
-      alert("Please fill in all fields.");
-      return;
+    const requiredFields = [
+      "firstname", "lastname", "email", "phone", "password", "confirm",
+      "dob", "street", "barangay", "city", "province", "zipcode"
+    ];
+
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        alert(`Please fill in the ${field.replace(/_/g, " ")} field.`);
+        return;
+      }
     }
 
     // Check email format
@@ -39,10 +52,10 @@ const Register = () => {
       return;
     }
 
-    // Check phone format (example: 10-15 digits)
+    // Check phone format (10–15 digits)
     const phoneRegex = /^[0-9]{10,15}$/;
     if (!phoneRegex.test(formData.phone)) {
-      alert("Invalid phone number.");
+      alert("Invalid phone number. Must be 10–15 digits.");
       return;
     }
 
@@ -52,43 +65,25 @@ const Register = () => {
       return;
     }
 
-    // Optional: check password strength
+    // Password strength check
     const password = formData.password;
     const passwordErrors = [];
-
-    if (password.length < 8) {
-      passwordErrors.push("at least 8 characters");
-    }
-    if (!/[A-Z]/.test(password)) {
-      passwordErrors.push("an uppercase letter");
-    }
-    if (!/[a-z]/.test(password)) {
-      passwordErrors.push("a lowercase letter");
-    }
-    if (!/[0-9]/.test(password)) {
-      passwordErrors.push("a number");
-    }
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      passwordErrors.push("a special character");
-    }
+    if (password.length < 8) passwordErrors.push("at least 8 characters");
+    if (!/[A-Z]/.test(password)) passwordErrors.push("an uppercase letter");
+    if (!/[a-z]/.test(password)) passwordErrors.push("a lowercase letter");
+    if (!/[0-9]/.test(password)) passwordErrors.push("a number");
+    if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password)) passwordErrors.push("a special character");
 
     if (passwordErrors.length > 0) {
       alert("Password must contain " + passwordErrors.join(", ") + ".");
       return;
     }
 
-
-    // Check DOB not in future
+    // Date of birth check
     const today = new Date();
     const dob = new Date(formData.dob);
     if (dob >= today) {
       alert("Date of birth cannot be in the future.");
-      return;
-    }
-
-    // Check address length
-    if (formData.address.length < 5) {
-      alert("Address is too short.");
       return;
     }
 
@@ -98,12 +93,18 @@ const Register = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: formData.name,
+          firstname: formData.firstname,
+          middlename: formData.middlename,
+          lastname: formData.lastname,
           email: formData.email,
           phone: formData.phone,
           password: formData.password,
           dob: formData.dob,
-          address: formData.address,
+          street: formData.street,
+          barangay: formData.barangay,
+          city: formData.city,
+          province: formData.province,
+          zipcode: formData.zipcode,
         }),
       });
 
@@ -117,7 +118,7 @@ const Register = () => {
       }
     } catch (error) {
       console.error(error);
-      alert("Something went wrong");
+      alert("Something went wrong. Please try again later.");
     }
   };
 
@@ -128,7 +129,9 @@ const Register = () => {
         <div className="auth-left">
           <div className="overlay"></div>
           <div className="auth-left-content">
-            <h1>Join <span>PHOME</span></h1>
+            <h1>
+              Join <span>PHOME</span>
+            </h1>
             <p>Start your journey — whether you’re a tenant or an owner, we’ve got you covered.</p>
           </div>
         </div>
@@ -136,78 +139,44 @@ const Register = () => {
         {/* RIGHT SIDE */}
         <div className="auth-right">
           <div className="auth-card">
-            <h2 style={{
-              fontSize: "2rem",
-              fontWeight: 700,
-              color: "#061A53",
-              marginBottom: "2rem",
-              textAlign: "center"
-            }}>Register</h2>
+            <h2
+              style={{
+                fontSize: "2rem",
+                fontWeight: 700,
+                color: "#061A53",
+                marginBottom: "2rem",
+                textAlign: "center",
+              }}
+            >
+              Register
+            </h2>
 
             <form onSubmit={handleSubmit}>
-              {/* Full Name */}
-              <div className="form-group">
-                <label>Full Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Enter your full name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {/* Email */}
-              <div className="form-group">
-                <label>Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {/* Phone */}
-              <div className="form-group">
-                <label>Phone</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="Enter your phone number"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {/* Date of Birth */}
-              <div className="form-group">
-                <label>Date of Birth</label>
-                <input
-                  type="date"
-                  name="dob"
-                  value={formData.dob}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {/* Address */}
-              <div className="form-group">
-                <label>Address</label>
-                <input
-                  type="text"
-                  name="address"
-                  placeholder="Enter your address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+              {[
+                { label: "First Name", name: "firstname" },
+                { label: "Middle Name (optional)", name: "middlename" },
+                { label: "Last Name", name: "lastname" },
+                { label: "Email", name: "email", type: "email" },
+                { label: "Phone", name: "phone", type: "tel" },
+                { label: "Date of Birth", name: "dob", type: "date" },
+                { label: "Street", name: "street" },
+                { label: "Barangay", name: "barangay" },
+                { label: "City", name: "city" },
+                { label: "Province", name: "province" },
+                { label: "Zip Code", name: "zipcode" },
+              ].map((field) => (
+                <div className="form-group" key={field.name}>
+                  <label>{field.label}</label>
+                  <input
+                    type={field.type || "text"}
+                    name={field.name}
+                    placeholder={`Enter your ${field.label.toLowerCase()}`}
+                    value={formData[field.name]}
+                    onChange={handleChange}
+                    required={field.name !== "middlename"}
+                  />
+                </div>
+              ))}
 
               {/* Password */}
               <div className="form-group password-group">
@@ -253,7 +222,9 @@ const Register = () => {
                 </div>
               </div>
 
-              <button type="submit" className="btn">Register</button>
+              <button type="submit" className="btn">
+                Register
+              </button>
               <p className="bottom-text">
                 Already have an account? <Link to="/login">Login</Link>
               </p>

@@ -19,42 +19,44 @@ const BrowseUnits = () => {
       .catch((err) => console.error("Error fetching units:", err));
   }, []);
 
-  // ✅ Check if tenant has already applied
   useEffect(() => {
-    if (!tenantId) return;
+  if (!tenantId) return;
 
-    const fetchApplication = async () => {
-      try {
-        const res = await fetch(`http://localhost:5000/api/application/${tenantId}`);
+  const fetchApplication = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/application/${tenantId}`);
 
-        if (res.ok) {
-          const data = await res.json();
+      if (res.ok) {
+        const data = await res.json();
 
-          // ✅ Only mark as applied if unit_id exists
-          if (data.unit_id === null || data.unit_id === undefined) {
-            setHasApplied(false);
-          } else {
-            setHasApplied(true);
-          }
-
-          setApplication(data); // still store for autofill
-        } else if (res.status === 404) {
+        // Fix here: use data.unitid instead of data.unit_id
+        if (data.unitid === null || data.unitid === undefined) {
           setHasApplied(false);
         } else {
-          console.error("Unexpected response status:", res.status);
+          setHasApplied(true);
         }
-      } catch (err) {
-        console.error("Error fetching tenant application:", err);
-      }
-    };
 
-    fetchApplication();
-  }, [tenantId]);
+        setApplication(data);
+      } else if (res.status === 404) {
+        setHasApplied(false);
+      } else {
+        console.error("Unexpected response status:", res.status);
+      }
+    } catch (err) {
+      console.error("Error fetching tenant application:", err);
+    }
+  };
+
+  fetchApplication();
+}, [tenantId]);
+
+
 
 
 
 
   console.log("Has Applied:", hasApplied);
+  console.log("tenantId:", tenantId);
 
 
 
@@ -118,12 +120,24 @@ const BrowseUnits = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        alert(data.message || "Application submitted successfully!");
-        setShowApplyForm(false);
-        setSelectedUnit(null);
-        setHasApplied(true); // Disable apply button
+    alert(data.message || "Application submitted successfully!");
+    setShowApplyForm(false);
+    setSelectedUnit(null);
+
+    // ✅ Refetch tenant application to update hasApplied properly
+    fetch(`http://localhost:5000/api/application/${tenantId}`)
+      .then((res) => res.json())
+      .then((appData) => {
+        if (appData.unit_id) {
+          setHasApplied(true);
+          setApplication(appData);
+        } else {
+          setHasApplied(false);
+        }
       })
-      .catch((err) => console.error("Error submitting application:", err));
+      .catch((err) => console.error("Error fetching updated application:", err));
+})
+
   };
 
 
