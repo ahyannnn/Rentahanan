@@ -5,16 +5,9 @@ from datetime import datetime
 from extensions import db
 from models.applications_model import Application
 from models.users_model import User
+from models.units_model import House as Unit
 
 application_bp = Blueprint("application_bp", __name__)
-
-from flask import request, jsonify
-from werkzeug.utils import secure_filename
-from datetime import datetime
-import os
-from extensions import db
-from models.applications_model import Application
-from models.users_model import User
 
 @application_bp.route("/apply", methods=["POST"])
 def apply_unit():
@@ -124,3 +117,62 @@ def get_application(tenant_id):
         "unitid": application.unitid
     })
 
+from models.units_model import House as Unit  # ✅ add this import at the top
+
+@application_bp.route("/applicants/for-billing", methods=["GET"])
+def get_applicants_for_billing():
+    try:
+        # Fetch approved applications
+        approved_applicants = (
+            db.session.query(
+                Application.applicationid,
+                User.userid,
+                User.firstname,
+                User.middlename,
+                User.lastname,
+                User.email,
+                User.phone,
+                Unit.name.label("unit_name"),
+                Unit.price.label("unit_price"),
+                Application.status
+            )
+            .join(User, User.userid == Application.userid)
+            .join(Unit, Unit.unitid == Application.unitid)
+            .filter(Application.status == "Pending")  # Only pending applicants
+            .all()
+        )
+
+        if not approved_applicants:
+            return jsonify([])  # No applicants
+
+        # Format results
+        result = []
+        for (
+            applicationid,
+            userid,
+            firstname,
+            middlename,
+            lastname,
+            email,
+            phone,
+            unit_name,
+            unit_price,
+            status
+        ) in approved_applicants:
+            result.append({
+                "applicationid": applicationid,
+                "userid": userid,
+                "fullname": f"{firstname} {middlename + ' ' if middlename else ''}{lastname}",
+                "email": email,
+                "phone": phone,
+                "unit_name": unit_name,
+                "unit_price": unit_price,
+                "status": status,
+                "estimated_bill": unit_price * 3  # Assuming bill is based on unit price
+            })
+
+        return jsonify(result)
+
+    except Exception as e:
+        print("❌ Error fetching applicants for billing:", e)
+        return jsonify({"error": str(e)}), 500

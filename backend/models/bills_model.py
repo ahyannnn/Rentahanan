@@ -1,0 +1,32 @@
+from extensions import db
+
+class Bill(db.Model):
+    __tablename__ = "Bills"  # ✅ matches your database table
+    billid = db.Column(db.Integer, primary_key=True)
+    contractid = db.Column(db.Integer, db.ForeignKey('Contracts.contractid'))
+    tenantid = db.Column(db.Integer, db.ForeignKey('Tenants.tenantid'))
+    issuedate = db.Column(db.String(50))
+    duedate = db.Column(db.String(50))
+    amount = db.Column(db.Float)
+    billtype = db.Column(db.String(50))
+    description = db.Column(db.String(255))
+    paymenttype = db.Column(db.String(50))
+    gcash_ref = db.Column(db.String(200))
+    gcash_receipt = db.Column(db.String(255))
+    status = db.Column(db.String(50))
+
+    def to_dict(self):
+        return {
+            "billid": self.billid,
+            "contractid": self.contractid,
+            "tenantid": self.tenantid,
+            "issuedate": self.issuedate,
+            "duedate": self.duedate,
+            "amount": self.amount,
+            "billtype": self.billtype,
+            "description": self.description,
+            "paymenttype": self.paymenttype,
+            "gcashref": self.gcashref,
+            "gcashreceipt": self.gcashreceipt,
+            "status": self.status,
+        }

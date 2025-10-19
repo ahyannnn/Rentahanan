@@ -288,6 +288,7 @@ const Layout = () => {
     { name: "Units", to: "/owner/units", icon: Building2 },
     { name: "Transactions", to: "/owner/transactions", icon: FileText },
     { name: "Billing", to: "/owner/billing", icon: CreditCard },
+    { name: "Contract", to: "/owner/contract", icon: ClipboardList },
     { name: "Notifications", to: "/owner/notifications", icon: Bell },
     { name: "User Management", to: "/owner/user", icon: UserCog },
   ];

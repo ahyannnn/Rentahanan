@@ -55,18 +55,23 @@ const Tenants = () => {
       </div>
     ));
 
-  const handleApprove = async (userId) => {
+  const handleApprove = async (applicationId) => {
     if (window.confirm("Are you sure you want to approve this application?")) {
       try {
-        const response = await fetch(`http://localhost:5000/api/tenants/approve/${userId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-        });
+        const response = await fetch(
+          `http://localhost:5000/api/tenants/approve/${selectedUser?.applicationid}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
 
         if (response.ok) {
           alert("Application approved successfully!");
           closeModal();
-          setApplicants((prev) => prev.filter((a) => a._id !== userId));
+          setApplicants((prev) =>
+            prev.filter((a) => a.applicationid !== applicationId)
+          );
         } else {
           alert("Failed to approve application.");
         }
@@ -77,23 +82,32 @@ const Tenants = () => {
     }
   };
 
-  // 🚫 NEW: Handle Reject Applicant
-  const handleReject = async (userId) => {
-    const reason = prompt("Enter reason for rejection (optional):", "Incomplete requirements");
-    if (reason === null) return; // Cancel pressed
+  console.log("applicationid", selectedUser?.applicationid);
+
+  const handleReject = async (applicationId) => {
+    const reason = prompt(
+      "Enter reason for rejection (optional):",
+      "Incomplete requirements"
+    );
+    if (reason === null) return;
 
     if (window.confirm("Are you sure you want to reject this application?")) {
       try {
-        const response = await fetch(`http://localhost:5000/api/tenants/reject/${userId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ reason }),
-        });
+        const response = await fetch(
+          `http://localhost:5000/api/tenants/reject/${selectedUser?.applicationid}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ reason }),
+          }
+        );
 
         if (response.ok) {
           alert("Application rejected successfully!");
           closeModal();
-          setApplicants((prev) => prev.filter((a) => a._id !== userId)); // Remove rejected applicant
+          setApplicants((prev) =>
+            prev.filter((a) => a.applicationid !== applicationId)
+          );
         } else {
           alert("Failed to reject application.");
         }
@@ -103,6 +117,7 @@ const Tenants = () => {
       }
     }
   };
+
 
   return (
     <div className="tenants-container">
@@ -177,18 +192,33 @@ const Tenants = () => {
                     Review Document
                   </button>
                 </p>
+                
+                <button
+                  className="issue-contract-btn"
+                  onClick={() => handleIssueContract(selectedUser.applicationid)}
+                >
+                  ISSUE CONTRACT
+                </button>
+
+                <button
+                  className="advance-payment-btn"
+                  onClick={() => handleAdvancePayment(selectedUser.applicationid)}
+                >
+                  ADVANCE PAYMENT
+                </button>
+
 
                 {/* ✅ APPROVE + REJECT BUTTONS */}
                 <div className="approve-section">
                   <button
                     className="approve-btn"
-                    onClick={() => handleApprove(selectedUser._id)}
+                    onClick={() => handleApprove(selectedUser.applicationid)}
                   >
                     APPROVE APPLICATION
                   </button>
                   <button
                     className="reject-btn"
-                    onClick={() => handleReject(selectedUser._id)}
+                    onClick={() => handleReject(selectedUser.applicationid)}
                   >
                     REJECT APPLICATION
                   </button>
