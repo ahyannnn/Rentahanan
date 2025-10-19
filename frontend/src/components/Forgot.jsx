@@ -17,7 +17,7 @@ const Forgot = () => {
 
     try {
       setLoading(true);
-      const response = await fetch("http://127.0.0.1:5000/api/forgot-password", {
+      const response = await fetch("http://localhost:5000/api/forgot/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -54,7 +54,7 @@ const Forgot = () => {
 
     try {
       setLoading(true);
-      const response = await fetch("http://127.0.0.1:5000/api/verify-code", {
+      const response = await fetch("http://localhost:5000/api/forgot/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code: enteredCode }),
@@ -82,10 +82,16 @@ const Forgot = () => {
 
     try {
       setLoading(true);
-      const response = await fetch("http://127.0.0.1:5000/api/reset-password", {
+      const response = await fetch("http://localhost:5000/api/forgot/reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, confirm_password: confirmPassword }),
+        body: JSON.stringify({
+  email,
+  new_password: password,
+  confirm_password: confirmPassword
+  
+}),
+
       });
       const data = await response.json();
       setLoading(false);
