@@ -13,6 +13,7 @@ tenant_bp = Blueprint("tenant_bp", __name__)
 def get_active_tenants():
     tenants = (
         db.session.query(
+            Application.applicationid,
             User.fullname,
             User.email,
             User.phone,
@@ -34,6 +35,7 @@ def get_active_tenants():
 
     result = [
         {
+            "applicationid": applicationid,
             "fullname": fullname,
             "email": email,
             "phone": phone,
@@ -45,7 +47,7 @@ def get_active_tenants():
             "brgy_clearance": brgy_clearance,
             "proof_of_income": proof_of_income,
         }
-        for fullname, email, phone, dateofbirth, address, unit_name, unit_price, valid_id, brgy_clearance, proof_of_income in tenants
+        for applicationid, fullname, email, phone, dateofbirth, address, unit_name, unit_price, valid_id, brgy_clearance, proof_of_income in tenants
     ]
 
     return jsonify(result)
@@ -58,6 +60,7 @@ def get_active_tenants():
 def get_applicants():
     applicants = (
         db.session.query(
+            Application.applicationid,
             User.fullname,
             User.email,
             User.phone,
@@ -77,6 +80,7 @@ def get_applicants():
 
     result = [
         {
+            "applicationid": applicationid,
             "fullname": fullname,
             "email": email,
             "phone": phone,
@@ -87,8 +91,44 @@ def get_applicants():
             "brgy_clearance": brgy_clearance,
             "proof_of_income": proof_of_income,
         }
-        for fullname, email, phone, dateofbirth, address, unit_name, valid_id, brgy_clearance, proof_of_income in applicants
+        for applicationid, fullname, email, phone, dateofbirth, address, unit_name, valid_id, brgy_clearance, proof_of_income in applicants
     ]
 
     return jsonify(result)
+
+# Approve an applicant
+@tenant_bp.route("/tenants/approve/<int:application_id>", methods=["PUT"])
+def approve_applicant(application_id):
+    application = Application.query.get(application_id)
+
+    if not application:
+        return jsonify({"success": False, "message": "Application not found"}), 404
+
+    # Update status to Approved
+    application.status = "Approved"
+    db.session.commit()
+
+    return jsonify({
+        "success": True,
+        "message": f"Application {application_id} approved successfully."
+    })
+
+
+# Reject an applicant
+@tenant_bp.route("/tenants/reject/<int:application_id>", methods=["PUT"])
+def reject_applicant(application_id):
+    application = Application.query.get(application_id)
+
+    if not application:
+        return jsonify({"success": False, "message": "Application not found"}), 404
+
+    # Update status to Rejected
+    application.status = "Rejected"
+    db.session.commit()
+
+    return jsonify({
+        "success": True,
+        "message": f"Application {application_id} rejected successfully."
+    })
+
 

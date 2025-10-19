@@ -66,13 +66,40 @@ const Tenants = () => {
         if (response.ok) {
           alert("Application approved successfully!");
           closeModal();
-          setApplicants((prev) => prev.filter((a) => a._id !== userId)); // Remove from list
+          setApplicants((prev) => prev.filter((a) => a._id !== userId));
         } else {
           alert("Failed to approve application.");
         }
       } catch (error) {
         console.error("Error approving application:", error);
         alert("An error occurred while approving the application.");
+      }
+    }
+  };
+
+  // 🚫 NEW: Handle Reject Applicant
+  const handleReject = async (userId) => {
+    const reason = prompt("Enter reason for rejection (optional):", "Incomplete requirements");
+    if (reason === null) return; // Cancel pressed
+
+    if (window.confirm("Are you sure you want to reject this application?")) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/tenants/reject/${userId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reason }),
+        });
+
+        if (response.ok) {
+          alert("Application rejected successfully!");
+          closeModal();
+          setApplicants((prev) => prev.filter((a) => a._id !== userId)); // Remove rejected applicant
+        } else {
+          alert("Failed to reject application.");
+        }
+      } catch (error) {
+        console.error("Error rejecting application:", error);
+        alert("An error occurred while rejecting the application.");
       }
     }
   };
@@ -117,8 +144,6 @@ const Tenants = () => {
       {selectedUser && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-
-            {/* HEADER: Dito magkasama ang Pangalan at ang Close button */}
             <div className="modal-header-fixed">
               <h2>{selectedUser.fullname}</h2>
               <button className="close-btn" onClick={closeModal}>
@@ -126,71 +151,34 @@ const Tenants = () => {
               </button>
             </div>
 
-            {/* CONTENT: Walang scrollbar sa loob */}
             <p><strong>Email:</strong> {selectedUser.email}</p>
             <p><strong>Phone:</strong> {selectedUser.phone}</p>
             <p><strong>Unit:</strong> {selectedUser.unit_name || "N/A"}</p>
             <p><strong>DOB:</strong> {selectedUser.dateofbirth}</p>
             <p><strong>Address:</strong> {selectedUser.address}</p>
 
-            {activeTab === "active" && (
-              <>
-                <p><strong>Unit Price:</strong> {selectedUser.unit_price}</p>
-                <p className="document-row">
-                  <strong>Valid ID:</strong>
-                  <button className="document-btn action-primary"
-                    onClick={() => console.log('View Valid ID:', selectedUser.valid_id)}>
-                    {selectedUser.valid_id ? "View Document" : "View"}
-                  </button>
-                </p>
-                <p className="document-row">
-                  <strong>Clearance:</strong>
-                  <button className="document-btn action-primary"
-                    onClick={() => console.log('View Clearance:', selectedUser.brgy_clearance)}>
-                    {selectedUser.brgy_clearance ? "View Document" : "View"}
-                  </button>
-                </p>
-                <p className="document-row">
-                  <strong>Income:</strong>
-                  <button className="document-btn action-primary"
-                    onClick={() => console.log('View Proof of Income:', selectedUser.proof_of_income)}>
-                    {selectedUser.proof_of_income ? "View Document" : "View"}
-                  </button>
-                </p>
-              </>
-            )}
-
             {activeTab === "applications" && (
               <>
                 <p className="document-row">
                   <strong>Valid ID:</strong>
-                  <button
-                    className="document-btn action-primary"
-                    onClick={() => console.log('Review Valid ID:', selectedUser.valid_id)}
-                  >
-                    {selectedUser.valid_id ? "Review Document" : "View"}
+                  <button className="document-btn action-primary">
+                    Review Document
                   </button>
                 </p>
                 <p className="document-row">
                   <strong>Clearance:</strong>
-                  <button
-                    className="document-btn action-primary"
-                    onClick={() => console.log('Review Clearance:', selectedUser.brgy_clearance)}
-                  >
-                    {selectedUser.brgy_clearance ? "Review Document" : "View"}
+                  <button className="document-btn action-primary">
+                    Review Document
                   </button>
                 </p>
                 <p className="document-row">
                   <strong>Income:</strong>
-                  <button
-                    className="document-btn action-primary"
-                    onClick={() => console.log('Review Proof of Income:', selectedUser.proof_of_income)}
-                  >
-                    {selectedUser.proof_of_income ? "Review Document" : "View"}
+                  <button className="document-btn action-primary">
+                    Review Document
                   </button>
                 </p>
 
-                {/* BIG APPROVE BUTTON */}
+                {/* ✅ APPROVE + REJECT BUTTONS */}
                 <div className="approve-section">
                   <button
                     className="approve-btn"
@@ -198,11 +186,15 @@ const Tenants = () => {
                   >
                     APPROVE APPLICATION
                   </button>
+                  <button
+                    className="reject-btn"
+                    onClick={() => handleReject(selectedUser._id)}
+                  >
+                    REJECT APPLICATION
+                  </button>
                 </div>
               </>
             )}
-
-
           </div>
         </div>
       )}

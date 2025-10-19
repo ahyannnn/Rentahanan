@@ -48,6 +48,26 @@
   transform: scale(1.05);
 }
 
+.reject-btn {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 6px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.reject-btn:hover {
+  background-color: #c9302c;
+}
+
+.approve-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
 /* --- HEADER FIX (Full Name + Close Button) --- */
 .modal-header-fixed {
     display: flex;
