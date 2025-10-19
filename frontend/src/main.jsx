@@ -8,6 +8,7 @@ import LandingPage from "./components/LandingPage";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Layout from "./components/Layout";
+import Forgot from "./components/Forgot";
 
 // Tenant Pages
 import TenantDashboard from "./pages/tenant/Dashboard"; // Changed name for clarity
@@ -35,6 +36,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<Forgot />} />
 
         {/* 👥 Tenant Routes with Layout */}
         <Route path="/tenant" element={<Layout />}>

@@ -1,0 +1,276 @@
+* {
+  font-family: "Poppins", sans-serif !important;
+}
+
+.forgot-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f5f7fa;
+    font-family: "Poppins", sans-serif;
+    color: #333;
+    padding: 1rem;
+}
+
+/* === MAIN WRAPPER === */
+.forgot-wrapper {
+    display: flex;
+    width: 80%;
+    max-width: 1000px;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* === LEFT SECTION === */
+.forgot-left {
+    flex: 1;
+    background: linear-gradient(135deg, #061a53, #0b3c91);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    padding: 2rem;
+}
+
+.forgot-text {
+    position: relative;
+    text-align: center;
+    z-index: 2;
+    max-width: 400px;
+}
+
+.forgot-text h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #fff;
+}
+
+.forgot-text p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.forgot-text span {
+    color: #fff;
+    font-weight: 600;
+}
+
+/* === RIGHT SECTION === */
+.forgot-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+}
+
+.forgot-card {
+    width: 100%;
+    max-width: 400px;
+}
+
+.forgot-title {
+    color: #061a53;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.forgot-card p {
+    text-align: center;
+    color: #555;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+
+/* === FORM ELEMENTS === */
+.forgot-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.forgot-form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.forgot-form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+.forgot-form-group input:focus {
+    border-color: #0b3c91;
+    box-shadow: 0 0 6px rgba(11, 60, 145, 0.2);
+}
+
+/* === BUTTONS === */
+.forgot-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background: #061a53;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.forgot-btn:hover {
+    background: #0b3c91;
+}
+
+.forgot-bottom-text {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.forgot-bottom-text a {
+    color: #0b3c91;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.forgot-bottom-text a:hover {
+    text-decoration: underline;
+}
+
+/* === CODE INPUT (Verification) === */
+.code-input-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.code-input {
+    width: 55px;
+    height: 55px;
+    text-align: center;
+    font-size: 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    transition: 0.2s;
+    color: #061a53;
+    background: #fff;
+}
+
+.code-input:focus {
+    border-color: #0b3c91;
+    box-shadow: 0 0 6px rgba(11, 60, 145, 0.4);
+}
+
+/* === RESEND LINK === */
+.resend-link {
+    color: #0b3c91;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.resend-link:hover {
+    text-decoration: underline;
+}
+
+/* ======================================= */
+/* 📱 RESPONSIVE DESIGN */
+/* ======================================= */
+
+/* Tablets */
+@media (max-width: 992px) {
+    .forgot-wrapper {
+        width: 90%;
+    }
+}
+
+/* Phones */
+@media (max-width: 768px) {
+
+    .forgot-card p {
+        color: white !important;
+    }
+
+    .forgot-container {
+        background: linear-gradient(135deg, #061a53, #0b3c91);
+        color: #fff;
+        padding: 1.5rem;
+    }
+
+    .forgot-wrapper {
+        flex-direction: column;
+        background: transparent;
+        box-shadow: none;
+        border-radius: 0;
+        width: 100%;
+        max-width: 420px;
+    }
+
+    .forgot-left {
+        display: none;
+    }
+
+    .forgot-right {
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .forgot-card {
+        background: transparent;
+        box-shadow: none;
+        padding: 2rem 1.5rem;
+        width: 100%;
+    }
+
+    .forgot-title,
+    .forgot-card p,
+    .forgot-bottom-text,
+    .forgot-form-group label {
+        color: #fff;
+    }
+
+    .forgot-form-group input {
+        background: rgba(255, 255, 255, 0.15);
+        border: none;
+        color: #fff;
+    }
+
+    .forgot-form-group input::placeholder {
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    .code-input {
+        background: white;
+        color: #061a53;
+    }
+
+    .forgot-btn {
+        background: #fff;
+        color: #061a53;
+    }
+
+    .resend-link {
+        color: #fff;
+    }
+}

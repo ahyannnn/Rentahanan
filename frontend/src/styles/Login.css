@@ -21,15 +21,15 @@ body {
   width: 100%;
   max-width: 1100px;
   border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   background-color: #fff;
 }
 
 .auth-wrapper {
   display: flex;
-  justify-content: center; 
-  align-items: center;     
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
   width: 100%;
   background-color: #E8ECF3;
@@ -43,7 +43,7 @@ body {
   background-position: center;
   position: relative;
   display: flex;
-  align-items: center;  
+  align-items: center;
   justify-content: center;
 }
 
@@ -53,7 +53,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(6, 26, 83, 0.85); 
+  background: rgba(6, 26, 83, 0.85);
 }
 
 .auth-left-content {
@@ -65,7 +65,7 @@ body {
 }
 
 .auth-left-content h1 {
-  font-size: 2.5rem; 
+  font-size: 2.5rem;
   margin-bottom: 1rem;
   color: #F5C542;
 }
@@ -76,15 +76,15 @@ body {
 }
 
 .auth-left-content p {
-  font-size: 1.1rem; 
+  font-size: 1.1rem;
   line-height: 1.6;
   color: #f0f0f0;
 }
 
 /* --- Right Side --- */
 .auth-right {
-  flex: 1.2; 
-  background-color: #ffffff; 
+  flex: 1.2;
+  background-color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -93,30 +93,30 @@ body {
 
 /* --- Card (Modified for Desktop Look) --- */
 .auth-card {
-  background-color: transparent; 
-  box-shadow: none; 
+  background-color: transparent;
+  box-shadow: none;
   border-radius: 0;
-  padding: 0; 
+  padding: 0;
   width: 100%;
   max-width: 380px;
-  text-align: left; 
+  text-align: left;
   transition: all 0.3s ease;
 }
 
 .auth-card:hover {
-  transform: none; 
+  transform: none;
 }
 
 /* --- Logo Box (Modified for Desktop Look) --- */
 .logo-box {
-  display: none; 
+  display: none;
 }
 
 
 
 /* --- Inputs --- */
 .form-group {
-  margin-bottom: 1.5rem; 
+  margin-bottom: 1.5rem;
   text-align: left;
 }
 
@@ -124,12 +124,12 @@ label {
   display: block;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #444; 
+  color: #444;
 }
 
 input {
   width: 100%;
-  padding: 1rem; 
+  padding: 1rem;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
@@ -139,7 +139,7 @@ input {
 }
 
 input:focus {
-  border-color: #061A53; 
+  border-color: #061A53;
   box-shadow: 0 0 0 1px rgba(6, 26, 83, 0.4);
 }
 
@@ -151,12 +151,13 @@ input:focus {
   padding: 1rem;
   border-radius: 8px;
   width: 100%;
-  font-size: 1.1rem; 
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   transition: 0.3s;
-  margin-top: 1.5rem; 
-  margin-bottom: 1.5rem; /* Added bottom margin for spacing before OR/social buttons */
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  /* Added bottom margin for spacing before OR/social buttons */
 }
 
 .btn:hover {
@@ -165,13 +166,18 @@ input:focus {
 
 /* --- OR Text --- */
 .or-text {
-  display: block; /* Ensure it's visible on desktop now */
-  margin: 1.5rem 0; /* Adjusted spacing */
+  display: block;
+  /* Ensure it's visible on desktop now */
+  margin: 1.5rem 0;
+  /* Adjusted spacing */
   font-weight: 600;
   color: #777;
-  text-align: center; /* Centered for desktop */
-  position: relative; /* For the line effect */
-  line-height: 0; /* To help with line positioning */
+  text-align: center;
+  /* Centered for desktop */
+  position: relative;
+  /* For the line effect */
+  line-height: 0;
+  /* To help with line positioning */
 }
 
 .or-text::before,
@@ -179,9 +185,11 @@ input:focus {
   content: '';
   position: absolute;
   top: 50%;
-  width: 40%; /* Adjust width of the line */
+  width: 40%;
+  /* Adjust width of the line */
   height: 1px;
-  background: #ddd; /* Color of the line */
+  background: #ddd;
+  /* Color of the line */
 }
 
 .or-text::before {
@@ -195,36 +203,43 @@ input:focus {
 
 /* --- Social Buttons (Re-enabled and styled for Desktop) --- */
 .social-login {
-  display: block; /* Ensure it's visible on desktop now */
-  margin-top: 1.5rem; /* Spacing after OR */
+  display: block;
+  /* Ensure it's visible on desktop now */
+  margin-top: 1.5rem;
+  /* Spacing after OR */
 }
 
 .social-login button {
   width: 100%;
-  padding: 1rem; /* Slightly larger padding */
-  border: 1px solid #ddd; /* Lighter border */
+  padding: 1rem;
+  /* Slightly larger padding */
+  border: 1px solid #ddd;
+  /* Lighter border */
   border-radius: 8px;
   background: #fff;
   font-weight: 600;
   margin-bottom: 0.8rem;
   cursor: pointer;
   transition: 0.3s;
-  color: #555; /* Slightly muted text color */
+  color: #555;
+  /* Slightly muted text color */
   font-size: 1rem;
 }
 
 .social-login button:hover {
-  background-color: #f0f0f0; /* Lighter hover effect */
+  background-color: #f0f0f0;
+  /* Lighter hover effect */
   border-color: #ccc;
 }
 
 
 /* --- Bottom Text (Modified for Desktop Look) --- */
 .bottom-text {
-  margin-top: 2rem; /* Increased margin for better separation */
+  margin-top: 2rem;
+  /* Increased margin for better separation */
   font-size: 0.95rem;
   color: #555;
-  text-align: center; 
+  text-align: center;
 }
 
 .bottom-text a {
@@ -237,20 +252,38 @@ input:focus {
   text-decoration: underline;
 }
 
+.forgot-link {
+  text-align: right;
+  margin-top: 0.3rem;
+}
+
+.forgot-link a {
+  color: #0b3c91;
+  font-size: 0.9rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.forgot-link a:hover {
+  text-decoration: underline;
+}
+
+
 /* --- Responsive (Mobile View - Kept as requested) --- */
 @media (max-width: 850px) {
+
   /* Resets for Mobile */
   .auth-left {
     display: none;
   }
-  
+
   .auth-right {
-    flex: 1; 
+    flex: 1;
     background: #fff;
     padding: 2rem 1rem;
     justify-content: flex-start;
   }
-  
+
   .auth-page {
     flex-direction: column;
     box-shadow: none;
@@ -260,55 +293,57 @@ input:focus {
   body {
     background-color: #fff;
   }
+
   .password-group {
-  position: relative;
-}
+    position: relative;
+  }
 
-.password-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
+  .password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
 
-.password-wrapper input {
-  width: 100%;
-  padding-right: 4rem; /* Space for the button */
-}
+  .password-wrapper input {
+    width: 100%;
+    padding-right: 4rem;
+    /* Space for the button */
+  }
 
-.show-btn {
-  position: absolute;
-  right: 1rem;
-  background: none;
-  border: none;
-  color: #061A53;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: color 0.2s;
-}
+  .show-btn {
+    position: absolute;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #061A53;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
 
-.show-btn:hover {
-  color: #0b287d;
-}
+  .show-btn:hover {
+    color: #0b287d;
+  }
 
 
   /* Mobile Card Styling */
   .auth-card {
-    background-color: white; 
+    background-color: white;
     box-shadow: none;
     border-radius: 0;
     padding: 0;
     max-width: 100%;
-    text-align: center; 
+    text-align: center;
   }
 
   .auth-card::before {
-    content: none; 
+    content: none;
   }
-  
+
   /* Mobile Logo Box */
   .logo-box {
-    display: flex; 
+    display: flex;
     flex-direction: column;
     align-items: center;
     margin-bottom: 2rem;
@@ -325,7 +360,7 @@ input:focus {
     font-weight: 700;
     margin-bottom: 0;
   }
-  
+
   /* Mobile Button/Input adjustments */
   input {
     padding: 0.9rem;
@@ -335,13 +370,14 @@ input:focus {
     margin-top: 1rem;
     font-size: 1rem;
     padding: 0.9rem;
-    margin-bottom: 1rem; /* Adjust for mobile spacing */
+    margin-bottom: 1rem;
+    /* Adjust for mobile spacing */
   }
-  
+
   .form-group {
     margin-bottom: 1.2rem;
   }
-  
+
   /* Mobile Social Login Re-enabled */
   .or-text {
     display: block;
@@ -349,17 +385,21 @@ input:focus {
     font-weight: 600;
     color: #999;
     text-align: center;
-    line-height: initial; /* Reset for mobile */
+    line-height: initial;
+    /* Reset for mobile */
   }
+
   .or-text::before,
   .or-text::after {
-    content: none; /* Hide lines for mobile */
+    content: none;
+    /* Hide lines for mobile */
   }
 
 
   .social-login {
     display: block;
-    margin-top: 0; /* Reset margin for mobile */
+    margin-top: 0;
+    /* Reset margin for mobile */
   }
 
   .social-login button {
@@ -373,9 +413,10 @@ input:focus {
     cursor: pointer;
     transition: 0.3s;
     font-size: 0.95rem;
-    color: #061A53; /* Revert to primary color for mobile */
+    color: #061A53;
+    /* Revert to primary color for mobile */
   }
-  
+
   /* Mobile Bottom Text */
   .bottom-text {
     margin-top: 1.5rem;
