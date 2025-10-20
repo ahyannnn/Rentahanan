@@ -145,19 +145,21 @@ input:focus {
 
 /* --- Main Button --- */
 .btn {
-  background-color: #061A53;
+  background-color: #061A53 !important; /* dark blue */
   color: white;
   border: none;
-  padding: 1rem;
   border-radius: 8px;
   width: 100%;
+  padding: 1rem;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   transition: 0.3s;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
-  /* Added bottom margin for spacing before OR/social buttons */
+  -webkit-appearance: none; /* Remove default Chrome style */
+  -moz-appearance: none;
+  appearance: none;
 }
 
 .btn:hover {
