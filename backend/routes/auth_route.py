@@ -6,18 +6,6 @@ from models.tenants_model import Tenant
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
-auth_bp = Blueprint("auth_bp", __name__)
-
-# ==============================
-# REGISTER
-# ==============================
-from flask import Blueprint, request, jsonify
-from extensions import db
-from models.users_model import User
-from models.applications_model import Application
-from models.tenants_model import Tenant
-from werkzeug.security import generate_password_hash
-from datetime import datetime
 
 auth_bp = Blueprint("auth_bp", __name__)
 
