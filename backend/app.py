@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory, current_app
 from flask_cors import CORS
 from dotenv import load_dotenv
 from extensions import db
@@ -11,42 +11,32 @@ from routes.bill_route import bill_bp
 from routes.contract_route import contract_bp
 from routes.forgot_route import forgot_bp
 
-# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 
-# ✅ Proper CORS setup — allow your frontend origin
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
-# Config
+# ✅ Config
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["BREVO_API_KEY"] = os.getenv("BREVO_API_KEY")
+app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
 
-# Base folder for all uploads
-app.config["UPLOAD_FOLDER"] = "uploads"
+# ✅ Ensure upload folders exist
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
-
-# You can optionally pre-create subfolders
-for sub in ["valid_ids", "brgy_clearances", "proof_of_income"]:
+for sub in ["valid_ids", "brgy_clearances", "proof_of_income", "contracts", "houseimages"]:
     os.makedirs(os.path.join(app.config["UPLOAD_FOLDER"], sub), exist_ok=True)
 
-# Initialize extensions
+# ✅ Initialize and register
 db.init_app(app)
-
-# Register blueprints
 app.register_blueprint(auth_bp, url_prefix="/api")
 app.register_blueprint(application_bp, url_prefix="/api")
 app.register_blueprint(tenant_bp, url_prefix="/api")
 app.register_blueprint(bill_bp, url_prefix="/api")
 app.register_blueprint(contract_bp, url_prefix="/api")
 app.register_blueprint(forgot_bp, url_prefix="/api")
-
-
-
-
-
 
 # Example routes
 @app.route("/api/houses", methods=["GET"])
@@ -62,6 +52,10 @@ def ping():
 def home():
     return jsonify({"message": "Flask backend is running!"})
 
+# ✅ Serve uploaded files (e.g. PDFs)
+@app.route("/uploads/<path:filename>")
+def serve_uploads(filename):
+    return send_from_directory(current_app.config["UPLOAD_FOLDER"], filename)
 
 if __name__ == "__main__":
     with app.app_context():

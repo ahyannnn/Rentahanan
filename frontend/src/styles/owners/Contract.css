@@ -24,6 +24,11 @@
   margin-top: 4px;
   color: #777;
 }
+.highlight-row {
+  background-color: #fff3cd; /* light yellow */
+  transition: background-color 0.4s ease;
+  font-weight: bold;
+}
 
 /* Tabs */
 .tabs {

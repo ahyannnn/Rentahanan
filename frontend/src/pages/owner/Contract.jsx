@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Search, FileText, Plus, X } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import { FileText, X } from "lucide-react";
 import "../../styles/owners/Contract.css";
 
 const OwnerContract = () => {
-    const [activeTab, setActiveTab] = useState("tenants"); // "tenants" | "issue"
+    const location = useLocation();
+    const [activeTab, setActiveTab] = useState("tenants");
     const [contracts, setContracts] = useState([]);
     const [applicants, setApplicants] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedApplicant, setSelectedApplicant] = useState(null);
+    const [highlightedApplicantId, setHighlightedApplicantId] = useState(null);
     const [formData, setFormData] = useState({
         tenantid: "",
         startdate: "",
@@ -17,7 +20,17 @@ const OwnerContract = () => {
         remarks: "",
     });
 
-    // Fetch data for both tabs
+    // ✅ Auto-open tab & highlight applicant when coming from navigation
+    useEffect(() => {
+        if (location.state?.openTab === "issue") {
+            setActiveTab("issue");
+            if (location.state?.selectedApplicantId) {
+                setHighlightedApplicantId(location.state.selectedApplicantId);
+            }
+        }
+    }, [location.state]);
+
+    // ✅ Fetch contracts and applicants
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -29,6 +42,14 @@ const OwnerContract = () => {
                 const applicantsData = await applicantsRes.json();
                 setContracts(contractsData);
                 setApplicants(applicantsData);
+
+                // Auto-open modal if a highlighted applicant exists
+                if (location.state?.selectedApplicantId) {
+                    const foundApplicant = applicantsData.find(
+                        (a) => a.applicationid === location.state.selectedApplicantId
+                    );
+                    if (foundApplicant) openIssueModal(foundApplicant);
+                }
             } catch (error) {
                 console.error("Error loading contracts:", error);
             }
@@ -36,6 +57,7 @@ const OwnerContract = () => {
         fetchData();
     }, []);
 
+    // ✅ Handle form inputs
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -45,9 +67,9 @@ const OwnerContract = () => {
         setSelectedApplicant(applicant);
         const today = new Date().toISOString().split("T")[0];
         setFormData({
-            tenantid: applicant.applicationid,
+            tenantid: applicant.tenantid,
+            unitid: applicant.unitid,
             startdate: today,
-            enddate: "",
             monthlyrent: applicant.unit_price,
             deposit: applicant.unit_price,
             advancepayment: applicant.unit_price,
@@ -56,36 +78,58 @@ const OwnerContract = () => {
         setShowAddModal(true);
     };
 
-    const handleIssueContract = async () => {
+    const handleGeneratePDF = async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/contracts/create", {
+            const pdfResponse = await fetch("http://localhost:5000/api/contracts/generate-pdf", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    tenantid: formData.tenantid,
+                    tenant_name: selectedApplicant.fullname,
+                    unit_name: selectedApplicant.unit_name,
+                    monthlyrent: formData.monthlyrent,
+                    deposit: formData.deposit,
+                    advancepayment: formData.advancepayment,
+                    start_date: formData.startdate,
+                    remarks: formData.remarks,
+                }),
             });
 
-            if (response.ok) {
-                alert("Contract successfully issued!");
-                setApplicants((prev) =>
-                    prev.filter((app) => app.applicationid !== selectedApplicant.applicationid)
-                );
-                setShowAddModal(false);
-                setSelectedApplicant(null);
-            } else {
-                alert("Failed to issue contract.");
-            }
+            const pdfData = await pdfResponse.json();
+            if (!pdfResponse.ok) throw new Error(pdfData.error || "Failed to generate contract");
+
+            console.log("PDF generated:", pdfData.pdf_url);
+
+            // ✅ Use this URL
+            window.open(pdfData.pdf_url, "_blank");
+
+
+            const issueResponse = await fetch("http://localhost:5000/api/contracts/issuecontract", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    tenantid: formData.tenantid,
+                    unitid: formData.unitid,
+                    startdate: formData.startdate,
+                    generated_contract: pdfData.file_path,
+                }),
+            });
+
+            if (!issueResponse.ok) throw new Error("Failed to issue contract record");
+
+            alert("✅ Contract successfully generated and issued!");
+            setShowAddModal(false);
+            window.location.reload();
         } catch (error) {
             console.error("Error issuing contract:", error);
+            alert("❌ Failed to issue contract. Please try again.");
         }
     };
 
+
+
     return (
         <div className="contracts-page-container">
-            <div className="content-card header-card">
-                <h2>Contracts Management</h2>
-                <p>Manage and issue rental contracts for tenants and new applicants.</p>
-            </div>
-
             {/* Tabs */}
             <div className="tabs">
                 <button
@@ -102,45 +146,7 @@ const OwnerContract = () => {
                 </button>
             </div>
 
-            {/* Tenant Contracts Table */}
-            {activeTab === "tenants" && (
-                <div className="content-card contract-area">
-                    <div className="contract-control-bar">
-                        <div className="search-box">
-                            <Search size={18} className="search-icon" />
-                            <input type="text" placeholder="Search Tenant or Contract" />
-                        </div>
-                    </div>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Tenant</th>
-                                <th>Unit</th>
-                                <th>Start Date</th>
-                                <th>Monthly Rent</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {contracts.map((contract, i) => (
-                                <tr key={i}>
-                                    <td>{contract.fullname}</td>
-                                    <td>{contract.unit_name}</td>
-                                    <td>{contract.startdate}</td>
-                                    <td>{contract.enddate}</td>
-                                    <td>₱{contract.monthlyrent}</td>
-                                    <td>
-                                        <span className="status-badge status-active">Active</span>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-            {/* Issue New Contracts */}
+            {/* Issue New Contracts Tab */}
             {activeTab === "issue" && (
                 <div className="content-card applicant-area">
                     <h3>Applicants Ready for Contract Issuance</h3>
@@ -157,17 +163,19 @@ const OwnerContract = () => {
                         </thead>
                         <tbody>
                             {applicants.map((app, i) => (
-                                <tr key={i}>
+                                <tr
+                                    key={i}
+                                    className={
+                                        highlightedApplicantId === app.applicationid ? "highlight-row" : ""
+                                    }
+                                >
                                     <td>{app.fullname}</td>
                                     <td>{app.email}</td>
                                     <td>{app.phone}</td>
                                     <td>{app.unit_name}</td>
                                     <td>₱{app.unit_price}</td>
                                     <td>
-                                        <button
-                                            className="action-btn"
-                                            onClick={() => openIssueModal(app)}
-                                        >
+                                        <button className="action-btn" onClick={() => openIssueModal(app)}>
                                             <FileText size={16} /> Issue Contract
                                         </button>
                                     </td>
@@ -179,21 +187,18 @@ const OwnerContract = () => {
             )}
 
             {/* Issue Contract Modal */}
-            {showAddModal && (
+            {showAddModal && selectedApplicant && (
                 <div className="modal-overlay">
-                    <div className="add-contract-modal">
+                    <div className="modal-content">
                         <div className="modal-header">
-                            <h3>Issue Contract</h3>
+                            <h3>Issue Contract for {selectedApplicant.fullname}</h3>
                             <button className="close-btn" onClick={() => setShowAddModal(false)}>
-                                <X size={20} />
+                                <X size={18} />
                             </button>
                         </div>
 
                         <div className="modal-body">
-                            <p><strong>Applicant:</strong> {selectedApplicant?.fullname}</p>
-                            <p><strong>Unit:</strong> {selectedApplicant?.unit_name}</p>
-
-                            <label>Start Date</label>
+                            <label>Start Date:</label>
                             <input
                                 type="date"
                                 name="startdate"
@@ -201,9 +206,7 @@ const OwnerContract = () => {
                                 onChange={handleInputChange}
                             />
 
-                            
-
-                            <label>Monthly Rent</label>
+                            <label>Monthly Rent (₱):</label>
                             <input
                                 type="number"
                                 name="monthlyrent"
@@ -211,7 +214,7 @@ const OwnerContract = () => {
                                 onChange={handleInputChange}
                             />
 
-                            <label>Deposit</label>
+                            <label>Deposit (₱):</label>
                             <input
                                 type="number"
                                 name="deposit"
@@ -219,7 +222,7 @@ const OwnerContract = () => {
                                 onChange={handleInputChange}
                             />
 
-                            <label>Advance Payment</label>
+                            <label>Advance Payment (₱):</label>
                             <input
                                 type="number"
                                 name="advancepayment"
@@ -227,21 +230,18 @@ const OwnerContract = () => {
                                 onChange={handleInputChange}
                             />
 
-                            <label>Remarks</label>
+                            <label>Remarks:</label>
                             <textarea
                                 name="remarks"
                                 value={formData.remarks}
                                 onChange={handleInputChange}
                             />
-                        </div>
 
-                        <div className="modal-footer">
-                            <button className="save-btn" onClick={handleIssueContract}>
-                                Save Contract
-                            </button>
-                            <button className="cancel-btn" onClick={() => setShowAddModal(false)}>
-                                Cancel
-                            </button>
+                            <div className="modal-actions">
+                                <button className="generate-btn" onClick={handleGeneratePDF}>
+                                    Generate Contract PDF
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -27,8 +27,8 @@ def apply_unit():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # Define folders
-    base_folder = "uploads"
+    # ✅ Use backend/uploads as base folder
+    base_folder = current_app.config["UPLOAD_FOLDER"]
     folders = {
         "valid_id": os.path.join(base_folder, "valid_ids"),
         "brgy": os.path.join(base_folder, "brgy_clearances"),
@@ -39,25 +39,23 @@ def apply_unit():
     for folder in folders.values():
         os.makedirs(folder, exist_ok=True)
 
-    # Helper function to save files
     def save_file(file, folder_key, prefix):
         filename = secure_filename(file.filename)
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         unique_filename = f"{user_id}_{prefix}_{timestamp}_{filename}"
         file_path = os.path.join(folders[folder_key], unique_filename)
         file.save(file_path)
-        return file_path  # Save relative path if needed
+        return file_path
 
     try:
         valid_id_path = save_file(valid_id_file, "valid_id", "validid")
         brgy_path = save_file(brgy_file, "brgy", "brgy") if brgy_file else None
         proof_path = save_file(proof_file, "proof", "proof") if proof_file else None
 
-        # Check if application already exists
+        # Check if application exists
         application = Application.query.filter_by(userid=user_id).first()
 
         if application:
-            # Update existing application
             application.unitid = unit_id
             application.valid_id = valid_id_path
             application.brgy_clearance = brgy_path
@@ -65,8 +63,7 @@ def apply_unit():
             application.status = "Pending"
             application.submissiondate = datetime.utcnow()
         else:
-            # Create new application
-            application = Application(
+            new_app = Application(
                 unitid=unit_id,
                 userid=user.userid,
                 valid_id=valid_id_path,
@@ -75,19 +72,16 @@ def apply_unit():
                 status="Pending",
                 submissiondate=datetime.utcnow()
             )
-            db.session.add(application)
+            db.session.add(new_app)
 
         db.session.commit()
         return jsonify({"message": "Application submitted successfully!"})
 
     except Exception as e:
-        db.session.rollback()  # Rollback on error
-
-        # Remove any saved files to avoid orphan files
+        db.session.rollback()
         for path in [valid_id_path, brgy_path, proof_path]:
             if path and os.path.exists(path):
                 os.remove(path)
-
         return jsonify({"error": f"Failed to submit application: {str(e)}"}), 500
 
 

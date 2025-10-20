@@ -8,7 +8,8 @@ class Contract(db.Model):
     startdate = db.Column(db.String(50))
     enddate = db.Column(db.String(50))
     status = db.Column(db.String(50))
-    signed_contract = db.Column(db.String(200))
+    generated_contract = db.Column(db.String(255))
+    signed_contract = db.Column(db.String(255))
 
     def to_dict(self):
         return {
@@ -19,4 +20,6 @@ class Contract(db.Model):
             "end_date": self.end_date,
             "rent_amount": self.rent_amount,
             "status": self.status,
+            "generated_contract": self.generated_contract,
+            "signed_contract": self.signed_contract
         }
