@@ -9,6 +9,7 @@ from routes.application_route import application_bp
 from routes.tenant_route import tenant_bp
 from routes.bill_route import bill_bp
 from routes.contract_route import contract_bp
+from routes.forgot_route import forgot_bp
 
 # Load environment variables
 load_dotenv()
@@ -21,6 +22,7 @@ CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 # Config
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config["BREVO_API_KEY"] = os.getenv("BREVO_API_KEY")
 
 # Base folder for all uploads
 app.config["UPLOAD_FOLDER"] = "uploads"
@@ -39,6 +41,8 @@ app.register_blueprint(application_bp, url_prefix="/api")
 app.register_blueprint(tenant_bp, url_prefix="/api")
 app.register_blueprint(bill_bp, url_prefix="/api")
 app.register_blueprint(contract_bp, url_prefix="/api")
+app.register_blueprint(forgot_bp, url_prefix="/api")
+
 
 
 
