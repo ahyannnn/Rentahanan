@@ -152,8 +152,8 @@ function Units() {
               <div className="unit-details small">
                 <span
                   className={`status-badge ${unit.status.toLowerCase() === "available"
-                      ? "status-available"
-                      : "status-occupied"
+                    ? "status-available"
+                    : "status-occupied"
                     }`}
                 >
                   {unit.status}
@@ -257,14 +257,12 @@ function Units() {
       )}
 
       {/* --- View Details Modal --- */}
+      {/* --- View Details Modal --- */}
       {showViewModal && selectedUnit && (
         <div className="modal-overlay">
           <div className="view-details-modal">
             <div className="modal-header">
               <h3>Unit Details</h3>
-              <button className="close-btn" onClick={handleCloseModal}>
-                <X size={20} />
-              </button>
             </div>
 
             <div className="modal-body">
@@ -295,14 +293,19 @@ function Units() {
               )}
             </div>
 
-            <div className="modal-footer">
-              <button className="cancel-btn" onClick={handleCloseModal}>
+            <div className="modal-footer" style={{ justifyContent: "center" }}>
+              <button
+                className="cancel-btn"
+                onClick={handleCloseModal}
+                style={{ width: "100px", fontWeight: "600" }}
+              >
                 Close
               </button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 }

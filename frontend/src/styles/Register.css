@@ -332,6 +332,22 @@ input:focus {
 .btn.secondary:hover {
   background-color: #cce0ff; /* Slightly darker on hover */
 }
+.success-step {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.success-step h2 {
+  color: #007bff;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.success-step p {
+  color: #555;
+  font-size: 15px;
+}
+
 
 @media (max-width: 850px) {
   .two-columns {
@@ -344,45 +360,52 @@ input:focus {
 
 /* --- Responsive (Mobile View - Kept as requested) --- */
 @media (max-width: 850px) {
-  /* Resets for Mobile */
+  /* Make all text white by default */
+  * {
+    color: white !important;
+  }
+
+  /* Hide the left side (image or banner) */
   .auth-left {
     display: none;
   }
-  
+
+  /* Right section styling */
   .auth-right {
-    flex: 1; 
-    background: #fff;
+    flex: 1;
+    background: transparent;
     padding: 2rem 1rem;
     justify-content: flex-start;
   }
-  
+
+  /* Auth page layout */
   .auth-page {
     flex-direction: column;
     box-shadow: none;
-    background-color: transparent;
+    background-color: #061A53; /* Dark blue bg for white contrast */
   }
 
   body {
-    background-color: #fff;
+    background-color: #061A53;
   }
 
-  /* Mobile Card Styling */
+  /* Card styling for mobile */
   .auth-card {
-    background-color: white; 
+    background-color: transparent;
     box-shadow: none;
     border-radius: 0;
     padding: 0;
     max-width: 100%;
-    text-align: center; 
+    text-align: center;
   }
 
   .auth-card::before {
-    content: none; 
+    content: none;
   }
-  
-  /* Mobile Logo Box */
+
+  /* Logo box */
   .logo-box {
-    display: flex; 
+    display: flex;
     flex-direction: column;
     align-items: center;
     margin-bottom: 2rem;
@@ -398,61 +421,87 @@ input:focus {
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 0;
-  }
-  
-  /* Mobile Button/Input adjustments */
-  input {
-    padding: 0.9rem;
+    color: white;
   }
 
+  /* Inputs */
+  input {
+    padding: 0.9rem;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid white;
+  }
+
+  input::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* Buttons */
   .btn {
     margin-top: 1rem;
     font-size: 1rem;
     padding: 0.9rem;
-    margin-bottom: 1rem; /* Adjust for mobile spacing */
+    margin-bottom: 1rem;
+    background-color: white;
+    color: #061A53;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
   }
-  
+
+  /* Form groups */
   .form-group {
     margin-bottom: 1.2rem;
   }
-  
-  /* Mobile Social Login Re-enabled */
+
+  /* OR text */
   .or-text {
     display: block;
     margin: 1rem 0;
     font-weight: 600;
-    color: #999;
+    color: white;
     text-align: center;
-    line-height: initial; /* Reset for mobile */
   }
+
   .or-text::before,
   .or-text::after {
-    content: none; /* Hide lines for mobile */
+    content: none;
   }
 
-
+  /* Social login buttons */
   .social-login {
     display: block;
-    margin-top: 0; /* Reset margin for mobile */
+    margin-top: 0;
   }
 
   .social-login button {
     width: 100%;
     padding: 0.9rem;
-    border: 1px solid #ccc;
+    border: 1px solid white;
     border-radius: 8px;
-    background: #fff;
+    background: transparent;
     font-weight: 600;
     margin-bottom: 0.8rem;
     cursor: pointer;
     transition: 0.3s;
     font-size: 0.95rem;
-    color: #061A53; /* Revert to primary color for mobile */
+    color: white;
   }
-  
-  /* Mobile Bottom Text */
+
+  .social-login button:hover {
+    background: white;
+    color: #061A53;
+  }
+
+  /* Bottom text (like "Already have an account?") */
   .bottom-text {
     margin-top: 1.5rem;
     text-align: center;
+    color: white;
+  }
+
+  .bottom-text a {
+    color: #FFD700;
+    text-decoration: underline;
   }
 }

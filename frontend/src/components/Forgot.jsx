@@ -4,7 +4,7 @@ import "./../styles/Forgot.css";
 
 const Forgot = () => {
   const [email, setEmail] = useState("");
-  const [step, setStep] = useState(1); // 1=email, 2=code, 3=new password
+  const [step, setStep] = useState(1); // 1=email, 2=code, 3=new password, 4=success
   const [code, setCode] = useState(Array(6).fill(""));
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -128,13 +128,13 @@ const Forgot = () => {
       setLoading(false);
 
       if (response.ok) {
-        setStep(1);
+        // Go to success step
+        setStep(4);
         setEmail("");
         setCode(Array(6).fill(""));
         setPassword("");
         setConfirmPassword("");
         setError("");
-        alert("Password reset successfully!");
       } else {
         setError(data.message || "Failed to reset password.");
       }
@@ -239,7 +239,7 @@ const Forgot = () => {
                       className="toggle-password"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? "🙈" : "👁️"}
+                      {showPassword ? "Hide" : "Show"}
                     </span>
                   </div>
 
@@ -259,7 +259,7 @@ const Forgot = () => {
                         setShowConfirmPassword(!showConfirmPassword)
                       }
                     >
-                      {showConfirmPassword ? "🙈" : "👁️"}
+                      {showConfirmPassword ? "Hide" : "Show"}
                     </span>
                   </div>
 
@@ -270,6 +270,22 @@ const Forgot = () => {
                   </button>
                 </form>
               </>
+            )}
+
+            {/* Step 4: Success message */}
+            {step === 4 && (
+              <div className="forgot-success">
+                <h2 className="forgot-title">Password Changed Successfully</h2>
+                <p style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+                  Your password has been updated. You can now log in using your new password.
+                </p>
+                <button
+                  className="forgot-btn"
+                  onClick={() => (window.location.href = "/login")}
+                >
+                  Back to Login
+                </button>
+              </div>
             )}
           </div>
         </div>

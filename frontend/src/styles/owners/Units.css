@@ -1,31 +1,33 @@
 /* === Page Container === */
 .units-page-container {
-    min-height: 100vh;
-    background-color: #f8f9fa;
-    padding: 20px;
-    font-family: "Inter", sans-serif;
-    color: #1e1e2f;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 20px;
+  font-family: "Inter", sans-serif;
+  color: #1e1e2f;
 }
 
 /* === Control Bar === */
 .control-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #fff;
-    padding: 12px 18px;
-    border-radius: 10px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 12px 18px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .tab-group {
-    display: flex;
-    gap: 6px;
+  display: flex;
+  gap: 6px;
 }
+
 .unit-card.small {
-  width: 250px; /* or whatever fits your grid */
+  width: 250px;
+  /* or whatever fits your grid */
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -37,7 +39,8 @@
 .unit-image-placeholder {
   position: relative;
   width: 100%;
-  height: 160px; /* force a consistent height */
+  height: 160px;
+  /* force a consistent height */
   overflow: hidden;
   border-radius: 12px 12px 0 0;
   background-color: #f5f5f5;
@@ -49,173 +52,174 @@
 .unit-thumbnail {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* crop image, not stretch */
+  object-fit: cover;
+  /* crop image, not stretch */
   display: block;
 }
 
 .tab-btn {
-    padding: 6px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 6px;
-    border: none;
-    background: transparent;
-    color: #555;
-    cursor: pointer;
-    transition: 0.2s;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .tab-btn.active {
-    background-color: #0b3c91;
-    color: #fff;
-    box-shadow: 0 2px 6px rgba(11, 60, 145, 0.3);
+  background-color: #0b3c91;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(11, 60, 145, 0.3);
 }
 
 .tab-btn:hover:not(.active) {
-    background-color: #e6eefd;
-    color: #0b3c91;
+  background-color: #e6eefd;
+  color: #0b3c91;
 }
 
 .add-unit-btn {
-    display: flex;
-    align-items: center;
-    background-color: #28a745;
-    color: #fff;
-    font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.4);
-    transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  background-color: #28a745;
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.4);
+  transition: background-color 0.2s;
 }
 
 .add-unit-btn:hover {
-    background-color: #1e7e34;
+  background-color: #1e7e34;
 }
 
 .add-unit-btn svg {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 /* === Units Grid === */
 .units-grid {
-    /* Palitan ang display: grid; */
-    display: flex;
-    /* Gawing magkakadikit sa kaliwa ang items at magbigay ng espasyo */
-    justify-content: flex-start;
+  /* Palitan ang display: grid; */
+  display: flex;
+  /* Gawing magkakadikit sa kaliwa ang items at magbigay ng espasyo */
+  justify-content: flex-start;
 
-    /* Lagyan ng gap o margin */
-    gap: 15px;
+  /* Lagyan ng gap o margin */
+  gap: 15px;
 
-    /* Para mag-wrap ang cards pag lumiit ang screen */
-    flex-wrap: wrap;
+  /* Para mag-wrap ang cards pag lumiit ang screen */
+  flex-wrap: wrap;
 }
 
 /* === Unit Card === */
 .unit-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
-    transition: transform 0.25s, box-shadow 0.25s;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.25s, box-shadow 0.25s;
 
-    /* Dito ang FLEXBOX magic para maging 3-column layout: */
-    /* Kalkulahin ang lapad para magkasya ang 3 items na may 15px na gap: */
-    flex-basis: calc((100% - 30px) / 3);
-    /* (100% minus 2 gaps) divided by 3 items */
-    flex-grow: 1;
-    /* Para umabot ang lapad hanggang sa matira pang espasyo */
-    max-width: calc((100% - 30px) / 3);
-    /* Para hindi lumampas sa 3 columns */
+  /* Dito ang FLEXBOX magic para maging 3-column layout: */
+  /* Kalkulahin ang lapad para magkasya ang 3 items na may 15px na gap: */
+  flex-basis: calc((100% - 30px) / 3);
+  /* (100% minus 2 gaps) divided by 3 items */
+  flex-grow: 1;
+  /* Para umabot ang lapad hanggang sa matira pang espasyo */
+  max-width: calc((100% - 30px) / 3);
+  /* Para hindi lumampas sa 3 columns */
 }
 
 .unit-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .unit-image-placeholder {
-    height: 130px;
-    background-color: #eef4ff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+  height: 130px;
+  background-color: #eef4ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 .unit-name-tag {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 5px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 5px;
 }
 
 .unit-details {
-    padding: 14px;
+  padding: 14px;
 }
 
 .status-badge {
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 20px;
-    display: inline-block;
-    margin-bottom: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 10px;
 }
 
 .status-available {
-    background-color: #d4edda;
-    color: #155724;
+  background-color: #d4edda;
+  color: #155724;
 }
 
 .status-occupied {
-    background-color: #f8d7da;
-    color: #721c24;
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
 .unit-location {
-    display: flex;
-    align-items: center;
-    font-size: 13px;
-    color: #555;
-    margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 8px;
 }
 
 .unit-price-block {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    color: #0b3c91;
-    font-weight: 700;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: #0b3c91;
+  font-weight: 700;
 }
 
 .unit-price-suffix {
-    font-size: 13px;
-    font-weight: 500;
-    color: #777;
-    margin-left: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #777;
+  margin-left: 4px;
 }
 
 .view-details-btn {
-    width: 100%;
-    padding: 8px;
-    background-color: #0b3c91;
-    color: white;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.2s;
+  width: 100%;
+  padding: 8px;
+  background-color: #0b3c91;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .view-details-btn:hover {
-    background-color: #072d6d;
+  background-color: #072d6d;
 }
 
 /* --- Unit Details Modal --- */
@@ -393,30 +397,127 @@
   border: 1px solid #e0e0e0;
 }
 
+.unit-full-image {
+  padding-left: 25px;
+  height: 300px;
+  width: 380px;
+}
+
+.view-details-modal .close-btn {
+  background-color: #0b3c91;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.view-details-modal .close-btn:hover {
+  background-color: #072d6d;
+}
 
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 
 
 /* === Responsive === */
 @media (max-width: 600px) {
-    .control-bar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-    }
+  .control-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
 
-    .tab-group {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
+  .tab-group {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 
-    .add-unit-btn {
-        width: 100%;
-        justify-content: center;
-    }
+  .add-unit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* === Responsive Fixes for Mobile === */
+@media (max-width: 992px) {
+
+  /* --- Units Grid: 2 cards per row for tablet --- */
+  .units-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .unit-card {
+    flex-basis: 100%;
+    width: 90%;
+    /* 💪 para may konting margin sa gilid */
+    max-width: 480px;
+    /* malapad pero di sumasagad */
+  }
+}
+
+@media (max-width: 768px) {
+
+  /* --- Units Grid: 1 card per row for phone --- */
+  .units-grid {
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .unit-card {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+
+  /* --- Modal full width on mobile --- */
+  .view-details-modal {
+    width: 95%;
+    max-width: none;
+    height: auto;
+    border-radius: 10px;
+    padding: 18px;
+  }
+
+  .view-details-modal h3 {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .unit-info p {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .unit-full-image {
+    padding-left: 50px;
+    height: 200px;
+    width: 280px;
+  }
+
+  /* --- Center Close button --- */
+  .modal-footer {
+    justify-content: center;
+  }
+
+  .modal-footer .cancel-btn {
+    width: 120px;
+    font-weight: 600;
+    font-size: 14px;
+  }
 }
