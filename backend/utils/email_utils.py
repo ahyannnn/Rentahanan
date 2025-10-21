@@ -44,24 +44,84 @@ def send_verification_email(email):
     }
 
     html_content = f"""
-    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; max-width: 600px; margin: auto;">
-        <h1 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">Password Reset Verification</h1>
-        <p style="font-size: 16px; color: #555;">
-            We received a request to reset your password. Please use the verification code below to proceed:
-        </p>
-        <div style="text-align: center; margin: 30px 0;">
-            <span style="display: inline-block; padding: 15px 25px; background-color: #007bff; color: white; font-size: 24px; font-weight: bold; border-radius: 5px; letter-spacing: 5px;">
-                {code}
-            </span>
+<div style="
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    background-color: #f4f6f8;
+    padding: 40px 0;
+">
+    <div style="
+        max-width: 600px;
+        margin: auto;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        border: 1px solid #e0e0e0;
+    ">
+
+        <!-- HEADER -->
+        <div style="
+            background-color: #0048b4;
+            color: white;
+            padding: 20px 30px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            text-align: center;
+        ">
+            <h1 style="font-size: 22px; font-weight: 600; margin: 0;">
+                Password Reset Verification
+            </h1>
         </div>
-        <p style="font-size: 14px; color: #777;">
-            This code will expire in 15 minutes. If you didn’t request this, please ignore the email.
-        </p>
-        <p style="font-size: 14px; color: #777;">
-            Thanks,<br>The Rentahanan App Team
-        </p>
+
+        <!-- BODY -->
+        <div style="padding: 30px 40px;">
+            <p style="font-size: 15px; color: #444; line-height: 1.6; margin-bottom: 20px;">
+                Hello,
+                <br><br>
+                We received a request to reset your password. Please use the verification code below to proceed with your request:
+            </p>
+
+            <div style="text-align: center; margin: 35px 0;">
+                <span style="
+                    display: inline-block;
+                    background-color: #0048b4;
+                    color: white;
+                    font-size: 26px;
+                    font-weight: 700;
+                    letter-spacing: 6px;
+                    padding: 15px 40px;
+                    border-radius: 6px;
+                ">
+                    {code}
+                </span>
+            </div>
+
+            <p style="font-size: 14px; color: #666; line-height: 1.6;">
+                This code will expire in <strong>15 minutes</strong>.
+                <br>
+                If you didn’t request this password reset, please ignore this message.
+            </p>
+
+            <p style="font-size: 14px; color: #666; margin-top: 25px;">
+                Thank you,<br>
+                <strong>The Rentahanan Team</strong>
+            </p>
+        </div>
+
+        <!-- FOOTER -->
+        <div style="
+            background-color: #f8f9fb;
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+        ">
+            © 2025 Rentahanan | All Rights Reserved
+        </div>
     </div>
-    """
+</div>
+"""
+
 
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
         to=[{"email": email}],
