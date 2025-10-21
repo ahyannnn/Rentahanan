@@ -126,20 +126,22 @@ def login():
     # ✅ Fetch the user's application record (optional)
     application = Application.query.filter_by(userid=user.userid).first()
     application_status = application.status if application else "No Application"
+    tenant = Tenant.query.filter_by(userid=str(user.userid)).first()
 
-    # ✅ Return JSON response
     return jsonify({
         "message": "Login successful",
         "user": {
             "userid": user.userid,
+            "tenantid": tenant.tenantid if tenant else None,
             "firstname": user.firstname,
             "lastname": user.lastname,
             "middlename": user.middlename,
             "email": user.email,
             "role": user.role,
-            "application_status": application_status
+            "application_status": application.status if application else "No Application"
         }
     }), 200
+
 
 
     

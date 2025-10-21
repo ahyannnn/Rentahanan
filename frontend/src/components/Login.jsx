@@ -45,6 +45,7 @@ const Login = () => {
         role,
         application_status,
         userid,
+        tenantid,
         fullname,
         email: userEmail,
         phone,
@@ -52,6 +53,7 @@ const Login = () => {
       } = data.user;
 
       localStorage.setItem("userId", userid);
+      localStorage.setItem("tenantId", tenantid);
       localStorage.setItem("fullName", fullname);
       localStorage.setItem("email", userEmail);
       localStorage.setItem("phone", phone);

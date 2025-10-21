@@ -8,6 +8,7 @@ const Tenants = () => {
   const [applicants, setApplicants] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedDocument, setSelectedDocument] = useState(null); // ✅ added this
   const navigate = useNavigate();
 
   // Fetch active tenants
@@ -35,8 +36,14 @@ const Tenants = () => {
       item.fullname.toLowerCase().includes(search.toLowerCase())
     );
 
-  const openModal = (user) => setSelectedUser(user);
-  const closeModal = () => setSelectedUser(null);
+  const openModal = (user) => {
+    setSelectedUser(user);
+    setSelectedDocument(null); // reset document view when switching users
+  };
+  const closeModal = () => {
+    setSelectedUser(null);
+    setSelectedDocument(null);
+  };
 
   const renderCards = (data, type) =>
     data.map((item, index) => (
@@ -115,16 +122,17 @@ const Tenants = () => {
     }
   };
 
-const handleIssueContract = (applicationId) => {
-  navigate("/owner/contract", { state: { openTab: "issue", selectedApplicantId: applicationId } });
-};
-
-
+  const handleIssueContract = (applicationId) => {
+    navigate("/owner/contract", {
+      state: { openTab: "issue", selectedApplicantId: applicationId },
+    });
+  };
 
   const handleAdvancePayment = (applicationId) => {
-  navigate("/owner/billing", { state: { openApplicants: true, applicationId } });
-};
-
+    navigate("/owner/billing", {
+      state: { openApplicants: true, applicationId },
+    });
+  };
 
   return (
     <div className="tenants-container">
@@ -183,22 +191,66 @@ const handleIssueContract = (applicationId) => {
               <>
                 <p className="document-row">
                   <strong>Valid ID:</strong>
-                  <button className="document-btn action-primary">
+                  <button
+                    className="document-btn action-primary"
+                    onClick={() =>
+                      setSelectedDocument({
+                        type: "Valid ID",
+                        path: `http://localhost:5000/uploads/valid_ids/${selectedUser.valid_id}`,
+                      })
+                    }
+                  >
                     Review Document
                   </button>
                 </p>
+
                 <p className="document-row">
                   <strong>Clearance:</strong>
-                  <button className="document-btn action-primary">
+                  <button
+                    className="document-btn action-primary"
+                    onClick={() =>
+                      setSelectedDocument({
+                        type: "Barangay Clearance",
+                        path: `http://localhost:5000/uploads/brgy_clearances/${selectedUser.brgy_clearance}`,
+                      })
+                    }
+                  >
                     Review Document
                   </button>
                 </p>
+
                 <p className="document-row">
-                  <strong>Income:</strong>
-                  <button className="document-btn action-primary">
+                  <strong>Proof of Income:</strong>
+                  <button
+                    className="document-btn action-primary"
+                    onClick={() =>
+                      setSelectedDocument({
+                        type: "Proof of Income",
+                        path: `http://localhost:5000/uploads/proof_of_income/${selectedUser.proof_of_income}`,
+                      })
+                    }
+                  >
                     Review Document
                   </button>
                 </p>
+
+                {/* Show selected document */}
+                {selectedDocument && (
+                  <div className="document-preview">
+                    <h3>{selectedDocument.type}</h3>
+                    <img
+                      src={selectedDocument.path}
+                      alt={selectedDocument.type}
+                      className="document-image"
+                    />
+                    <button
+                      className="close-document-btn"
+                      onClick={() => setSelectedDocument(null)}
+                    >
+                      Close Document
+                    </button>
+                  </div>
+                )}
 
                 {/* ✅ Buttons for navigation */}
                 <button

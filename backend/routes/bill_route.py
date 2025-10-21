@@ -6,6 +6,8 @@ from models.users_model import User
 from models.units_model import House as Unit
 from models.contracts_model import Contract
 from models.bills_model import Bill
+import os
+from werkzeug.utils import secure_filename
 
 bill_bp = Blueprint("bill_bp", __name__)
 
@@ -114,3 +116,89 @@ def create_bill():
         db.session.rollback()
         print("Error creating bill:", e)
         return jsonify({"error": "Failed to create bill"}), 500
+    
+# Get bills for a specific tenant
+@bill_bp.route("/bills/<tenant_id>", methods=["GET"])
+def get_tenant_bills(tenant_id):
+    try:
+        # Convert tenant_id to integer if necessary
+        tenant_id_int = int(tenant_id)
+        
+        bills = Bill.query.filter_by(tenantid=tenant_id_int).all()
+        
+        bills_list = []
+        for bill in bills:
+            bills_list.append({
+                "billid": bill.billid,
+                "contractid": bill.contractid,
+                "tenantid": bill.tenantid,
+                "issuedate": bill.issuedate.strftime("%Y-%m-%d") if bill.issuedate else None,
+                "duedate": bill.duedate.strftime("%Y-%m-%d") if bill.duedate else None,
+                "amount": float(bill.amount),  # ensure frontend gets a number
+                "billtype": bill.billtype,
+                "status": bill.status,
+                "description": bill.description,
+                "paymenttype": bill.paymenttype,
+                "gcash_ref": bill.gcash_ref,
+                "gcash_receipt": bill.gcash_receipt,
+            })
+        
+        return jsonify(bills_list), 200
+
+    except Exception as e:
+        print("Error fetching tenant bills:", e)
+        return jsonify({"error": "Failed to fetch bills"}), 500
+    
+UPLOAD_FOLDER = "uploads/gcash_receipts"
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "pdf"}
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+# Bill payment update
+@bill_bp.route("/bills/pay/<int:bill_id>", methods=["PUT"])
+def pay_bill(bill_id):
+    try:
+        bill = Bill.query.get(bill_id)
+        if not bill:
+            return jsonify({"error": "Bill not found"}), 404
+
+        payment_type = request.form.get("paymentType")
+        gcash_ref = request.form.get("gcashRef")
+        file = request.files.get("gcashReceipt")
+
+        # Set defaults based on payment type
+        if payment_type == "Cash":
+            bill.paymenttype = "Cash"
+            bill.gcash_ref = None
+            bill.gcash_receipt = None
+        else:
+            bill.paymenttype = "GCash"
+            bill.gcash_ref = gcash_ref
+
+            # Save GCash receipt file
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                save_path = os.path.join(UPLOAD_FOLDER, filename)
+                file.save(save_path)
+                bill.gcash_receipt = filename
+            else:
+                return jsonify({"error": "Invalid or missing GCash receipt file"}), 400
+
+        # Update bill status
+        bill.status = "For Validation"
+
+        # Commit changes
+        db.session.commit()
+        return jsonify({"message": "Bill marked as 'For Validation' successfully!"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating bill payment: {e}")
+        return jsonify({"error": "Failed to update bill payment"}), 500
+
+    finally:
+        db.session.close()
