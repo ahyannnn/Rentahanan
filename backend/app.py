@@ -10,6 +10,7 @@ from routes.tenant_route import tenant_bp
 from routes.bill_route import bill_bp
 from routes.contract_route import contract_bp
 from routes.forgot_route import forgot_bp
+from routes.units_route import houses_bp
 
 load_dotenv()
 
@@ -37,11 +38,12 @@ app.register_blueprint(tenant_bp, url_prefix="/api")
 app.register_blueprint(bill_bp, url_prefix="/api")
 app.register_blueprint(contract_bp, url_prefix="/api")
 app.register_blueprint(forgot_bp, url_prefix="/api")
+app.register_blueprint(houses_bp, url_prefix="/api")
 
 # Example routes
 @app.route("/api/houses", methods=["GET"])
 def get_houses():
-    houses = House.query.limit(5).all()
+    houses = House.query.all()
     return jsonify([h.to_dict() for h in houses])
 
 @app.route("/api/ping")
