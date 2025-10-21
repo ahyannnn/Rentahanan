@@ -266,6 +266,8 @@ const Layout = () => {
     Pending: [
       { name: "Dashboard", to: "/tenant", icon: Home },
       { name: "Browse Units", to: "/tenant/browse-units", icon: Building2 },
+      { name: "My Bills", to: "/tenant/bills", icon: CreditCard },
+      { name: "Contract", to: "/tenant/contract", icon: ClipboardList },
       { name: "Support", to: "/tenant/support", icon: HelpCircle },
     ],
     Approved: [

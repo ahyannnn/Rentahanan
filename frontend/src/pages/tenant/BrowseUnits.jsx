@@ -20,35 +20,35 @@ const BrowseUnits = () => {
   }, []);
 
   useEffect(() => {
-  if (!tenantId) return;
+    if (!tenantId) return;
 
-  const fetchApplication = async () => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/application/${tenantId}`);
+    const fetchApplication = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/application/${tenantId}`);
 
-      if (res.ok) {
-        const data = await res.json();
+        if (res.ok) {
+          const data = await res.json();
 
-        // Fix here: use data.unitid instead of data.unit_id
-        if (data.unitid === null || data.unitid === undefined) {
+          // Fix here: use data.unitid instead of data.unit_id
+          if (data.unitid === null || data.unitid === undefined) {
+            setHasApplied(false);
+          } else {
+            setHasApplied(true);
+          }
+
+          setApplication(data);
+        } else if (res.status === 404) {
           setHasApplied(false);
         } else {
-          setHasApplied(true);
+          console.error("Unexpected response status:", res.status);
         }
-
-        setApplication(data);
-      } else if (res.status === 404) {
-        setHasApplied(false);
-      } else {
-        console.error("Unexpected response status:", res.status);
+      } catch (err) {
+        console.error("Error fetching tenant application:", err);
       }
-    } catch (err) {
-      console.error("Error fetching tenant application:", err);
-    }
-  };
+    };
 
-  fetchApplication();
-}, [tenantId]);
+    fetchApplication();
+  }, [tenantId]);
 
 
 
@@ -120,23 +120,23 @@ const BrowseUnits = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-    alert(data.message || "Application submitted successfully!");
-    setShowApplyForm(false);
-    setSelectedUnit(null);
+        alert(data.message || "Application submitted successfully!");
+        setShowApplyForm(false);
+        setSelectedUnit(null);
 
-    // ✅ Refetch tenant application to update hasApplied properly
-    fetch(`http://localhost:5000/api/application/${tenantId}`)
-      .then((res) => res.json())
-      .then((appData) => {
-        if (appData.unit_id) {
-          setHasApplied(true);
-          setApplication(appData);
-        } else {
-          setHasApplied(false);
-        }
+        // ✅ Refetch tenant application to update hasApplied properly
+        fetch(`http://localhost:5000/api/application/${tenantId}`)
+          .then((res) => res.json())
+          .then((appData) => {
+            if (appData.unit_id) {
+              setHasApplied(true);
+              setApplication(appData);
+            } else {
+              setHasApplied(false);
+            }
+          })
+          .catch((err) => console.error("Error fetching updated application:", err));
       })
-      .catch((err) => console.error("Error fetching updated application:", err));
-})
 
   };
 
@@ -152,13 +152,20 @@ const BrowseUnits = () => {
         </button>
 
         <div className="units-carousel" ref={carouselRef}>
-          {units.map((unit, index) => (
+          {units.map((unit) => (
             <div key={unit.id} className="unit-card" onClick={() => setSelectedUnit(unit)}>
-              <img
-                src={`/images/house${index + 1}.jpg`}
-                alt={unit.name}
-                className="unit-image"
-              />
+              {unit.imagepath ? (
+                <img
+                  src={`http://localhost:5000/uploads/houseimages/${unit.imagepath}`}
+                  alt={unit.name}
+                  className="unit-image"
+                />
+              ) : (
+                <div className="unit-image-placeholder">
+                  {/* optional placeholder icon or text */}
+                  No Image
+                </div>
+              )}
               <div className="unit-info">
                 <h3>{unit.name}</h3>
                 <p className="unit-price">₱{unit.price.toLocaleString()} / month</p>
@@ -168,20 +175,26 @@ const BrowseUnits = () => {
           ))}
         </div>
 
+
         <button className="carousel-arrow right" onClick={() => scrollCarousel(1)}>
           &gt;
         </button>
       </div>
 
-      {/* Unit Detail Modal */}
       {selectedUnit && !showApplyForm && (
         <div className="modal-overlay" onClick={() => setSelectedUnit(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={`/images/house${units.indexOf(selectedUnit) + 1}.jpg`}
-              alt={selectedUnit.name}
-              className="modal-image"
-            />
+            {selectedUnit.imagepath ? (
+              <img
+                src={`http://localhost:5000/uploads/houseimages/${selectedUnit.imagepath}`}
+                alt={selectedUnit.name}
+                className="modal-image"
+              />
+            ) : (
+              <div className="unit-image-placeholder modal-placeholder">
+                No Image
+              </div>
+            )}
             <h2>{selectedUnit.name}</h2>
             <p>{selectedUnit.description}</p>
             <p>
@@ -203,6 +216,7 @@ const BrowseUnits = () => {
           </div>
         </div>
       )}
+
 
       {/* Apply Form Modal */}
       {selectedUnit && showApplyForm && (
