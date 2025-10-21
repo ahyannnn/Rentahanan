@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./../styles/Forgot.css";
 
@@ -9,11 +9,28 @@ const Forgot = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(""); // inline error messages
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const codeRefs = useRef([]);
+
+  // Auto-focus first empty code input when step 2 starts
+  useEffect(() => {
+    if (step === 2) {
+      const firstEmptyIndex = code.findIndex((digit) => digit === "");
+      if (firstEmptyIndex !== -1 && codeRefs.current[firstEmptyIndex]) {
+        codeRefs.current[firstEmptyIndex].focus();
+      }
+    }
+  }, [step]);
 
   // --- Handle email submission ---
   const handleForgot = async (e) => {
     e.preventDefault();
-    if (!email) return alert("Please enter your email.");
+    setError("");
+
+    if (!email) return setError("Please enter your email.");
 
     try {
       setLoading(true);
@@ -26,14 +43,14 @@ const Forgot = () => {
       setLoading(false);
 
       if (response.ok) {
-        alert("Verification code sent to your email!");
         setStep(2);
+        setError("");
       } else {
-        alert(data.message || "Failed to send verification code.");
+        setError(data.message || "Email not registered.");
       }
     } catch (error) {
       setLoading(false);
-      alert("Error connecting to the server.");
+      setError("Error connecting to the server.");
     }
   };
 
@@ -43,14 +60,26 @@ const Forgot = () => {
       const newCode = [...code];
       newCode[index] = value;
       setCode(newCode);
+
+      // Auto focus next input
+      if (value && index < 5) {
+        codeRefs.current[index + 1].focus();
+      }
+      // Move back if deleted
+      if (!value && index > 0) {
+        codeRefs.current[index - 1].focus();
+      }
     }
   };
 
   // --- Verify code ---
   const handleVerify = async (e) => {
     e.preventDefault();
+    setError("");
+
     const enteredCode = code.join("");
-    if (enteredCode.length !== 6) return alert("Please enter the complete 6-digit code.");
+    if (enteredCode.length !== 6)
+      return setError("Please enter the complete 6-digit code.");
 
     try {
       setLoading(true);
@@ -63,22 +92,26 @@ const Forgot = () => {
       setLoading(false);
 
       if (response.ok) {
-        alert("Code verified successfully!");
-        setStep(3); // ✅ Move to New Password modal
+        setStep(3);
+        setError("");
       } else {
-        alert(data.message || "Invalid code.");
+        setError(data.message || "Invalid verification code.");
       }
     } catch (error) {
       setLoading(false);
-      alert("Error connecting to the server.");
+      setError("Error connecting to the server.");
     }
   };
 
   // --- Reset password ---
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    if (!password || !confirmPassword) return alert("Please fill both password fields.");
-    if (password !== confirmPassword) return alert("Passwords do not match.");
+    setError("");
+
+    if (!password || !confirmPassword)
+      return setError("Please fill both password fields.");
+    if (password !== confirmPassword)
+      return setError("Passwords do not match.");
 
     try {
       setLoading(true);
@@ -86,29 +119,28 @@ const Forgot = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-  email,
-  new_password: password,
-  confirm_password: confirmPassword
-  
-}),
-
+          email,
+          new_password: password,
+          confirm_password: confirmPassword,
+        }),
       });
       const data = await response.json();
       setLoading(false);
 
       if (response.ok) {
-        alert("Password reset successfully!");
-        setStep(1); // back to email form
+        setStep(1);
         setEmail("");
         setCode(Array(6).fill(""));
         setPassword("");
         setConfirmPassword("");
+        setError("");
+        alert("Password reset successfully!");
       } else {
-        alert(data.message || "Failed to reset password.");
+        setError(data.message || "Failed to reset password.");
       }
     } catch (error) {
       setLoading(false);
-      alert("Error connecting to the server.");
+      setError("Error connecting to the server.");
     }
   };
 
@@ -118,7 +150,10 @@ const Forgot = () => {
         <div className="forgot-left">
           <div className="forgot-text">
             <h1>Forgot Password?</h1>
-            <p>Don’t worry — we’ve got you covered. Follow the steps to reset your password.</p>
+            <p>
+              Don’t worry — we’ve got you covered. Follow the steps to reset your
+              password.
+            </p>
           </div>
         </div>
 
@@ -138,6 +173,7 @@ const Forgot = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
+                    {error && <p className="error-text">{error}</p>}
                   </div>
                   <button type="submit" className="forgot-btn" disabled={loading}>
                     {loading ? "Sending..." : "Send Code"}
@@ -164,16 +200,21 @@ const Forgot = () => {
                         type="text"
                         maxLength="1"
                         value={digit}
+                        ref={(el) => (codeRefs.current[index] = el)}
                         onChange={(e) => handleCodeChange(e.target.value, index)}
                         className="code-input"
                       />
                     ))}
                   </div>
+                  {error && <p className="error-text">{error}</p>}
                   <button type="submit" className="forgot-btn" disabled={loading}>
                     {loading ? "Verifying..." : "Verify Code"}
                   </button>
                   <div className="forgot-bottom-text">
-                    Didn’t receive code? <span onClick={() => handleForgot()} className="resend-link">Resend it</span>
+                    Didn’t receive code?{" "}
+                    <span onClick={() => handleForgot()} className="resend-link">
+                      Resend it
+                    </span>
                   </div>
                 </form>
               </>
@@ -184,22 +225,46 @@ const Forgot = () => {
               <>
                 <h2 className="forgot-title">Set New Password</h2>
                 <form onSubmit={handleResetPassword}>
-                  <input
-                    type="password"
-                    placeholder="New Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="forgot-input"
-                    required
-                  />
-                  <input
-                    type="password"
-                    placeholder="Confirm Password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="forgot-input"
-                    required
-                  />
+                  {/* New Password */}
+                  <div className="forgot-input-wrapper">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="New Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="forgot-input"
+                      required
+                    />
+                    <span
+                      className="toggle-password"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? "🙈" : "👁️"}
+                    </span>
+                  </div>
+
+                  {/* Confirm Password */}
+                  <div className="forgot-input-wrapper">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirm Password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="forgot-input"
+                      required
+                    />
+                    <span
+                      className="toggle-password"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                    >
+                      {showConfirmPassword ? "🙈" : "👁️"}
+                    </span>
+                  </div>
+
+                  {error && <p className="error-text">{error}</p>}
+
                   <button type="submit" className="forgot-btn" disabled={loading}>
                     {loading ? "Resetting..." : "Reset Password"}
                   </button>

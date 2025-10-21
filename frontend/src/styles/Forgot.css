@@ -190,13 +190,46 @@
 }
 
 
-.forgot-input {
-    margin: 10px;
+.forgot-form-group,
+.forgot-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    /* stack vertically */
+    width: 100%;
 }
 
-.forgot-btn{
-    margin-left: 10px;
+.forgot-form-group input,
+.forgot-btn {
+    width: 100%;
+    /* make all same width */
+    box-sizing: border-box;
+    /* include padding/border in width */
 }
+
+
+.forgot-input-wrapper {
+    position: relative;
+    margin: 10px 0;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.1rem;
+    user-select: none;
+}
+
+.error-text {
+    color: #e63946;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    text-align: center;
+}
+
+
 
 /* ======================================= */
 /* 📱 RESPONSIVE DESIGN */
@@ -254,9 +287,14 @@
 
     .forgot-title,
     .forgot-card p,
-    .forgot-bottom-text,
     .forgot-form-group label {
-        color: #fff;
+        color: #fff !important;
+        /* force white */
+    }
+
+    .forgot-bottom-text,
+    .forgot-bottom-text a {
+        color: #fff !important;
     }
 
     .forgot-form-group input {
