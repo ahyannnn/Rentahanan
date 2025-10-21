@@ -30,11 +30,25 @@ def get_bills():
         .join(User, User.userid == Tenant.userid)
         .join(Contract, Contract.tenantid == Tenant.tenantid)
         .join(Unit, Unit.unitid == Contract.unitid)
+        
         .all()
     )
 
     result = []
     for tenantid, firstname, middlename, lastname, unit_name, unit_price in tenants_with_contracts:
+        # 🧾 Skip tenants who already have a Security Deposit & Advance Payment bill
+        has_initial_bill = (
+            db.session.query(Bill)
+            .filter(
+                Bill.tenantid == tenantid,
+                Bill.status == "Unpaid",
+            )
+            .first()
+        )
+        if has_initial_bill:
+            continue  # Skip tenant with initial payment bill
+
+        # 🧾 Skip tenants who already have a bill for the current month
         existing_bill = (
             db.session.query(Bill)
             .filter(
@@ -44,13 +58,16 @@ def get_bills():
             )
             .first()
         )
-        if not existing_bill:
-            result.append({
-                "id": tenantid,
-                "fullname": f"{firstname} {middlename + ' ' if middlename else ''}{lastname}",
-                "unit_name": unit_name,
-                "unit_price": unit_price
-            })
+        if existing_bill:
+            continue  # Skip tenant already billed this month
+
+        # ✅ Tenant qualifies to be billed
+        result.append({
+            "tenantid": tenantid,
+            "fullname": f"{firstname} {middlename + ' ' if middlename else ''}{lastname}",
+            "unit_name": unit_name,
+            "unit_price": unit_price
+        })
 
     return jsonify(result)
 
