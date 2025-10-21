@@ -61,7 +61,6 @@ def get_bills():
 @bill_bp.route("/billing/create", methods=["POST"])
 def create_bill():
     data = request.get_json()
-
     tenantid = data.get("tenantId")
     issuedate = data.get("issueDate", datetime.now().date())
     duedate = data.get("dueDate")
@@ -87,6 +86,11 @@ def create_bill():
         db.session.add(new_bill)
         db.session.commit()
 
+        # If Contract with tenantid exists, set bill contractid to it
+        contract = Contract.query.filter_by(tenantid=tenantid).first()
+        if contract:
+            new_bill.contractid = contract.contractid
+            db.session.commit()
         return jsonify({"message": "Bill created successfully!"}), 201
 
     except Exception as e:

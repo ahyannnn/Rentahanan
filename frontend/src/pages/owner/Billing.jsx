@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom"; // ✅ import this
 import { Search, Plus, X } from "lucide-react";
 import "../../styles/owners/Billing.css";
 
 function Billing() {
-    const [activeTab, setActiveTab] = useState("tenants"); // "tenants" | "applicants"
+    const location = useLocation();
+
+    // ✅ If coming from Tenants page, open Applicants tab
+    const [activeTab, setActiveTab] = useState(
+        location.state?.openApplicants ? "applicants" : "tenants"
+    );
+
     const [showAddModal, setShowAddModal] = useState(false);
     const [tenants, setTenants] = useState([]);
     const [applicants, setApplicants] = useState([]);
@@ -18,11 +25,8 @@ function Billing() {
         dueDate: ""
     });
 
-    // ✅ Get today's date in YYYY-MM-DD format
-    const getTodayDate = () => {
-        const today = new Date();
-        return today.toISOString().split("T")[0];
-    };
+    // ✅ Helper function
+    const getTodayDate = () => new Date().toISOString().split("T")[0];
 
     // Fetch tenants and applicants
     useEffect(() => {
@@ -30,12 +34,10 @@ function Billing() {
             try {
                 const [tenantsRes, applicantsRes] = await Promise.all([
                     fetch("http://localhost:5000/api/billing/bills"),
-                    fetch("http://localhost:5000/api/applicants/for-billing")
+                    fetch("http://localhost:5000/api/applicants/for-billing"),
                 ]);
-                const tenantsData = await tenantsRes.json();
-                const applicantsData = await applicantsRes.json();
-                setTenants(tenantsData);
-                setApplicants(applicantsData);
+                setTenants(await tenantsRes.json());
+                setApplicants(await applicantsRes.json());
             } catch (error) {
                 console.error("Error fetching billing data:", error);
             }
@@ -48,22 +50,18 @@ function Billing() {
         setFormData({ ...formData, [name]: value });
     };
 
-    // ✅ Open invoice modal with pre-filled data
     const openInvoiceModal = (applicant) => {
         setSelectedApplicant(applicant);
-
         const today = getTodayDate();
-
         setFormData({
             tenantId: applicant.applicationid,
-            invoiceNo: `INV-${Date.now()}`, // optional: auto-generate invoice number
+            invoiceNo: `INV-${Date.now()}`,
             billType: "Security Deposit & Advance Payment",
             amount: applicant.unit_price * 3 || "",
             description: `Initial payment for ${applicant.fullname} (${applicant.unit_name})`,
             issuedDate: today,
-            dueDate: "" // leave empty to be chosen by user
+            dueDate: "",
         });
-
         setShowAddModal(true);
     };
 
@@ -90,7 +88,7 @@ function Billing() {
                     amount: "",
                     description: "",
                     issuedDate: "",
-                    dueDate: ""
+                    dueDate: "",
                 });
             } else {
                 alert("Failed to create invoice.");
@@ -235,5 +233,5 @@ function Billing() {
         </div>
     );
 }
-    
+
 export default Billing;

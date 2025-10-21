@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/owners/Tenants.css";
+import { useNavigate } from "react-router-dom";
 
 const Tenants = () => {
   const [activeTab, setActiveTab] = useState("active");
   const [tenants, setTenants] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [search, setSearch] = useState("");
-  const [selectedUser, setSelectedUser] = useState(null); // For popup modal
+  const [selectedUser, setSelectedUser] = useState(null);
+  const navigate = useNavigate();
 
   // Fetch active tenants
   useEffect(() => {
@@ -46,10 +48,7 @@ const Tenants = () => {
           <p>Phone: {item.phone}</p>
           <p>Unit: {item.unit_name || "N/A"}</p>
         </div>
-        <button
-          className="view-profile-btn"
-          onClick={() => openModal(item)}
-        >
+        <button className="view-profile-btn" onClick={() => openModal(item)}>
           {type === "active" ? "View Profile" : "Review"}
         </button>
       </div>
@@ -59,7 +58,7 @@ const Tenants = () => {
     if (window.confirm("Are you sure you want to approve this application?")) {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/tenants/approve/${selectedUser?.applicationid}`,
+          `http://localhost:5000/api/tenants/approve/${applicationId}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -82,8 +81,6 @@ const Tenants = () => {
     }
   };
 
-  console.log("applicationid", selectedUser?.applicationid);
-
   const handleReject = async (applicationId) => {
     const reason = prompt(
       "Enter reason for rejection (optional):",
@@ -94,7 +91,7 @@ const Tenants = () => {
     if (window.confirm("Are you sure you want to reject this application?")) {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/tenants/reject/${selectedUser?.applicationid}`,
+          `http://localhost:5000/api/tenants/reject/${applicationId}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -117,6 +114,16 @@ const Tenants = () => {
       }
     }
   };
+
+const handleIssueContract = (applicationId) => {
+  navigate("/owner/contract", { state: { openTab: "issue", selectedApplicantId: applicationId } });
+};
+
+
+
+  const handleAdvancePayment = (applicationId) => {
+  navigate("/owner/billing", { state: { openApplicants: true, applicationId } });
+};
 
 
   return (
@@ -192,33 +199,41 @@ const Tenants = () => {
                     Review Document
                   </button>
                 </p>
-                
+
+                {/* ✅ Buttons for navigation */}
                 <button
                   className="issue-contract-btn"
-                  onClick={() => handleIssueContract(selectedUser.applicationid)}
+                  onClick={() =>
+                    handleIssueContract(selectedUser.applicationid)
+                  }
                 >
                   ISSUE CONTRACT
                 </button>
 
                 <button
                   className="advance-payment-btn"
-                  onClick={() => handleAdvancePayment(selectedUser.applicationid)}
+                  onClick={() =>
+                    handleAdvancePayment(selectedUser.applicationid)
+                  }
                 >
-                  ADVANCE PAYMENT
+                  ISSUE INITIAL PAYMENT
                 </button>
 
-
-                {/* ✅ APPROVE + REJECT BUTTONS */}
+                {/* Approve + Reject */}
                 <div className="approve-section">
                   <button
                     className="approve-btn"
-                    onClick={() => handleApprove(selectedUser.applicationid)}
+                    onClick={() =>
+                      handleApprove(selectedUser.applicationid)
+                    }
                   >
                     APPROVE APPLICATION
                   </button>
                   <button
                     className="reject-btn"
-                    onClick={() => handleReject(selectedUser.applicationid)}
+                    onClick={() =>
+                      handleReject(selectedUser.applicationid)
+                    }
                   >
                     REJECT APPLICATION
                   </button>
