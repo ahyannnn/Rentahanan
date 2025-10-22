@@ -27,7 +27,7 @@ app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
 
 # ✅ Ensure upload folders exist
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
-for sub in ["valid_ids", "brgy_clearances", "proof_of_income", "contracts", "houseimages"]:
+for sub in ["valid_ids", "brgy_clearances", "proof_of_income", "contracts", "houseimages", "signed_contracts"]:
     os.makedirs(os.path.join(app.config["UPLOAD_FOLDER"], sub), exist_ok=True)
 
 # ✅ Initialize and register
