@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import SignatureCanvas from "react-signature-canvas";
 import { useLocation } from "react-router-dom";
 import { FileText, X } from "lucide-react";
 import "../../styles/owners/Contract.css";
@@ -20,7 +21,8 @@ const OwnerContract = () => {
         remarks: "",
     });
 
-    // ✅ Auto-open tab & highlight applicant when coming from navigation
+    const sigPadRef = useRef(null); // 🖋️ Reference for signature pad
+
     useEffect(() => {
         if (location.state?.openTab === "issue") {
             setActiveTab("issue");
@@ -30,7 +32,6 @@ const OwnerContract = () => {
         }
     }, [location.state]);
 
-    // ✅ Fetch contracts and applicants
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -43,7 +44,6 @@ const OwnerContract = () => {
                 setContracts(contractsData);
                 setApplicants(applicantsData);
 
-                // Auto-open modal if a highlighted applicant exists
                 if (location.state?.selectedApplicantId) {
                     const foundApplicant = applicantsData.find(
                         (a) => a.applicationid === location.state.selectedApplicantId
@@ -57,7 +57,6 @@ const OwnerContract = () => {
         fetchData();
     }, []);
 
-    // ✅ Handle form inputs
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -78,8 +77,17 @@ const OwnerContract = () => {
         setShowAddModal(true);
     };
 
+    const clearSignature = () => {
+        sigPadRef.current.clear();
+    };
+
     const handleGeneratePDF = async () => {
         try {
+            // 🖋️ Get the signature as a base64 image (if drawn)
+            const signatureData = sigPadRef.current.isEmpty()
+                ? null
+                : sigPadRef.current.getTrimmedCanvas().toDataURL("image/png");
+
             const pdfResponse = await fetch("http://localhost:5000/api/contracts/generate-pdf", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -92,17 +100,14 @@ const OwnerContract = () => {
                     advancepayment: formData.advancepayment,
                     start_date: formData.startdate,
                     remarks: formData.remarks,
+                    owner_signature: signatureData, // ✅ include owner signature
                 }),
             });
 
             const pdfData = await pdfResponse.json();
             if (!pdfResponse.ok) throw new Error(pdfData.error || "Failed to generate contract");
 
-            console.log("PDF generated:", pdfData.pdf_url);
-
-            // ✅ Use this URL
             window.open(pdfData.pdf_url, "_blank");
-
 
             const issueResponse = await fetch("http://localhost:5000/api/contracts/issuecontract", {
                 method: "POST",
@@ -126,8 +131,6 @@ const OwnerContract = () => {
         }
     };
 
-
-
     return (
         <div className="contracts-page-container">
             {/* Tabs */}
@@ -146,7 +149,6 @@ const OwnerContract = () => {
                 </button>
             </div>
 
-            {/* Issue New Contracts Tab */}
             {activeTab === "issue" && (
                 <div className="content-card applicant-area">
                     <h3>Applicants Ready for Contract Issuance</h3>
@@ -186,7 +188,7 @@ const OwnerContract = () => {
                 </div>
             )}
 
-            {/* Issue Contract Modal */}
+            {/* Modal */}
             {showAddModal && selectedApplicant && (
                 <div className="modal-overlay">
                     <div className="modal-content">
@@ -236,6 +238,23 @@ const OwnerContract = () => {
                                 value={formData.remarks}
                                 onChange={handleInputChange}
                             />
+
+                            {/* 🖋️ Signature Pad */}
+                            <label>Owner Signature:</label>
+                            <div className="signature-container">
+                                <SignatureCanvas
+                                    ref={sigPadRef}
+                                    penColor="black"
+                                    canvasProps={{
+                                        width: 400,
+                                        height: 150,
+                                        className: "sigCanvas",
+                                    }}
+                                />
+                                <button className="clear-btn" onClick={clearSignature}>
+                                    Clear
+                                </button>
+                            </div>
 
                             <div className="modal-actions">
                                 <button className="generate-btn" onClick={handleGeneratePDF}>
