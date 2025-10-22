@@ -6,22 +6,53 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  
+  // 1. STATE FOR EMAIL ERROR
+  const [emailError, setEmailError] = useState("");
+  // 1. NEW STATE FOR PASSWORD ERROR
+  const [passwordError, setPasswordError] = useState("");
+  // State for general login errors (server, missing both)
+  const [generalError, setGeneralError] = useState("");
+  
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      alert("Please fill in both email and password.");
-      return;
+    // Reset all errors before validation/submission
+    setEmailError("");
+    setPasswordError("");
+    setGeneralError("");
+
+    let isValid = true;
+
+    // --- CLIENT-SIDE VALIDATION ---
+    
+    // Check Email presence and format
+    if (!email) {
+      setEmailError("Email address is required.");
+      isValid = false;
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setEmailError("Please enter a valid email address.");
+        isValid = false;
+      }
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address.");
+    // Check Password presence
+    if (!password) {
+      setPasswordError("Password is required.");
+      isValid = false;
+    } 
+
+    // Stop if client-side validation failed
+    if (!isValid) {
       return;
     }
-
+    
+    // --- SERVER SUBMISSION ---
+    
     try {
       const response = await fetch("http://127.0.0.1:5000/api/login", {
         method: "POST",
@@ -32,15 +63,17 @@ const Login = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.message || "Login failed!");
+        // Set general error for failed login (e.g., incorrect credentials)
+        setGeneralError(data.message || "Login failed! Please check your credentials.");
         return;
       }
 
       if (!data.user) {
-        alert("Unexpected server response. Please try again.");
+        setGeneralError("Unexpected server response. Please try again.");
         return;
       }
-
+      
+      // ... (Rest of the successful login logic remains the same) ...
       const {
         role,
         application_status,
@@ -75,14 +108,21 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("Something went wrong. Please try again.");
+      setGeneralError("Something went wrong. Please check your network connection.");
     }
+  };
+
+  const errorStyle = { 
+    color: 'red', 
+    textAlign: 'left', 
+    marginTop: '5px',
+    fontSize: '0.875rem' // Standard size for inline error messages
   };
 
   return (
     <div className="auth-wrapper">
       <div className="auth-page">
-        {/* LEFT SIDE */}
+        {/* LEFT SIDE (omitted for brevity) */}
         <div className="auth-left">
           <div className="overlay"></div>
           <div className="auth-left-content">
@@ -110,6 +150,7 @@ const Login = () => {
             </h2>
 
             <form onSubmit={handleLogin}>
+              
               {/* EMAIL */}
               <div className="form-group">
                 <label>Email Address</label>
@@ -118,8 +159,14 @@ const Login = () => {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
+                  // Removed 'required' to let our state handle validation display
                 />
+                {/* 3. EMAIL ERROR MESSAGE */}
+                {emailError && (
+                  <p style={errorStyle}>
+                    {emailError}
+                  </p>
+                )}
               </div>
 
               {/* PASSWORD */}
@@ -131,7 +178,7 @@ const Login = () => {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required
+                    // Removed 'required'
                   />
                   <button
                     type="button"
@@ -141,12 +188,34 @@ const Login = () => {
                     {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
+                
+                {/* 3. PASSWORD ERROR MESSAGE (positioned within the password-group for layout) */}
+                {passwordError && (
+                  <p style={{...errorStyle, marginTop: '10px'}}>
+                    {passwordError}
+                  </p>
+                )}
 
-                {/* 💡 NEW Forgot Password Link */}
+                {/* Forgot Password Link */}
                 <div className="forgot-link">
                   <Link to="/forgot-password">Forgot Password?</Link>
                 </div>
               </div>
+
+              {/* General Error Message (for server/login failure) */}
+              {generalError && (
+                <p 
+                  style={{ 
+                    color: 'red', 
+                    textAlign: 'center', 
+                    marginBottom: '10px', 
+                    fontWeight: 'bold' 
+                  }}
+                >
+                  {generalError}
+                </p>
+              )}
+
 
               {/* BUTTONS */}
               <button className="btn" type="submit">
