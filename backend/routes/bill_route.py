@@ -16,59 +16,49 @@ bill_bp = Blueprint("bill_bp", __name__)
 # -------------------------------
 @bill_bp.route("/billing/bills", methods=["GET"])
 def get_bills():
-    now = datetime.now()
-    current_month = now.month
-    current_year = now.year
-
-    tenants_with_contracts = (
+    bills = (
         db.session.query(
+            Bill.billid,
             Tenant.tenantid,
             User.firstname,
             User.middlename,
             User.lastname,
             Unit.name.label("unit_name"),
-            Unit.price.label("unit_price")
+            Unit.price.label("unit_price"),
+            Bill.issuedate,
+            Bill.duedate,
+            Bill.amount,
+            Bill.billtype,
+            Bill.status,
+            Bill.description,
+            Bill.paymenttype,
+            Bill.gcash_ref,
+            Bill.gcash_receipt
         )
-        .join(User, User.userid == Tenant.userid)
+        .join(Tenant, Bill.tenantid == Tenant.tenantid)
+        .join(User, Tenant.userid == User.userid)
         .join(Contract, Contract.tenantid == Tenant.tenantid)
         .join(Unit, Unit.unitid == Contract.unitid)
-        
         .all()
     )
 
     result = []
-    for tenantid, firstname, middlename, lastname, unit_name, unit_price in tenants_with_contracts:
-        # 🧾 Skip tenants who already have a Security Deposit & Advance Payment bill
-        has_initial_bill = (
-            db.session.query(Bill)
-            .filter(
-                Bill.tenantid == tenantid,
-                Bill.status == "Unpaid",
-            )
-            .first()
-        )
-        if has_initial_bill:
-            continue  # Skip tenant with initial payment bill
-
-        # 🧾 Skip tenants who already have a bill for the current month
-        existing_bill = (
-            db.session.query(Bill)
-            .filter(
-                Bill.tenantid == tenantid,
-                db.extract('month', Bill.issuedate) == current_month,
-                db.extract('year', Bill.issuedate) == current_year
-            )
-            .first()
-        )
-        if existing_bill:
-            continue  # Skip tenant already billed this month
-
-        # ✅ Tenant qualifies to be billed
+    for b in bills:
         result.append({
-            "tenantid": tenantid,
-            "fullname": f"{firstname} {middlename + ' ' if middlename else ''}{lastname}",
-            "unit_name": unit_name,
-            "unit_price": unit_price
+            "billid": b.billid,
+            "tenantid": b.tenantid,
+            "tenant_name": f"{b.firstname} {b.middlename + ' ' if b.middlename else ''}{b.lastname}",
+            "unit_name": b.unit_name,
+            "unit_price": b.unit_price,
+            "issuedate": b.issuedate,
+            "duedate": b.duedate,
+            "amount": b.amount,
+            "billtype": b.billtype,
+            "status": b.status,
+            "description": b.description,
+            "paymenttype": b.paymenttype,
+            "GCash_Ref": b.gcash_ref,
+            "GCash_receipt": b.gcash_receipt
         })
 
     return jsonify(result)

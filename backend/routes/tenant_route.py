@@ -4,7 +4,9 @@ from models.users_model import User
 from models.tenants_model import Tenant
 from models.contracts_model import Contract
 from models.units_model import House as Unit
+from models.contracts_model import Contract
 from models.applications_model import Application
+from models.bills_model import Bill
 
 tenant_bp = Blueprint("tenant_bp", __name__)
 
@@ -30,10 +32,14 @@ def get_active_tenants():
             Application.valid_id,
             Application.brgy_clearance,
             Application.proof_of_income
+            
+            
+            
         )
         .join(Tenant, Tenant.userid == User.userid)
         .join(Contract, Contract.tenantid == Tenant.tenantid)
         .join(Unit, Unit.unitid == Contract.unitid)
+        
         .join(Application, Application.applicationid == Tenant.applicationid)
         .filter(Contract.status == "Active")
         .all()
@@ -62,7 +68,6 @@ def get_active_tenants():
 
 
 
-# Pending applicants
 @tenant_bp.route("/tenants/applicants")
 def get_applicants():
     applicants = (
@@ -82,64 +87,95 @@ def get_applicants():
             Unit.name.label("unit_name"),
             Application.valid_id,
             Application.brgy_clearance,
-            Application.proof_of_income
+            Application.proof_of_income,
+            Application.status.label("application_status"),
+            Contract.status.label("contract_status"),
+            Bill.status.label("bill_status")
         )
         .join(User, Application.userid == User.userid)
-        .outerjoin(Tenant, Tenant.userid == User.userid)  # include users without tenant info
-        .outerjoin(Unit, Unit.unitid == Application.unitid)  # in case unit not assigned yet
+        .outerjoin(Tenant, Tenant.userid == User.userid)
+        .outerjoin(Contract, Contract.tenantid == Tenant.tenantid)
+        .outerjoin(Unit, Unit.unitid == Application.unitid)
+        .outerjoin(Bill, Bill.tenantid == Tenant.tenantid)
         .filter(Application.status == "Pending")
         .all()
     )
 
-    result = [
-        {
-            "applicationid": applicationid,
-            "fullname": f"{firstname} {middlename + ' ' if middlename else ''}{lastname}",
-            "email": email,
-            "phone": phone,
-            "dateofbirth": dateofbirth,
-            "address": f"{street}, {barangay}, {city}, {province}, {zipcode}",
-            "unit_name": unit_name,
-            "valid_id": valid_id,
-            "brgy_clearance": brgy_clearance,
-            "proof_of_income": proof_of_income,
-        }
-        for applicationid, firstname, middlename, lastname, email, phone, dateofbirth, street, barangay, city, province, zipcode, unit_name, valid_id, brgy_clearance, proof_of_income in applicants
-    ]
+    result = []
+    for a in applicants:
+        contract_signed = a.contract_status == "Signed"
+
+        result.append({
+            "applicationid": a.applicationid,
+            "fullname": f"{a.firstname} {a.middlename + ' ' if a.middlename else ''}{a.lastname}",
+            "email": a.email,
+            "phone": a.phone,
+            "dateofbirth": a.dateofbirth,
+            "address": f"{a.street}, {a.barangay}, {a.city}, {a.province}, {a.zipcode}",
+            "unit_name": a.unit_name,
+            "valid_id": a.valid_id,
+            "brgy_clearance": a.brgy_clearance,
+            "proof_of_income": a.proof_of_income,
+            "application_status": a.application_status,
+            "contract_status": a.contract_status or "Unsigned",
+            "bill_status": a.bill_status or "Unpaid",
+            "contract_signed": contract_signed
+        })
 
     return jsonify(result)
 
 
-# Approve an applicant
+
+
 @tenant_bp.route("/tenants/approve/<int:application_id>", methods=["PUT"])
 def approve_applicant(application_id):
     try:
+        # Fetch the application
         application = Application.query.get(application_id)
-
         if not application:
             return jsonify({"success": False, "message": "Application not found"}), 404
 
-        # Update status to Approved
+        # Fetch the tenant linked to this application
+        tenant = Tenant.query.filter_by(applicationid=application_id).first()
+        if not tenant:
+            return jsonify({"success": False, "message": "Tenant not found"}), 404
+
+        # Fetch the contract linked to this tenant
+        contract = Contract.query.filter_by(tenantid=tenant.tenantid).first()
+        if not contract:
+            return jsonify({"success": False, "message": "Contract not found"}), 404
+
+        # Ensure contract is signed
+        if contract.status != "Signed":
+            return jsonify({"success": False, "message": "Contract not signed yet"}), 400
+
+        # Optional: check initial payment
+        paid_bill = Bill.query.filter_by(tenantid=tenant.tenantid, status="Paid").first()
+        if not paid_bill:
+            return jsonify({"success": False, "message": "Initial payment not completed"}), 400
+
+        # Update statuses
         application.status = "Approved"
+        contract.status = "Active"
+        db.session.add_all([application, contract])
 
-        # Check if tenant entry already exists
-        existing_tenant = Tenant.query.filter_by(userid=application.userid).first()
-        if not existing_tenant:
-            new_tenant = Tenant(
-                userid=application.userid,
-                applicationid=application.applicationid
-            )
-            db.session.add(new_tenant)
-
+        # Ensure tenant record exists (already fetched above)
         db.session.commit()
+
         return jsonify({
             "success": True,
-            "message": f"Application {application_id} approved successfully."
+            "message": f"Application {application_id} approved and contract activated successfully."
         })
 
     except Exception as e:
         db.session.rollback()
+        print("❌ ERROR approving applicant:", e)
+        import traceback; traceback.print_exc()
         return jsonify({"success": False, "message": f"Failed to approve application: {str(e)}"}), 500
+
+
+
+
 
 
 # Reject an applicant

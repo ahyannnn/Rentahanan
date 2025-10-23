@@ -194,10 +194,10 @@ const Tenants = () => {
                   <button
                     className="document-btn action-primary"
                     onClick={() =>
-                      setSelectedDocument({
-                        type: "Valid ID",
-                        path: `http://localhost:5000/uploads/valid_ids/${selectedUser.valid_id}`,
-                      })
+                      window.open(
+                        `http://localhost:5000/uploads/valid_ids/${selectedUser.valid_id}`,
+                        "_blank"
+                      )
                     }
                   >
                     Review Document
@@ -209,10 +209,10 @@ const Tenants = () => {
                   <button
                     className="document-btn action-primary"
                     onClick={() =>
-                      setSelectedDocument({
-                        type: "Barangay Clearance",
-                        path: `http://localhost:5000/uploads/brgy_clearances/${selectedUser.brgy_clearance}`,
-                      })
+                      window.open(
+                        `http://localhost:5000/uploads/brgy_clearances/${selectedUser.brgy_clearance}`,
+                        "_blank"
+                      )
                     }
                   >
                     Review Document
@@ -224,15 +224,16 @@ const Tenants = () => {
                   <button
                     className="document-btn action-primary"
                     onClick={() =>
-                      setSelectedDocument({
-                        type: "Proof of Income",
-                        path: `http://localhost:5000/uploads/proof_of_income/${selectedUser.proof_of_income}`,
-                      })
+                      window.open(
+                        `http://localhost:5000/uploads/proof_of_income/${selectedUser.proof_of_income}`,
+                        "_blank"
+                      )
                     }
                   >
                     Review Document
                   </button>
                 </p>
+
 
                 {/* Show selected document */}
                 {selectedDocument && (
@@ -271,25 +272,31 @@ const Tenants = () => {
                   ISSUE INITIAL PAYMENT
                 </button>
 
-                {/* Approve + Reject */}
                 <div className="approve-section">
                   <button
                     className="approve-btn"
-                    onClick={() =>
-                      handleApprove(selectedUser.applicationid)
+                    onClick={() => handleApprove(selectedUser.applicationid)}
+                    disabled={
+                      selectedUser.bill_status !== "Paid" || !selectedUser.contract_signed
+                    }
+                    title={
+                      selectedUser.bill_status !== "Paid"
+                        ? "Cannot approve: Initial payment not completed"
+                        : !selectedUser.contract_signed
+                          ? "Cannot approve: Contract not signed"
+                          : ""
                     }
                   >
                     APPROVE APPLICATION
                   </button>
                   <button
                     className="reject-btn"
-                    onClick={() =>
-                      handleReject(selectedUser.applicationid)
-                    }
+                    onClick={() => handleReject(selectedUser.applicationid)}
                   >
                     REJECT APPLICATION
                   </button>
                 </div>
+
               </>
             )}
           </div>

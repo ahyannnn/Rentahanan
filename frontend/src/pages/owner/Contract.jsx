@@ -101,6 +101,7 @@ const OwnerContract = () => {
                     start_date: formData.startdate,
                     remarks: formData.remarks,
                     owner_signature: signatureData, // ✅ include owner signature
+                    
                 }),
             });
 
@@ -139,7 +140,7 @@ const OwnerContract = () => {
                     className={activeTab === "tenants" ? "tab active" : "tab"}
                     onClick={() => setActiveTab("tenants")}
                 >
-                    Tenant Contracts
+                    Contracts
                 </button>
                 <button
                     className={activeTab === "issue" ? "tab active" : "tab"}
@@ -148,6 +149,28 @@ const OwnerContract = () => {
                     Issue New Contracts
                 </button>
             </div>
+            {activeTab === "tenants" && (
+                <div className="contracts-grid">
+                    {contracts.length === 0 ? (
+                        <p>No contracts found.</p>
+                    ) : (
+                        contracts.map((contract, index) => (
+                            <div className="contract-card" key={index}>
+                                <h3>{contract.fullname}</h3>
+                                <p><strong>Unit:</strong> {contract.unit_name}</p>
+                                <p><strong>Monthly Rent:</strong> ₱{contract.unit_price}</p>
+                                <p><strong>Monthly Rent:</strong> ₱{contract.start_date}</p>
+                                <button
+                                    className="view-btn"
+                                    onClick={() => window.open(`http://localhost:5000/uploads/signed_contracts/${contract.signed_contract}`, "_blank")}
+                                >
+                                    View Contract
+                                </button>
+                            </div>
+                        ))
+                    )}
+                </div>
+            )}
 
             {activeTab === "issue" && (
                 <div className="content-card applicant-area">
