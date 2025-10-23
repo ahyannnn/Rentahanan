@@ -11,6 +11,7 @@ from routes.bill_route import bill_bp
 from routes.contract_route import contract_bp
 from routes.forgot_route import forgot_bp
 from routes.units_route import houses_bp
+from routes.transaction_route import transaction_bp
 
 load_dotenv()
 
@@ -27,7 +28,7 @@ app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
 
 # ✅ Ensure upload folders exist
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
-for sub in ["valid_ids", "brgy_clearances", "proof_of_income", "contracts", "houseimages", "signed_contracts"]:
+for sub in ["valid_ids", "brgy_clearances", "proof_of_income", "contracts", "houseimages", "signed_contracts", "receipts"]:
     os.makedirs(os.path.join(app.config["UPLOAD_FOLDER"], sub), exist_ok=True)
 
 # ✅ Initialize and register
@@ -39,6 +40,7 @@ app.register_blueprint(bill_bp, url_prefix="/api")
 app.register_blueprint(contract_bp, url_prefix="/api")
 app.register_blueprint(forgot_bp, url_prefix="/api")
 app.register_blueprint(houses_bp, url_prefix="/api")
+app.register_blueprint(transaction_bp, url_prefix="/api")
 
 # Example routes
 @app.route("/api/houses", methods=["GET"])
@@ -54,10 +56,11 @@ def ping():
 def home():
     return jsonify({"message": "Flask backend is running!"})
 
-# ✅ Serve uploaded files (e.g. PDFs)
-@app.route("/uploads/<path:filename>")
-def serve_uploads(filename):
-    return send_from_directory(current_app.config["UPLOAD_FOLDER"], filename)
+@app.route("/uploads/<path:subpath>/<path:filename>")
+def serve_uploads(subpath, filename):
+    full_path = os.path.join(current_app.config["UPLOAD_FOLDER"], subpath)
+    return send_from_directory(full_path, filename)
+
 
 if __name__ == "__main__":
     with app.app_context():

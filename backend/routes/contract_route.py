@@ -28,7 +28,8 @@ def get_tenant_contracts():
             Unit.price.label("unit_price"),
             Contract.startdate,
             Contract.enddate,
-            Contract.status
+            Contract.status,
+            Contract.signed_contract
         )
         .join(Tenant, Contract.tenantid == Tenant.tenantid)
         .join(User, Tenant.userid == User.userid)
@@ -45,9 +46,10 @@ def get_tenant_contracts():
             "unit_price": unit_price,
             "start_date": start_date.strftime("%Y-%m-%d"),
             "end_date": end_date.strftime("%Y-%m-%d") if end_date else None,
-            "status": status
+            "status": status,
+            "signed_contract":signed_contract
         }
-        for contractid, tenantid, firstname, middlename, lastname, unit_name, unit_price, start_date, end_date, status in contracts
+        for contractid, tenantid, firstname, middlename, lastname, unit_name, unit_price, start_date, end_date, status, signed_contract in contracts
     ]
 
     return jsonify(result)
