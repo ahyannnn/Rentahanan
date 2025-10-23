@@ -86,7 +86,8 @@ const OwnerContract = () => {
             // 🖋️ Get the signature as a base64 image (if drawn)
             const signatureData = sigPadRef.current.isEmpty()
                 ? null
-                : sigPadRef.current.getTrimmedCanvas().toDataURL("image/png");
+                : sigPadRef.current.getCanvas().toDataURL("image/png");
+
 
             const pdfResponse = await fetch("http://localhost:5000/api/contracts/generate-pdf", {
                 method: "POST",
@@ -117,7 +118,8 @@ const OwnerContract = () => {
                     tenantid: formData.tenantid,
                     unitid: formData.unitid,
                     startdate: formData.startdate,
-                    generated_contract: pdfData.file_path,
+                    generated_contract: pdfData.filename,
+
                 }),
             });
 

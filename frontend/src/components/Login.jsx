@@ -6,29 +6,27 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  
+
   // 1. STATE FOR EMAIL ERROR
   const [emailError, setEmailError] = useState("");
   // 1. NEW STATE FOR PASSWORD ERROR
   const [passwordError, setPasswordError] = useState("");
   // State for general login errors (server, missing both)
   const [generalError, setGeneralError] = useState("");
-  
+
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Reset all errors before validation/submission
+    // Reset errors
     setEmailError("");
     setPasswordError("");
     setGeneralError("");
 
     let isValid = true;
 
-    // --- CLIENT-SIDE VALIDATION ---
-    
-    // Check Email presence and format
+    // Validation
     if (!email) {
       setEmailError("Email address is required.");
       isValid = false;
@@ -40,19 +38,13 @@ const Login = () => {
       }
     }
 
-    // Check Password presence
     if (!password) {
       setPasswordError("Password is required.");
       isValid = false;
-    } 
-
-    // Stop if client-side validation failed
-    if (!isValid) {
-      return;
     }
-    
-    // --- SERVER SUBMISSION ---
-    
+
+    if (!isValid) return;
+
     try {
       const response = await fetch("http://127.0.0.1:5000/api/login", {
         method: "POST",
@@ -63,7 +55,6 @@ const Login = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        // Set general error for failed login (e.g., incorrect credentials)
         setGeneralError(data.message || "Login failed! Please check your credentials.");
         return;
       }
@@ -72,31 +63,36 @@ const Login = () => {
         setGeneralError("Unexpected server response. Please try again.");
         return;
       }
-      
-      // ... (Rest of the successful login logic remains the same) ...
+
+      // ✅ Extract user data from backend
       const {
         role,
         application_status,
         userid,
         tenantid,
-        fullname,
+        firstname,
+        middlename,
+        lastname,
         email: userEmail,
         phone,
-        unitid,
       } = data.user;
 
-      localStorage.setItem("userId", userid);
-      localStorage.setItem("tenantId", tenantid);
-      localStorage.setItem("fullName", fullname);
-      localStorage.setItem("email", userEmail);
-      localStorage.setItem("phone", phone);
-      localStorage.setItem("userRole", role);
-      localStorage.setItem("unitId", unitid || "");
+      const fullName = [firstname, middlename, lastname].filter(Boolean).join(" ");
 
-      if (role.toLowerCase() === "tenant") {
-        localStorage.setItem("applicationStatus", application_status || "Registered");
-      }
+      // ✅ Store everything in ONE object (so Layout.jsx can read it easily)
+      const userData = {
+        userid,
+        tenantid,
+        fullName,
+        email: userEmail,
+        phone,
+        role,
+        applicationStatus: application_status || "Registered",
+      };
 
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      // ✅ Navigate based on role and status
       if (role.toLowerCase() === "owner") {
         navigate("/owner");
       } else if (role.toLowerCase() === "tenant") {
@@ -106,15 +102,17 @@ const Login = () => {
       } else {
         navigate("/landing");
       }
+
     } catch (error) {
       console.error("Login error:", error);
       setGeneralError("Something went wrong. Please check your network connection.");
     }
   };
 
-  const errorStyle = { 
-    color: 'red', 
-    textAlign: 'left', 
+
+  const errorStyle = {
+    color: 'red',
+    textAlign: 'left',
     marginTop: '5px',
     fontSize: '0.875rem' // Standard size for inline error messages
   };
@@ -150,7 +148,7 @@ const Login = () => {
             </h2>
 
             <form onSubmit={handleLogin}>
-              
+
               {/* EMAIL */}
               <div className="form-group">
                 <label>Email Address</label>
@@ -159,7 +157,7 @@ const Login = () => {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  // Removed 'required' to let our state handle validation display
+                // Removed 'required' to let our state handle validation display
                 />
                 {/* 3. EMAIL ERROR MESSAGE */}
                 {emailError && (
@@ -178,7 +176,7 @@ const Login = () => {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    // Removed 'required'
+                  // Removed 'required'
                   />
                   <button
                     type="button"
@@ -188,10 +186,10 @@ const Login = () => {
                     {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
-                
+
                 {/* 3. PASSWORD ERROR MESSAGE (positioned within the password-group for layout) */}
                 {passwordError && (
-                  <p style={{...errorStyle, marginTop: '10px'}}>
+                  <p style={{ ...errorStyle, marginTop: '10px' }}>
                     {passwordError}
                   </p>
                 )}
@@ -204,12 +202,12 @@ const Login = () => {
 
               {/* General Error Message (for server/login failure) */}
               {generalError && (
-                <p 
-                  style={{ 
-                    color: 'red', 
-                    textAlign: 'center', 
-                    marginBottom: '10px', 
-                    fontWeight: 'bold' 
+                <p
+                  style={{
+                    color: 'red',
+                    textAlign: 'center',
+                    marginBottom: '10px',
+                    fontWeight: 'bold'
                   }}
                 >
                   {generalError}
