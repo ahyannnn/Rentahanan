@@ -1,3 +1,7 @@
+/* ============================= */
+/* --- AUTH PAGE FULL STYLES --- */
+/* ============================= */
+
 /* General Styles */
 * {
   margin: 0;
@@ -18,9 +22,7 @@ body {
 .auth-wrapper {
   display: flex;
   justify-content: center;
-  /* horizontal centering */
   align-items: center;
-  /* vertical centering */
   min-height: 100vh;
   width: 100%;
   background-color: #E8ECF3;
@@ -40,7 +42,6 @@ body {
 /* --- Left Side --- */
 .auth-left {
   flex: 1;
-  /* Note: Placeholder for your image. Ensure the image is available at this path. */
   background-image: url("/images/house-bg.jpg");
   background-size: cover;
   background-position: center;
@@ -94,7 +95,7 @@ body {
   padding: 3rem 2rem;
 }
 
-/* --- Card (Modified for Desktop Look) --- */
+/* --- Card --- */
 .auth-card {
   background-color: transparent;
   box-shadow: none;
@@ -106,15 +107,12 @@ body {
   transition: all 0.3s ease;
 }
 
-.auth-card:hover {
-  transform: none;
-}
-
-/* --- Logo Box (Modified for Desktop Look) --- */
+/* --- Logo Box --- */
 .logo-box {
   display: none;
 }
 
+/* --- Password Group --- */
 .password-group {
   position: relative;
 }
@@ -128,7 +126,6 @@ body {
 .password-wrapper input {
   width: 100%;
   padding-right: 4rem;
-  /* Space for the button */
 }
 
 .show-btn {
@@ -176,31 +173,21 @@ input:focus {
   box-shadow: 0 0 0 1px rgba(6, 26, 83, 0.4);
 }
 
-/* --- ERROR STYLING --- */
+/* --- Error Text --- */
 .error-text {
   color: #dc3545;
-  /* Red color for errors */
   font-size: 0.9rem;
-  margin: 0.25rem 0 0 0;
-  /* Minimal top margin, zero elsewhere */
+  margin-top: 0.25rem;
   text-align: left;
 }
 
-/* FIX: Specific alignment for email error */
-.error-email {
-  display: flex;
-  justify-content: flex-start;
-  /* Forces content to the far left, overriding inherited centering */
-  width: 100%;
-}
-
-
-/* --- Button Styles --- */
+/* --- Button Styles (Desktop Default) --- */
 .btn {
-  background-color: #007bff;
-  /* Primary blue */
-  color: white;
-  border: none;
+  background-color: #061A53;
+  /* Dark blue background */
+  color: #ffffff;
+  /* White text */
+  border: 1px solid #061A53;
   padding: 1rem;
   border-radius: 8px;
   width: 100%;
@@ -213,10 +200,11 @@ input:focus {
 }
 
 .btn:hover {
-  background-color: #0056b3;
+  background-color: #0b287d;
+  border-color: #0b287d;
 }
 
-/* Back / Secondary Button - Light Blue */
+/* Secondary Button (THIS RULE OVERRIDES .btn COLOR) */
 .btn.secondary {
   background-color: #e6f0ff;
   color: #007bff;
@@ -227,8 +215,7 @@ input:focus {
   background-color: #cce0ff;
 }
 
-
-/* --- OR Text (Kept original logic) --- */
+/* --- OR Text --- */
 .or-text {
   display: block;
   margin: 1.5rem 0;
@@ -257,8 +244,7 @@ input:focus {
   right: 0;
 }
 
-
-/* --- Social Buttons (Kept original logic) --- */
+/* --- Social Buttons --- */
 .social-login {
   display: block;
   margin-top: 1.5rem;
@@ -283,8 +269,7 @@ input:focus {
   border-color: #ccc;
 }
 
-
-/* --- Bottom Text (Kept original logic) --- */
+/* --- Bottom Text --- */
 .bottom-text {
   margin-top: 2rem;
   font-size: 0.95rem;
@@ -310,7 +295,7 @@ input:focus {
   color: #061A53;
 }
 
-/* Buttons group for modal */
+/* --- Button Group --- */
 .form-buttons {
   display: flex;
   justify-content: space-between;
@@ -318,6 +303,7 @@ input:focus {
   margin-top: 1.5rem;
 }
 
+/* --- Success Step --- */
 .success-step {
   text-align: center;
   padding: 50px 20px;
@@ -334,36 +320,30 @@ input:focus {
   font-size: 15px;
 }
 
-/* --- NEW THREE-COLUMN GRID LAYOUT (STEP 2) --- */
-
+/* --- Three Column Grid --- */
 .three-column-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  /* Three equal columns */
   gap: 1rem 1.5rem;
-  /* Row gap and Column gap */
   width: 100%;
 }
 
 .three-column-grid .form-group {
   margin-bottom: 0;
-  /* Remove form-group margin for cleaner grid spacing */
 }
 
-/* Fields that need to be "mahaba" (long/wider) */
 .span-2 {
   grid-column: span 2;
-  /* Email will take 2/3rds of the row */
 }
 
 .span-3 {
   grid-column: span 3;
-  /* Street Address will take the full row width */
 }
 
-/* --- Responsive (Mobile View) --- */
+/* ============================= */
+/* --- MOBILE RESPONSIVE --- */
+/* ============================= */
 @media (max-width: 850px) {
-  /* Existing mobile styles... */
 
   .two-columns {
     flex-direction: column;
@@ -372,23 +352,17 @@ input:focus {
 
   .three-column-grid {
     grid-template-columns: 1fr;
-    /* Stack columns on mobile */
     gap: 0;
   }
 
   .span-2,
   .span-3 {
     grid-column: span 1;
-    /* Reset spans to single column on mobile */
   }
 
-  /* Ensure mobile text colors are correct for errors */
   .error-text {
     color: #ff9999;
-    /* Lighter red for contrast on dark blue mobile background */
   }
-
-  /* Other mobile styles... */
 
   body {
     background-color: #061A53;
@@ -411,7 +385,6 @@ input:focus {
     background-color: #061A53;
   }
 
-  /* Text color overrides for mobile */
   .auth-page,
   .auth-right,
   .auth-card,
@@ -425,7 +398,6 @@ input:focus {
     color: white;
   }
 
-  /* Input overrides for mobile */
   input {
     color: white;
     background-color: rgba(255, 255, 255, 0.1);
@@ -436,10 +408,16 @@ input:focus {
     color: rgba(255, 255, 255, 0.8);
   }
 
-  /* Button overrides for mobile */
+  /* --- MOBILE BUTTON OVERRIDE --- */
   .btn {
     background-color: white;
     color: #061A53;
+    border: 1px solid white;
+  }
+
+  .btn:hover {
+    background-color: #f5f5f5;
+    color: #0b287d;
   }
 
   .btn.secondary {
@@ -455,5 +433,4 @@ input:focus {
   .bottom-text a {
     color: #FFD700;
   }
-
 }

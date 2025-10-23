@@ -1,3 +1,5 @@
+
+
 /* ======================================= */
 /* SHARED CONTAINERS & STYLES */
 /* ======================================= */
@@ -43,7 +45,7 @@
 }
 
 .new-concern-btn {
-    background: #007bff; /* Blue color matching the image */
+    background: #007bff; /* Blue color */
     color: white;
     border: none;
     padding: 10px 20px;
@@ -57,9 +59,9 @@
     background: #0056b3;
 }
 
-/* Status colors (Reused) */
+/* Status colors (Pending is now Gray) */
 .status-pending { 
-    color: #ffc107; 
+    color: #6c757d; /* Changed from orange to gray */
     font-weight: 600; 
 }
 .status-resolved { 
@@ -143,7 +145,7 @@
 }
 
 /* ======================================= */
-/* NEW CONCERN MODAL STYLES (Same as Payments Modal structure) */
+/* NEW CONCERN MODAL STYLES */
 /* ======================================= */
 
 .modal-overlay {
@@ -165,9 +167,12 @@
     border-radius: 10px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
     width: 90%;
-    max-width: 500px; /* Slightly wider modal for forms */
+    max-width: 500px;
     color: #1e1e2f;
     position: relative;
+    max-height: 90vh; /* Set max height for better mobile fit */
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-header {
@@ -177,6 +182,7 @@
     padding-bottom: 15px;
     margin-bottom: 20px;
     justify-content: center;
+    flex-shrink: 0; /* Prevents header from shrinking on small screens */
 }
 
 .modal-header h3 {
@@ -200,8 +206,7 @@
 }
 
 .modal-content {
-    max-height: 70vh;
-    overflow-y: auto;
+    overflow-y: auto; /* Allows content to scroll */
     padding-right: 5px;
 }
 
@@ -209,7 +214,7 @@
 .concern-form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px; /* Increased gap */
 }
 
 .form-group {
@@ -218,19 +223,28 @@
 }
 
 .form-group label {
-    font-weight: 600;
-    margin-bottom: 5px;
-    font-size: 0.95rem;
-    color: #444;
+    font-weight: 700; /* Bolder label */
+    margin-bottom: 8px; /* Increased space */
+    font-size: 1rem;
+    color: #1e293b; 
 }
 
 .form-input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 0.9rem;
+    /* KEY FIX: Added light border for visibility on white background */
+    padding: 12px;
+    border: 1px solid #d1d5db; 
+    border-radius: 8px;
+    font-size: 1rem;
     width: 100%;
     box-sizing: border-box;
+    background-color: #ffffff; 
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+    border-color: #007bff; 
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
 .form-input.textarea {
@@ -251,20 +265,35 @@
 }
 
 .choose-file-btn {
-    background: #f4f6f9;
-    border: 1px solid #ddd;
+    /* Enhanced Button Contrast */
+    background: #e9ecef;
+    border: 1px solid #ced4da;
     padding: 8px 12px;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: 500;
-    font-size: 0.85rem;
-    color: #333;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #343a40;
+    transition: background-color 0.2s;
+}
+.choose-file-btn:hover {
+    background: #dee2e6;
 }
 
-/* Modal Footer */
+/* Modal Footer (Sticky behavior for better UX) */
 .modal-footer {
     padding-top: 20px;
     text-align: center;
+    flex-shrink: 0; /* Prevents footer from shrinking */
+    
+    /* Sticky styles */
+    position: sticky; 
+    bottom: -20px; 
+    background: #fff;
+    z-index: 10;
+    margin: 0 -30px; 
+    padding: 20px 30px 0 30px;
+    border-top: 1px solid #f0f0f0;
 }
 
 .submit-btn {
@@ -284,52 +313,61 @@
     background: #0056b3;
 }
 
-/* RESPONSIVE FIX for Modals on Mobile */
-@media (max-width: 480px) {
-    .concern-modal {
-        padding: 15px 20px;
-    }
-    .back-btn {
-        left: 20px;
-    }
-    .upload-proof {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-}
-
 /* ======================================= */
 /* RESPONSIVE STYLES */
 /* ======================================= */
 
-@media (max-width: 768px) {
-    .bills-invoice-container {
-        padding: 15px;
+/* ======================================= */
+/* RESPONSIVE FIX for Modals on Mobile */
+/* ======================================= */
+@media (max-width: 480px) {
+    /* Modal and all text inside */
+    .concern-modal,
+    .concern-modal * {
+        color: #1e1e2f !important; /* Force dark text */
     }
 
-    .support-top-controls {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
+    /* Inputs */
+    .concern-modal .form-input {
+        color: #1e1e2f !important;
+        background-color: #fff !important;
     }
 
-    .search-input,
-    .new-concern-btn {
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .concern-card {
-        padding: 15px;
-    }
-    
-    .concern-title {
-        font-size: 1rem;
+    .concern-modal .form-input::placeholder {
+        color: #888 !important;
     }
 
-    .card-bottom {
-        flex-direction: column;
-        gap: 15px;
+    /* Back button */
+    .concern-modal .back-btn {
+        color: #1e1e2f !important;
+    }
+
+    /* File upload button */
+    .concern-modal .choose-file-btn {
+        color: #343a40 !important;
+        background: #e9ecef !important;
+        border: 1px solid #ced4da !important;
+    }
+
+    /* Submit button */
+    .concern-modal .submit-btn {
+        color: #fff !important; /* Keep white text for contrast */
+        background: #007bff !important;
+    }
+
+    /* Modal footer */
+    .concern-modal .modal-footer {
+        background: #fff !important;
+    }
+
+    /* Layout adjustments remain */
+    .concern-modal {
+        padding: 15px 20px !important;
+    }
+
+    .upload-proof {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
     }
 }

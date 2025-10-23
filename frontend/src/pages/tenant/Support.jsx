@@ -17,7 +17,7 @@ const Support = () => {
     const handleCloseNewConcernModal = () => setIsNewConcernModalOpen(false);
 
     return (
-        <div className="bills-invoice-container support-container">
+        <div className="support-container">
             
             {/* Page Header */}
             <div className="page-header">

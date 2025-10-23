@@ -321,7 +321,7 @@ const Register = () => {
                           onChange={handleChange}
                         />
                         <button
-                          type="button"
+                          type="submit"
                           className="show-btn"
                           onClick={() => setShowConfirm(!showConfirm)}
                         >
@@ -337,7 +337,7 @@ const Register = () => {
                   <div className="form-buttons">
                     {step > 1 && (
                       <button
-                        type="button"
+                        type="submit"
                         onClick={handlePrev}
                         className="btn secondary"
                       >
@@ -345,13 +345,13 @@ const Register = () => {
                       </button>
                     )}
                     {step < 3 && (
-                      <button type="button" onClick={handleNext} className="btn">
+                      <button type="submit" onClick={handleNext} className="btn">
                         Next
                       </button>
                     )}
                     {step === 3 && (
                       <button type="submit" className="btn">
-                        Create Account
+                        Create
                       </button>
                     )}
                   </div>
