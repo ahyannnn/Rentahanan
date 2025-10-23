@@ -55,56 +55,57 @@ const MyBills = () => {
       .sort((a, b) => new Date(a.duedate) - new Date(b.duedate))[0]?.duedate || "N/A";
 
   const handleSubmitPayment = async () => {
-  if (unpaidBills.length === 0) return;
+    if (unpaidBills.length === 0) return;
 
-  // 🔹 Validate input before submitting
-  if (paymentMethod === "gcash") {
-    const refPattern = /^\d{13}$/;
+    // 🔹 Validate input before submitting
+    if (paymentMethod === "gcash") {
+      const refPattern = /^\d{13}$/;
 
-    if (!gcashRef || !refPattern.test(gcashRef)) {
-      alert("Please enter a valid 13-digit GCash reference number.");
-      return;
-    }
-
-    if (!gcashReceipt) {
-      alert("Please upload your GCash receipt before submitting.");
-      return;
-    }
-  }
-
-  setIsSubmitting(true);
-
-  try {
-    for (const bill of unpaidBills) {
-      const formData = new FormData();
-      formData.append("paymentType", paymentMethod === "cash" ? "Cash" : "GCash");
-      if (paymentMethod === "gcash") {
-        formData.append("gcashRef", gcashRef);
-        formData.append("gcashReceipt", gcashReceipt);
+      if (!gcashRef || !refPattern.test(gcashRef)) {
+        alert("Please enter a valid 13-digit GCash reference number.");
+        return;
       }
 
-      const response = await fetch(
-        `http://localhost:5000/api/bills/pay/${bill.billid}`,
-        {
-          method: "PUT",
-          body: formData, // ⬅️ must be FormData (not JSON)
-        }
-      );
-
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Payment update failed");
+      if (!gcashReceipt) {
+        alert("Please upload your GCash receipt before submitting.");
+        return;
+      }
     }
 
-    alert("Bills submitted for validation!");
-    handleCloseModal();
-    fetchBills();
-  } catch (error) {
-    console.error("Error submitting payment:", error);
-    alert(error.message || "Failed to submit payment. Please try again.");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    setIsSubmitting(true);
+
+    try {
+      for (const bill of unpaidBills) {
+        const formData = new FormData();
+        formData.append("paymentType", paymentMethod === "cash" ? "Cash" : "GCash");
+        if (paymentMethod === "gcash") {
+          formData.append("gcashRef", gcashRef);
+          formData.append("gcashReceipt", gcashReceipt);
+        }
+
+        const response = await fetch(
+          `http://localhost:5000/api/bills/pay/${bill.billid}`,
+          {
+            method: "PUT",
+            body: formData, // ⬅️ must be FormData (not JSON)
+          }
+        );
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Payment update failed");
+      }
+
+      alert("Bills submitted for validation!");
+      handleCloseModal();
+      fetchBills();
+    } catch (error) {
+      console.error("Error submitting payment:", error);
+      alert(error.message || "Failed to submit payment. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
 
 
   return (
@@ -152,12 +153,19 @@ const MyBills = () => {
                     </td>
                     <td data-label="Action">
                       <a
-                        href="#"
+                        href={
+                          !isUnpaid && bill.GCash_receipt
+                            ? `http://localhost:5000/uploads/gcash_receipts/${b.GCash_receipt}`
+                            : "#"
+                        }
                         className={`action-link action-${isUnpaid ? "pay-now" : "receipt"}`}
                         onClick={isUnpaid ? handleOpenModal : undefined}
+                        target={!isUnpaid ? "_blank" : undefined} // ✅ open receipt in new tab
+                        rel="noopener noreferrer"
                       >
                         {isUnpaid ? "Pay Now" : "Receipt"}
                       </a>
+
                     </td>
                   </tr>
                 );

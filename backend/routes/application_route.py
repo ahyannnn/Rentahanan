@@ -27,7 +27,7 @@ def apply_unit():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # ✅ Use backend/uploads as base folder
+    # Base folder setup
     base_folder = current_app.config["UPLOAD_FOLDER"]
     folders = {
         "valid_id": os.path.join(base_folder, "valid_ids"),
@@ -43,32 +43,33 @@ def apply_unit():
         filename = secure_filename(file.filename)
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         unique_filename = f"{user_id}_{prefix}_{timestamp}_{filename}"
-        file_path = os.path.join(folders[folder_key], unique_filename)
-        file.save(file_path)
-        return file_path
+        save_path = os.path.join(folders[folder_key], unique_filename)
+        file.save(save_path)
+        # ✅ Return only the filename, not the full path
+        return unique_filename
 
     try:
-        valid_id_path = save_file(valid_id_file, "valid_id", "validid")
-        brgy_path = save_file(brgy_file, "brgy", "brgy") if brgy_file else None
-        proof_path = save_file(proof_file, "proof", "proof") if proof_file else None
+        valid_id_filename = save_file(valid_id_file, "valid_id", "validid")
+        brgy_filename = save_file(brgy_file, "brgy", "brgy") if brgy_file else None
+        proof_filename = save_file(proof_file, "proof", "proof") if proof_file else None
 
         # Check if application exists
         application = Application.query.filter_by(userid=user_id).first()
 
         if application:
             application.unitid = unit_id
-            application.valid_id = valid_id_path
-            application.brgy_clearance = brgy_path
-            application.proof_of_income = proof_path
+            application.valid_id = valid_id_filename
+            application.brgy_clearance = brgy_filename
+            application.proof_of_income = proof_filename
             application.status = "Pending"
             application.submissiondate = datetime.utcnow()
         else:
             new_app = Application(
                 unitid=unit_id,
                 userid=user.userid,
-                valid_id=valid_id_path,
-                brgy_clearance=brgy_path,
-                proof_of_income=proof_path,
+                valid_id=valid_id_filename,
+                brgy_clearance=brgy_filename,
+                proof_of_income=proof_filename,
                 status="Pending",
                 submissiondate=datetime.utcnow()
             )
@@ -79,9 +80,11 @@ def apply_unit():
 
     except Exception as e:
         db.session.rollback()
-        for path in [valid_id_path, brgy_path, proof_path]:
-            if path and os.path.exists(path):
-                os.remove(path)
+        # cleanup any saved files on error
+        for folder in folders.values():
+            for f in os.listdir(folder):
+                if f.startswith(f"{user_id}_"):
+                    os.remove(os.path.join(folder, f))
         return jsonify({"error": f"Failed to submit application: {str(e)}"}), 500
 
 
