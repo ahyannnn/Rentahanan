@@ -74,6 +74,21 @@ body {
     color: #ffffff;
     letter-spacing: 1px;
 }
+.nav-brand {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+}
+.logo {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
 /* ===== Sidebar Links ===== */
 .linkholderbody {

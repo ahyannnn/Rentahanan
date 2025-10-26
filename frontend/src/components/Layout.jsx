@@ -160,7 +160,7 @@ const Layout = () => {
     { name: "Billing", to: "/owner/billing", icon: CreditCard },
     { name: "Contract", to: "/owner/contract", icon: ClipboardList },
     { name: "Notifications", to: "/owner/notifications", icon: Bell },
-    { name: "User Management", to: "/owner/user", icon: UserCog },
+    // { name: "User Management", to: "/owner/user", icon: UserCog },
   ];
 
   if (!userData) {
@@ -288,7 +288,14 @@ const Layout = () => {
       {/* SIDEBAR */}
       <div className={`sidebar ${sidebarOpen ? "show" : ""}`} id="sidebar">
         <div className="logotitle">
-          <h1>RenTahan</h1>
+          <div className="nav-brand">
+          <img
+            src="/logo.png"
+            alt="RenTahanan Logo"
+            className="logo"
+          />
+          <div className="nav-brand">RenTahanan</div>
+        </div>
         </div>
 
         <div className="linkholderbody">
