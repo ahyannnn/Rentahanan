@@ -1,28 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../../styles/tenant/MyBills.css";
 
 const MyBills = () => {
-  const [bills, setBills] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [gcashRef, setGcashRef] = useState("");
   const [gcashReceipt, setGcashReceipt] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedBills, setSelectedBills] = useState([]);
 
-  const tenantId = localStorage.getItem("tenantId");
+  // 🔹 Static example bills for UI preview
+  const sampleBills = [
+    { billid: "B101", billtype: "Water", amount: 450, duedate: "2025-10-30", status: "Unpaid" },
+    { billid: "B102", billtype: "Electricity", amount: 980, duedate: "2025-10-31", status: "Unpaid" },
+    { billid: "B103", billtype: "Rent", amount: 5000, duedate: "2025-10-25", status: "Pending" },
+    { billid: "B104", billtype: "Internet", amount: 1200, duedate: "2025-11-05", status: "Paid" },
+  ];
 
-  // Fetch bills from backend
-  const fetchBills = () => {
-    if (!tenantId) return;
-    fetch(`http://localhost:5000/api/bills/${tenantId}`)
-      .then((res) => res.json())
-      .then((data) => setBills(data))
-      .catch((err) => console.error("Error fetching bills:", err));
-  };
+  const unpaidBills = sampleBills.filter((b) => b.status.toLowerCase() === "unpaid");
+  const totalAmount = unpaidBills.reduce((sum, bill) => sum + bill.amount, 0);
 
-  useEffect(() => {
-    fetchBills();
-  }, [tenantId]);
+  // Calculate selected total
+  const selectedTotalAmount = selectedBills.reduce((sum, billId) => {
+    const bill = sampleBills.find(b => b.billid === billId);
+    return sum + (bill ? bill.amount : 0);
+  }, 0);
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => {
@@ -112,28 +114,20 @@ const MyBills = () => {
     <div className="bills-invoice-container">
       <div className="page-header">
         <h2>My Bills & Invoices</h2>
-        <p>View, manage, and keep track of your recent bills.</p>
+        <p className="bills-description">View, manage, and keep track of your recent bills.</p>
       </div>
 
-      <div className="top-controls">
-        <input type="text" placeholder="🔍 Search bill..." className="search-input" />
-        <div className="filter-tabs">
-          <button className="filter-btn active">All</button>
-          <button className="filter-btn">Unpaid</button>
-          <button className="filter-btn">Paid</button>
-          <button className="filter-btn">Pending</button>
-        </div>
-      </div>
-
+      {/* 🧾 Bills Table */}
       <div className="bills-table-wrapper">
         <table className="bills-table">
           <thead>
             <tr>
-              <th>Bill Type</th>
+              <th>Select</th>
+              <th>Bill ID</th>
+              <th>Type</th>
               <th>Amount</th>
               <th>Due Date</th>
               <th>Status</th>
-              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -182,37 +176,25 @@ const MyBills = () => {
       </div>
 
       <div className="bottom-actions">
-        <div className="total-selected">
-          <strong>Total Selected:</strong> <span>₱{totalAmount.toLocaleString()}</span>
-        </div>
-        <button className="proceed-btn" onClick={handleOpenModal} disabled={unpaidBills.length === 0}>
-          Proceed to Payment
-        </button>
-      </div>
-
-      {/* Summary Section */}
-      <div className="summary-section">
-        <h3>Summary</h3>
-        <div className="summary-cards">
-          <div className="summary-card unpaid">
-            <p>Total Unpaid</p>
-            <h4>₱{totalUnpaid.toLocaleString()}</h4>
+        <div className="payment-summary-row">
+          <div className="total-value">
+            <span className="total-label">Total Value:</span>
+            <span className="total-amount">₱{selectedTotalAmount.toLocaleString()}</span>
           </div>
-          <div className="summary-card pending">
-            <p>Total Pending</p>
-            <h4>₱{totalPending.toLocaleString()}</h4>
-          </div>
-          <div className="summary-card due">
-            <p>Next Due</p>
-            <h4>{nextDue}</h4>
-          </div>
+          <button
+            className="proceed-btn"
+            onClick={handleOpenModal}
+            disabled={selectedBills.length === 0}
+          >
+            Proceed to Payment
+          </button>
         </div>
       </div>
 
-      {/* Payment Modal */}
+      {/* 💳 Payment Modal */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="payments-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="payments-modal no-scroll" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <button className="back-btn" onClick={handleCloseModal}>
                 &lt;
@@ -221,75 +203,87 @@ const MyBills = () => {
             </div>
 
             <div className="modal-content">
-              <div className="bill-summary">
-                <p><strong>Selected Bills:</strong></p>
-                <div className="bill-list">
-                  {unpaidBills.map((bill) => (
-                    <div key={bill.billid} className="bill-item">
-                      <span>#{bill.billid} - {bill.billtype}</span>
-                      <span>₱{Number(bill.amount).toLocaleString()}</span>
-                    </div>
-                  ))}
+              {/* Compact Bill Summary */}
+              <div className="bill-summary-compact">
+                <p><strong>Selected Bills ({selectedBills.length}):</strong></p>
+                <div className="compact-bill-list">
+                  {sampleBills
+                    .filter(bill => selectedBills.includes(bill.billid))
+                    .map((bill) => (
+                      <div key={bill.billid} className="compact-bill-item">
+                        <span className="bill-type">#{bill.billid}</span>
+                        <span className="bill-amount">₱{bill.amount.toLocaleString()}</span>
+                      </div>
+                    ))}
                 </div>
                 <div className="total-amount-row">
                   <span>Total Amount:</span>
-                  <strong>₱{totalAmount.toLocaleString()}</strong>
+                  <strong>₱{selectedTotalAmount.toLocaleString()}</strong>
                 </div>
               </div>
 
               <div className="payment-method-section">
-                <p><strong>Payment Method:</strong></p>
+                <p>
+                  <strong>Payment Method:</strong>
+                </p>
 
-                <label className="radio-option">
-                  <input
-                    type="radio"
-                    name="payment-method"
-                    value="cash"
-                    checked={paymentMethod === "cash"}
-                    onChange={() => setPaymentMethod("cash")}
-                  />
-                  <span>Cash</span>
-                  <div className="detail-text">
-                    Prepare cash payment. Owner will validate.
-                  </div>
-                </label>
+                {/* Cash Card */}
+                <div
+                  className={`payment-card ${paymentMethod === "cash" ? "selected" : ""}`}
+                  onClick={() => setPaymentMethod("cash")}
+                >
+                  <h4>💵 Cash</h4>
+                  <p>Prepare cash payment. Owner will validate.</p>
+                </div>
 
-                <label className="radio-option">
-                  <input
-                    type="radio"
-                    name="payment-method"
-                    value="gcash"
-                    checked={paymentMethod === "gcash"}
-                    onChange={() => setPaymentMethod("gcash")}
-                  />
-                  <span>Gcash</span>
-                  <div className="detail-text">
-                    Send the total amount to the owner's GCash number.<br />
-                    Ref No.:{" "}
-                    <input
-                      type="text"
-                      placeholder="12345..."
-                      className="ref-input"
-                      value={gcashRef}
-                      onChange={(e) => setGcashRef(e.target.value)}
-                      disabled={paymentMethod !== "gcash"}
-                    />
-                    <div className="upload-proof">
-                      Upload Proof:
-                      <label className="choose-file-btn">
-                        Choose File
+                {/* GCash Card */}
+                <div
+                  className={`payment-card ${paymentMethod === "gcash" ? "selected" : ""}`}
+                  onClick={() => setPaymentMethod("gcash")}
+                >
+                  <h4>📱 GCash</h4>
+                  <p>Send the total amount to the owner's GCash account.</p>
+
+                  {paymentMethod === "gcash" && (
+                    <div className="gcash-details-compact">
+                      <div className="gcash-account-info">
+                        <div className="account-info-row">
+                          <span className="account-label">Account Name:</span>
+                          <span className="account-value">Maria Dela Cruz</span>
+                        </div>
+                        <div className="account-info-row">
+                          <span className="account-label">Account Number:</span>
+                          <span className="account-value">0917-XXX-XXXX</span>
+                        </div>
+                      </div>
+
+                      <div className="gcash-input-row">
+                        <label>Ref No.:</label>
                         <input
-                          type="file"
-                          accept="image/*"
-                          style={{ display: "none" }}
-                          onChange={(e) => setGcashReceipt(e.target.files[0])}
-                          disabled={paymentMethod !== "gcash"}
+                          type="text"
+                          placeholder="1234567890123"
+                          className="ref-input"
+                          value={gcashRef}
+                          onChange={(e) => setGcashRef(e.target.value)}
                         />
-                      </label>
-                      {gcashReceipt && <span>{gcashReceipt.name}</span>}
+                      </div>
+
+                      <div className="gcash-input-row">
+                        <label>Upload Proof:</label>
+                        <label className="choose-file-btn">
+                          Choose File
+                          <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            onChange={(e) => setGcashReceipt(e.target.files[0])}
+                          />
+                        </label>
+                        {gcashReceipt && <span className="file-name">{gcashReceipt.name}</span>}
+                      </div>
                     </div>
-                  </div>
-                </label>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -299,7 +293,7 @@ const MyBills = () => {
                 onClick={handleSubmitPayment}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Processing..." : "Submit"}
+                {isSubmitting ? "Processing..." : "Submit Payment"}
               </button>
             </div>
           </div>

@@ -18,6 +18,7 @@ import {
   Edit,
   Save,
   RotateCcw,
+  User, // Add this import
 } from "lucide-react";
 import "../styles/tenant/Layout.css";
 
@@ -305,7 +306,9 @@ const Layout = () => {
             height="40"
             style={{ borderRadius: "50%", cursor: "pointer", objectFit: "cover" }}
             onClick={openProfileModal}
-          />
+          >
+            <User size={24} color="white" />
+          </div>
         </div>
       </div>
 

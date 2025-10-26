@@ -207,6 +207,12 @@ body {
     filter: brightness(0) invert(1);
 }
 
+.notif-btn svg {
+    color: white !important;
+    fill: white !important;
+    stroke: white !important;
+}
+
 /* ===== Main Content ===== */
 .main {
     grid-area: main;

@@ -9,7 +9,6 @@ const Login = () => {
 
   // 1. STATE FOR EMAIL ERROR
   const [emailError, setEmailError] = useState("");
-  // 1. NEW STATE FOR PASSWORD ERROR
   const [passwordError, setPasswordError] = useState("");
   // State for general login errors (server, missing both)
   const [generalError, setGeneralError] = useState("");
@@ -22,7 +21,6 @@ const Login = () => {
     // Reset errors
     setEmailError("");
     setPasswordError("");
-    setGeneralError("");
 
     let isValid = true;
 
@@ -60,7 +58,7 @@ const Login = () => {
       }
 
       if (!data.user) {
-        setGeneralError("Unexpected server response. Please try again.");
+        setEmailError("Unexpected response. Please try again.");
         return;
       }
 
@@ -105,7 +103,7 @@ const Login = () => {
 
     } catch (error) {
       console.error("Login error:", error);
-      setGeneralError("Something went wrong. Please check your network connection.");
+      setEmailError("Network error. Please check your connection.");
     }
   };
 
@@ -120,7 +118,7 @@ const Login = () => {
   return (
     <div className="auth-wrapper">
       <div className="auth-page">
-        {/* LEFT SIDE (omitted for brevity) */}
+        {/* LEFT SIDE */}
         <div className="auth-left">
           <div className="overlay"></div>
           <div className="auth-left-content">
@@ -159,12 +157,7 @@ const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                 // Removed 'required' to let our state handle validation display
                 />
-                {/* 3. EMAIL ERROR MESSAGE */}
-                {emailError && (
-                  <p style={errorStyle}>
-                    {emailError}
-                  </p>
-                )}
+                {emailError && <p style={errorStyle}>{emailError}</p>}
               </div>
 
               {/* PASSWORD */}
@@ -194,7 +187,6 @@ const Login = () => {
                   </p>
                 )}
 
-                {/* Forgot Password Link */}
                 <div className="forgot-link">
                   <Link to="/forgot-password">Forgot Password?</Link>
                 </div>

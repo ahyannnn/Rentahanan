@@ -8,9 +8,8 @@ const Contract = () => {
   const [isSigning, setIsSigning] = useState(false);
   const sigCanvas = useRef();
 
-  const tenantId = localStorage.getItem("tenantId"); // adjust as needed
+  const tenantId = localStorage.getItem("tenantId");
 
-  // 🔹 Fetch tenant’s contract
   useEffect(() => {
     const fetchContract = async () => {
       try {
@@ -30,41 +29,36 @@ const Contract = () => {
   const handleSignClick = () => setIsSigning(true);
 
   const handleSaveSignature = async () => {
-  try {
-    const canvas = sigCanvas.current.getCanvas();
-    const signatureImage = canvas.toDataURL("image/png");
+    try {
+      const canvas = sigCanvas.current.getCanvas();
+      const signatureImage = canvas.toDataURL("image/png");
+      const blob = await (await fetch(signatureImage)).blob();
 
-    // ✅ Convert base64 to Blob (so Flask treats it like an actual file)
-    const blob = await (await fetch(signatureImage)).blob();
+      const formData = new FormData();
+      formData.append("signed_contract", blob, `signed_${tenantId}.png`);
+      formData.append("contractid", contract.contractid);
 
-    const formData = new FormData();
-    formData.append("signed_contract", blob, `signed_${tenantId}.png`);
-    formData.append("contractid", contract.contractid);
+      const response = await axios.post(
+        "http://localhost:5000/api/contracts/sign",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
-    console.log([...formData]); // 🔍 optional: view what's being sent
-
-    const response = await axios.post(
-      "http://localhost:5000/api/contracts/sign",
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
-
-    if (response.data.message) {
-      alert("✅ Contract signed successfully!");
-      setContract((prev) => ({
-        ...prev,
-        signed_contract: response.data.filename,
-      }));
-      setIsSigning(false);
-    } else {
-      alert("❌ Error saving signed contract.");
+      if (response.data.message) {
+        alert("✅ Contract signed successfully!");
+        setContract((prev) => ({
+          ...prev,
+          signed_contract: response.data.filename,
+        }));
+        setIsSigning(false);
+      } else {
+        alert("❌ Error saving signed contract.");
+      }
+    } catch (error) {
+      console.error("Error signing contract:", error);
+      alert("Failed to upload signed contract.");
     }
-  } catch (error) {
-    console.error("Error signing contract:", error);
-    alert("Failed to upload signed contract.");
-  }
-};
-
+  };
 
   const handleClear = () => sigCanvas.current.clear();
 
@@ -78,20 +72,38 @@ const Contract = () => {
 
   return (
     <div className="contract-container">
-      <h1>My Contract</h1>
+      <h1 className="contract-title">My Contract</h1>
 
-      <div className="contract-details">
-        <p><strong>Unit:</strong> {contract.unit_name}</p>
-        <p><strong>Price:</strong> ₱{contract.unit_price}</p>
-        <p><strong>Start Date:</strong> {contract.start_date}</p>
-        <p><strong>End Date:</strong> {contract.end_date || "Ongoing"}</p>
-        <p><strong>Status:</strong> {contract.status}</p>
+      {/* ✅ Contract Summary Cards */}
+      <div className="contract-summary">
+        <div className="summary-card">
+          <p className="label">Unit</p>
+          <p className="value">{contract.unit_name}</p>
+        </div>
+        <div className="summary-card">
+          <p className="label">Price</p>
+          <p className="value">₱{contract.unit_price}</p>
+        </div>
+        <div className="summary-card">
+          <p className="label">Start Date</p>
+          <p className="value">{contract.start_date}</p>
+        </div>
+        <div className="summary-card">
+          <p className="label">End Date</p>
+          <p className="value">{contract.end_date || "Ongoing"}</p>
+        </div>
+        <div className="summary-card">
+          <p className="label">Status</p>
+          <p className={`value status ${contract.status.toLowerCase()}`}>
+            {contract.status}
+          </p>
+        </div>
       </div>
 
       {/* ✅ Contract Preview */}
       <div className="contract-preview">
         <div className="pdf-icon">📄</div>
-        <p><strong>Contract File:</strong> </p>
+        <p><strong>Contract File:</strong></p>
         <button
           className="open-btn"
           onClick={() => window.open(contractURL, "_blank")}

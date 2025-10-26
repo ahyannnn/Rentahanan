@@ -1,23 +1,30 @@
 import React, { useState } from "react";
 import "../../styles/tenant/Support.css";
 
-
 const Support = () => {
     // State para sa modal visibility
     const [isNewConcernModalOpen, setIsNewConcernModalOpen] = useState(false); 
+    const [activeFilter, setActiveFilter] = useState("all");
     
     const concerns = [
         { id: 'C-2025-001', category: "Maintenance", title: "Water leakage in the unit", date: "01-01-0001", status: "Pending" },
         { id: 'C-2025-002', category: "Billing", title: "mahal naman bayad", date: "01-01-0001", status: "Pending" },
         { id: 'C-2025-003', category: "Contract", title: "why why why carlot", date: "01-01-0001", status: "Pending" },
-        { id: 'C-2025-004', category: "Other", title: "secret to more on wala sa tatlo", date: "01-01-0001", status: "Pending" },
+        { id: 'C-2025-004', category: "Other", title: "secret to more on wala sa tatlo", date: "01-01-0001", status: "Resolved" },
     ];
 
     const handleOpenNewConcernModal = () => setIsNewConcernModalOpen(true);
     const handleCloseNewConcernModal = () => setIsNewConcernModalOpen(false);
 
+    const filteredConcerns = concerns.filter(concern => {
+        if (activeFilter === "all") return true;
+        if (activeFilter === "pending") return concern.status === "Pending";
+        if (activeFilter === "completed") return concern.status === "Resolved";
+        return true;
+    });
+
     return (
-        <div className="bills-invoice-container support-container">
+        <div className="support-container">
             
             {/* Page Header */}
             <div className="page-header">
@@ -28,13 +35,36 @@ const Support = () => {
             {/* Controls */}
             <div className="support-top-controls">
                 <input type="text" placeholder="Search Concern ID or Title..." className="search-input" />
+                
+                {/* Filter Tabs */}
+                <div className="filter-tabs">
+                    <button 
+                        className={`filter-btn ${activeFilter === "all" ? "active" : ""}`}
+                        onClick={() => setActiveFilter("all")}
+                    >
+                        All
+                    </button>
+                    <button 
+                        className={`filter-btn ${activeFilter === "pending" ? "active" : ""}`}
+                        onClick={() => setActiveFilter("pending")}
+                    >
+                        Pending
+                    </button>
+                    <button 
+                        className={`filter-btn ${activeFilter === "completed" ? "active" : ""}`}
+                        onClick={() => setActiveFilter("completed")}
+                    >
+                        Completed
+                    </button>
+                </div>
+                
                 {/* Button na magpapakita ng modal */}
                 <button className="new-concern-btn" onClick={handleOpenNewConcernModal}>+ New Concern</button>
             </div>
 
             {/* Concerns List / Cards */}
             <div className="concerns-list">
-                {concerns.map(concern => (
+                {filteredConcerns.map(concern => (
                     <div key={concern.id} className="concern-card">
                         <div className="card-top">
                             <span className="concern-category">{concern.category}</span>
