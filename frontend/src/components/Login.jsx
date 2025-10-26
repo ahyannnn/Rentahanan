@@ -214,9 +214,7 @@ const Login = () => {
 
               <span className="or-text">OR</span>
 
-              <div className="social-login">
-                <button type="button">Login with Google</button>
-              </div>
+              
 
               <div className="bottom-text">
                 Don’t have an account? <Link to="/register">Register</Link>

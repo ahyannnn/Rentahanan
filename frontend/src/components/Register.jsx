@@ -136,7 +136,7 @@ const Register = () => {
           <div className="overlay"></div>
           <div className="auth-left-content">
             <h1>
-              Join <span>PHOME</span>
+              Join <span>RenTahanan</span>
             </h1>
             <p>
               Start your journey — whether you’re a tenant or an owner, we’ve
@@ -158,7 +158,7 @@ const Register = () => {
             {step === 4 ? (
               <div className="success-step">
                 <h2>Account Created Successfully</h2>
-                <p>Your PHOME account has been created successfully.</p>
+                <p>Your RenTahanan account has been created successfully.</p>
                 <button
                   className="btn"
                   style={{ marginTop: "25px" }}

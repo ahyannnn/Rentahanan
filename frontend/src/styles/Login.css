@@ -112,8 +112,6 @@ body {
   display: none;
 }
 
-
-
 /* --- Inputs --- */
 .form-group {
   margin-bottom: 1.5rem;
@@ -195,7 +193,6 @@ input:focus {
   right: 0;
 }
 
-
 /* --- Social Buttons (Re-enabled and styled for Desktop) --- */
 .social-login {
   display: block;
@@ -220,7 +217,6 @@ input:focus {
   background-color: #f0f0f0;
   border-color: #ccc;
 }
-
 
 /* --- Bottom Text (Modified for Desktop Look) --- */
 .bottom-text {
@@ -256,10 +252,8 @@ input:focus {
   text-decoration: underline;
 }
 
-
 /* --- Responsive (Mobile View - Final Override) --- */
 @media (max-width: 850px) {
-
   /* Login Button (top button) override to white */
   .btn {
     background-color: white !important;
@@ -309,7 +303,9 @@ input:focus {
     color: white !important;
   }
   
-  label {
+  /* FIX: Ensure labels are white in mobile view */
+  .auth-card label,
+  .form-group label {
     color: white !important;
   }
 
@@ -351,7 +347,7 @@ input:focus {
     color: #061A53 !important;
   }
 
-  /* Bottom text: "Don’t have an account?" */
+  /* Bottom text: "Don't have an account?" */
   .bottom-text {
     color: white !important;
   }
@@ -359,7 +355,6 @@ input:focus {
   .bottom-text a {
     color: white !important;
   }
-
 
   /* Structural resets (kept for functionality) */
   .auth-left {
@@ -378,5 +373,12 @@ input:focus {
   .btn { margin-top: 1rem; font-size: 1rem; padding: 0.9rem; margin-bottom: 1rem; }
   .form-group { margin-bottom: 1.2rem; }
   .or-text { line-height: initial; }
+}
 
+
+/* NUCLEAR OPTION - Add this at the very end of your CSS file */
+@media (max-width: 850px) {
+  .auth-wrapper .auth-page .auth-right .auth-card .form-group label {
+    color: white !important;
+  }
 }

@@ -8,12 +8,10 @@
     align-items: center;
     min-height: 100vh;
     background: #f5f7fa;
-    font-family: "Poppins", sans-serif;
     color: #333;
     padding: 1rem;
 }
 
-/* === MAIN WRAPPER === */
 .forgot-wrapper {
     display: flex;
     width: 80%;
@@ -24,11 +22,9 @@
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* === LEFT SECTION === */
 .forgot-left {
     flex: 1;
     background: linear-gradient(135deg, #061a53, #0b3c91);
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -37,9 +33,7 @@
 }
 
 .forgot-text {
-    position: relative;
     text-align: center;
-    z-index: 2;
     max-width: 400px;
 }
 
@@ -56,12 +50,6 @@
     color: rgba(255, 255, 255, 0.9);
 }
 
-.forgot-text span {
-    color: #fff;
-    font-weight: 600;
-}
-
-/* === RIGHT SECTION === */
 .forgot-right {
     flex: 1;
     display: flex;
@@ -90,7 +78,6 @@
     margin-bottom: 1.5rem;
 }
 
-/* === FORM ELEMENTS === */
 .forgot-form-group {
     margin-bottom: 1.5rem;
 }
@@ -117,7 +104,6 @@
     box-shadow: 0 0 6px rgba(11, 60, 145, 0.2);
 }
 
-/* === BUTTONS === */
 .forgot-btn {
     width: 100%;
     padding: 0.8rem;
@@ -153,7 +139,6 @@
     text-decoration: underline;
 }
 
-/* === CODE INPUT (Verification) === */
 .code-input-group {
     display: flex;
     justify-content: center;
@@ -179,7 +164,6 @@
     box-shadow: 0 0 6px rgba(11, 60, 145, 0.4);
 }
 
-/* === RESEND LINK === */
 .resend-link {
     color: #0b3c91;
     font-weight: 600;
@@ -190,37 +174,30 @@
     text-decoration: underline;
 }
 
-
-.forgot-form-group,
-.forgot-input-wrapper {
-    display: flex;
-    flex-direction: column;
-    /* stack vertically */
-    width: 100%;
-}
-
-.forgot-form-group input,
-.forgot-btn {
-    width: 100%;
-    /* make all same width */
-    box-sizing: border-box;
-    /* include padding/border in width */
-}
-
-
 .forgot-input-wrapper {
     position: relative;
-    margin: 10px 0;
+    width: 100%;
+}
+
+.forgot-input-wrapper input {
+    width: 100%;
+    padding-right: 70px !important;
+    box-sizing: border-box;
 }
 
 .toggle-password {
     position: absolute;
-    right: 15px;
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #061a53;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 1.1rem;
-    user-select: none;
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 4px;
 }
 
 .error-text {
@@ -230,95 +207,75 @@
     text-align: center;
 }
 
-
-
-/* ======================================= */
-/* 📱 RESPONSIVE DESIGN */
-/* ======================================= */
-
-/* Tablets */
-@media (max-width: 992px) {
-    .forgot-wrapper {
-        width: 90%;
-    }
-}
-
-/* Phones */
+/* ===== MOBILE STYLES ===== */
 @media (max-width: 768px) {
-
-    .forgot-card p {
-        color: white !important;
-    }
-
     .forgot-container {
-        background: linear-gradient(135deg, #061a53, #0b3c91);
-        color: #fff;
-        padding: 1.5rem;
+        background: linear-gradient(135deg, #061a53, #0b3c91) !important;
+        padding: 1rem;
     }
 
     .forgot-wrapper {
         flex-direction: column;
-        background: transparent;
-        box-shadow: none;
-        border-radius: 0;
+        background: transparent !important;
+        box-shadow: none !important;
         width: 100%;
-        max-width: 420px;
+        max-width: 400px;
     }
 
     .forgot-left {
-        display: none;
+        display: none !important;
     }
 
     .forgot-right {
-        width: 100%;
-        height: 100%;
-        background: transparent;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        background: transparent !important;
+        padding: 0 !important;
     }
 
     .forgot-card {
-        background: transparent;
-        box-shadow: none;
+        background: transparent !important;
         padding: 2rem 1.5rem;
-        width: 100%;
     }
 
+    /* Force white text for all text elements */
     .forgot-title,
     .forgot-card p,
-    .forgot-form-group label {
-        color: #fff !important;
-        /* force white */
-    }
-
+    .forgot-form-group label,
     .forgot-bottom-text,
     .forgot-bottom-text a {
-        color: #fff !important;
+        color: white !important;
     }
 
+    /* Input styling */
     .forgot-form-group input {
-        background: rgba(255, 255, 255, 0.15);
-        border: none;
-        color: #fff;
+        background: rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.4) !important;
+        color: white !important;
     }
 
+    /* Placeholder styling */
     .forgot-form-group input::placeholder {
-        color: rgba(255, 255, 255, 0.85);
+        color: rgba(255, 255, 255, 0.7) !important;
     }
 
-    .code-input {
-        background: white;
-        color: #061a53;
+    /* Toggle password button - FORCE VISIBLE */
+    .toggle-password {
+        color: white !important;
+        background: rgba(255, 255, 255, 0.3) !important;
+        font-weight: 700 !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
     }
 
     .forgot-btn {
-        background: #fff;
-        color: #061a53;
+        background: white !important;
+        color: #061a53 !important;
+        font-weight: 600 !important;
     }
 
     .resend-link {
-        color: #fff;
+        color: white !important;
+    }
+
+    .error-text {
+        color: #ff9999 !important;
     }
 }
