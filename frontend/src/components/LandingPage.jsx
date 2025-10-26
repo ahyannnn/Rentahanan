@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import "../styles/LandingPage.css";
 import { Link } from "react-router-dom";
 
-
 function LandingPage() {
   const [houses, setHouses] = useState([]);
   const [selectedHouse, setSelectedHouse] = useState(null);
 
   useEffect(() => {
-    // Fetch 5 houses from Flask API
+    // Fetch houses from Flask API
     fetch("http://localhost:5000/api/houses")
       .then((res) => res.json())
       .then((data) => setHouses(data))
@@ -19,14 +18,19 @@ function LandingPage() {
     <div>
       {/* Navbar */}
       <nav className="navbar">
-        <div className="nav-brand">🏡 RenTahanan</div>
+        <div className="nav-brand">
+          <img
+            src="/logo.png"
+            alt="RenTahanan Logo"
+            className="logo"
+          />
+          <div className="nav-brand">RenTahanan</div>
+        </div>
         <div className="nav-links">
           <Link to="/login" className="nav-btn login">Login</Link>
           <Link to="/register" className="nav-btn register">Register</Link>
         </div>
       </nav>
-
-
 
       {/* Hero Section */}
       <section className="hero">
@@ -41,16 +45,19 @@ function LandingPage() {
       <section className="houses-section">
         <h2>Available Houses</h2>
         <div className="houses-container">
-          {houses.map((house, index) => (
+          {houses.map((house) => (
             <div
               key={house.id}
               className="house-card"
               onClick={() => setSelectedHouse(house)}
             >
               <img
-                src={`/images/house${index + 1}.jpg`}
+                src={`http://localhost:5000/uploads/houseimages/${house.imagepath}`}
                 alt={house.name}
                 className="house-image"
+                onError={(e) => {
+                  e.target.src = "/images/default-house.jpg"; // fallback image
+                }}
               />
               <div className="house-info">
                 <h3>{house.name}</h3>
@@ -68,10 +75,12 @@ function LandingPage() {
           <div className="modal-overlay" onClick={() => setSelectedHouse(null)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <img
-                src={`/images/house${houses.indexOf(selectedHouse) + 1
-                  }.jpg`}
+                src={`http://localhost:5000/uploads/houseimages/${selectedHouse.imagepath}`}
                 alt={selectedHouse.name}
                 className="modal-image"
+                onError={(e) => {
+                  e.target.src = "/images/default-house.jpg";
+                }}
               />
               <h2>{selectedHouse.name}</h2>
               <p>{selectedHouse.description}</p>
@@ -122,7 +131,7 @@ function LandingPage() {
       <footer className="footer">
         <p>&copy; 2025 RENTAHANAN. All Rights Reserved.</p>
       </footer>
-    </div >
+    </div>
   );
 }
 
