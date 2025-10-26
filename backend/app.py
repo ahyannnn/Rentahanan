@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from extensions import db
 from models.units_model import House
 import os
+from flask_jwt_extended import JWTManager
 from routes.auth_route import auth_bp
 from routes.application_route import application_bp
 from routes.tenant_route import tenant_bp
@@ -25,11 +26,23 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["BREVO_API_KEY"] = os.getenv("BREVO_API_KEY")
 app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
+app.config["JWT_SECRET_KEY"] = "super-secret-key-change-this"
+jwt = JWTManager(app)
 
 # ✅ Ensure upload folders exist
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
-for sub in ["valid_ids", "brgy_clearances", "proof_of_income", "contracts", "houseimages", "signed_contracts", "receipts"]:
+for sub in [
+    "valid_ids",
+    "brgy_clearances",
+    "proof_of_income",
+    "contracts",
+    "houseimages",
+    "signed_contracts",
+    "receipts",
+    "gcash_receipts"  # ✅ add this
+]:
     os.makedirs(os.path.join(app.config["UPLOAD_FOLDER"], sub), exist_ok=True)
+
 
 # ✅ Initialize and register
 db.init_app(app)

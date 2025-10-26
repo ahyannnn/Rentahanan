@@ -4,7 +4,8 @@ from models.users_model import User
 from models.applications_model import Application
 from models.tenants_model import Tenant
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
+from flask_jwt_extended import create_access_token
 
 
 auth_bp = Blueprint("auth_bp", __name__)
@@ -114,22 +115,29 @@ def login():
     if not all([email, password]):
         return jsonify({"message": "Email and password required"}), 400
 
-    # ✅ Query the Users table correctly
     user = User.query.filter_by(email=email).first()
     if not user:
         return jsonify({"message": "User not found"}), 404
 
-    # ✅ Verify hashed password using werkzeug
     if not user.check_password(password):
         return jsonify({"message": "Incorrect password"}), 401
 
-    # ✅ Fetch the user's application record (optional)
     application = Application.query.filter_by(userid=user.userid).first()
-    application_status = application.status if application else "No Application"
     tenant = Tenant.query.filter_by(userid=str(user.userid)).first()
+
+    # ✅ Generate JWT token
+    access_token = create_access_token(
+        identity={
+            "userid": user.userid,
+            "role": user.role,
+            "tenantid": tenant.tenantid if tenant else None
+        },
+        expires_delta=timedelta(hours=1)  # token expires after 1 hour
+    )
 
     return jsonify({
         "message": "Login successful",
+        "token": access_token,
         "user": {
             "userid": user.userid,
             "tenantid": tenant.tenantid if tenant else None,

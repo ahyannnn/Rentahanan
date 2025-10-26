@@ -34,28 +34,81 @@ const MyBills = () => {
     setGcashReceipt(null);
   };
 
-  const handleSubmitPayment = () => {
-    alert("Preview only: Payment submitted successfully!");
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsModalOpen(false);
-    }, 1200);
-  };
+  // Get unpaid bills
+  const unpaidBills = bills.filter((bill) => bill.status.toLowerCase() === "unpaid");
+  const totalAmount = unpaidBills.reduce((sum, bill) => sum + Number(bill.amount), 0);
 
-  const handleBillSelection = (billId, isUnpaid) => {
-    if (!isUnpaid) return; // Only allow selection of unpaid bills
+  // Calculate summary
+  const totalUnpaid = bills
+    .filter((bill) => bill.status.toLowerCase() === "unpaid")
+    .reduce((sum, bill) => sum + Number(bill.amount), 0);
 
-    setSelectedBills(prev => {
-      if (prev.includes(billId)) {
-        return prev.filter(id => id !== billId);
-      } else {
-        return [...prev, billId];
+  const totalPending = bills
+    .filter(
+      (bill) =>
+        bill.status.toLowerCase() === "pending" ||
+        bill.status.toLowerCase() === "for validation"
+    )
+    .reduce((sum, bill) => sum + Number(bill.amount), 0);
+
+  const nextDue =
+    bills
+      .filter((bill) => bill.status.toLowerCase() === "unpaid")
+      .sort((a, b) => new Date(a.duedate) - new Date(b.duedate))[0]?.duedate || "N/A";
+
+  const handleSubmitPayment = async () => {
+    if (unpaidBills.length === 0) return;
+
+    // 🔹 Validate input before submitting
+    if (paymentMethod === "gcash") {
+      const refPattern = /^\d{13}$/;
+
+      if (!gcashRef || !refPattern.test(gcashRef)) {
+        alert("Please enter a valid 13-digit GCash reference number.");
+        return;
       }
-    });
+
+      if (!gcashReceipt) {
+        alert("Please upload your GCash receipt before submitting.");
+        return;
+      }
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      for (const bill of unpaidBills) {
+        const formData = new FormData();
+        formData.append("paymentType", paymentMethod === "cash" ? "Cash" : "GCash");
+        if (paymentMethod === "gcash") {
+          formData.append("gcashRef", gcashRef);
+          formData.append("gcashReceipt", gcashReceipt);
+        }
+
+        const response = await fetch(
+          `http://localhost:5000/api/bills/pay/${bill.billid}`,
+          {
+            method: "PUT",
+            body: formData, // ⬅️ must be FormData (not JSON)
+          }
+        );
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Payment update failed");
+      }
+
+      alert("Bills submitted for validation!");
+      handleCloseModal();
+      fetchBills();
+    } catch (error) {
+      console.error("Error submitting payment:", error);
+      alert(error.message || "Failed to submit payment. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const isBillUnpaid = (status) => status.toLowerCase() === "unpaid";
+
 
   return (
     <div className="bills-invoice-container">
@@ -78,27 +131,46 @@ const MyBills = () => {
             </tr>
           </thead>
           <tbody>
-            {sampleBills.map((bill) => {
-              const isUnpaid = isBillUnpaid(bill.status);
-              return (
-                <tr key={bill.billid}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      className="bill-checkbox"
-                      checked={selectedBills.includes(bill.billid)}
-                      onChange={() => handleBillSelection(bill.billid, isUnpaid)}
-                      disabled={!isUnpaid}
-                    />
-                  </td>
-                  <td>#{bill.billid}</td>
-                  <td>{bill.billtype}</td>
-                  <td>₱{bill.amount.toLocaleString()}</td>
-                  <td>{bill.duedate}</td>
-                  <td className={`status ${bill.status.toLowerCase()}`}>{bill.status}</td>
-                </tr>
-              );
-            })}
+            {bills.length > 0 ? (
+              bills.map((bill) => {
+                const isUnpaid = bill.status.toLowerCase() === "unpaid";
+                return (
+                  <tr key={bill.billid} className={`row-${bill.status.toLowerCase()}`}>
+                    <td data-label="Bill Type" className="bill-type-combined">
+                      <input type="checkbox" className="bill-checkbox" defaultChecked={isUnpaid} />
+                      <span className="bill-type-label">{bill.billtype}</span>
+                    </td>
+                    <td data-label="Amount">₱{Number(bill.amount).toLocaleString()}</td>
+                    <td data-label="Due Date">{bill.duedate}</td>
+                    <td data-label="Status" className={`status-${bill.status.toLowerCase()}`}>
+                      {bill.status}
+                    </td>
+                    <td data-label="Action">
+                      <a
+                        href={
+                          !isUnpaid && bill.GCash_receipt
+                            ? `http://localhost:5000/uploads/gcash_receipts/${b.GCash_receipt}`
+                            : "#"
+                        }
+                        className={`action-link action-${isUnpaid ? "pay-now" : "receipt"}`}
+                        onClick={isUnpaid ? handleOpenModal : undefined}
+                        target={!isUnpaid ? "_blank" : undefined} // ✅ open receipt in new tab
+                        rel="noopener noreferrer"
+                      >
+                        {isUnpaid ? "Pay Now" : "Receipt"}
+                      </a>
+
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="5" style={{ textAlign: "center" }}>
+                  No bills found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
