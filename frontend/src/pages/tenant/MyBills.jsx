@@ -11,18 +11,15 @@ const MyBills = () => {
 
   // 🔹 Static example bills for UI preview
   const sampleBills = [
-    { billid: "B101", billtype: "Water", amount: 450, duedate: "2025-10-30", status: "Unpaid" },
-    { billid: "B102", billtype: "Electricity", amount: 980, duedate: "2025-10-31", status: "Unpaid" },
-    { billid: "B103", billtype: "Rent", amount: 5000, duedate: "2025-10-25", status: "Pending" },
-    { billid: "B104", billtype: "Internet", amount: 1200, duedate: "2025-11-05", status: "Paid" },
+    { billid: "BI01", billtype: "Water", amount: 450, duedate: "2025-10-30", status: "Unpaid" },
+    { billid: "BI02", billtype: "Electricity", amount: 980, duedate: "2025-10-31", status: "Unpaid" },
+    { billid: "BI03", billtype: "Rent", amount: 5000, duedate: "2025-10-25", status: "Pending" },
+    { billid: "BI04", billtype: "Internet", amount: 1200, duedate: "2025-11-05", status: "Paid" },
   ];
-
-  const unpaidBills = sampleBills.filter((b) => b.status.toLowerCase() === "unpaid");
-  const totalAmount = unpaidBills.reduce((sum, bill) => sum + bill.amount, 0);
 
   // Calculate selected total
   const selectedTotalAmount = selectedBills.reduce((sum, billId) => {
-    const bill = sampleBills.find(b => b.billid === billId);
+    const bill = sampleBills.find((b) => b.billid === billId);
     return sum + (bill ? bill.amount : 0);
   }, 0);
 
@@ -34,30 +31,8 @@ const MyBills = () => {
     setGcashReceipt(null);
   };
 
-  // Get unpaid bills
-  const unpaidBills = bills.filter((bill) => bill.status.toLowerCase() === "unpaid");
-  const totalAmount = unpaidBills.reduce((sum, bill) => sum + Number(bill.amount), 0);
-
-  // Calculate summary
-  const totalUnpaid = bills
-    .filter((bill) => bill.status.toLowerCase() === "unpaid")
-    .reduce((sum, bill) => sum + Number(bill.amount), 0);
-
-  const totalPending = bills
-    .filter(
-      (bill) =>
-        bill.status.toLowerCase() === "pending" ||
-        bill.status.toLowerCase() === "for validation"
-    )
-    .reduce((sum, bill) => sum + Number(bill.amount), 0);
-
-  const nextDue =
-    bills
-      .filter((bill) => bill.status.toLowerCase() === "unpaid")
-      .sort((a, b) => new Date(a.duedate) - new Date(b.duedate))[0]?.duedate || "N/A";
-
   const handleSubmitPayment = async () => {
-    if (unpaidBills.length === 0) return;
+    if (selectedBills.length === 0) return;
 
     // 🔹 Validate input before submitting
     if (paymentMethod === "gcash") {
@@ -77,7 +52,7 @@ const MyBills = () => {
     setIsSubmitting(true);
 
     try {
-      for (const bill of unpaidBills) {
+      for (const billId of selectedBills) {
         const formData = new FormData();
         formData.append("paymentType", paymentMethod === "cash" ? "Cash" : "GCash");
         if (paymentMethod === "gcash") {
@@ -86,10 +61,10 @@ const MyBills = () => {
         }
 
         const response = await fetch(
-          `http://localhost:5000/api/bills/pay/${bill.billid}`,
+          `http://localhost:5000/api/bills/pay/${billId}`,
           {
             method: "PUT",
-            body: formData, // ⬅️ must be FormData (not JSON)
+            body: formData,
           }
         );
 
@@ -99,7 +74,7 @@ const MyBills = () => {
 
       alert("Bills submitted for validation!");
       handleCloseModal();
-      fetchBills();
+      setSelectedBills([]); // Clear selection after successful payment
     } catch (error) {
       console.error("Error submitting payment:", error);
       alert(error.message || "Failed to submit payment. Please try again.");
@@ -108,7 +83,11 @@ const MyBills = () => {
     }
   };
 
-
+  // Function to handle receipt view
+  const handleViewReceipt = (billId) => {
+    alert(`Viewing receipt for ${billId}`);
+    // Add receipt viewing logic here
+  };
 
   return (
     <div className="bills-invoice-container">
@@ -128,45 +107,65 @@ const MyBills = () => {
               <th>Amount</th>
               <th>Due Date</th>
               <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {bills.length > 0 ? (
-              bills.map((bill) => {
+            {sampleBills.length > 0 ? (
+              sampleBills.map((bill) => {
                 const isUnpaid = bill.status.toLowerCase() === "unpaid";
+                const isPending = bill.status.toLowerCase() === "pending";
+                const isPaid = bill.status.toLowerCase() === "paid";
+                const isSelectable = isUnpaid; // Only unpaid bills can be selected
+                
                 return (
-                  <tr key={bill.billid} className={`row-${bill.status.toLowerCase()}`}>
-                    <td data-label="Bill Type" className="bill-type-combined">
-                      <input type="checkbox" className="bill-checkbox" defaultChecked={isUnpaid} />
-                      <span className="bill-type-label">{bill.billtype}</span>
+                  <tr key={bill.billid}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        className="bill-checkbox"
+                        checked={selectedBills.includes(bill.billid)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedBills([...selectedBills, bill.billid]);
+                          } else {
+                            setSelectedBills(selectedBills.filter((id) => id !== bill.billid));
+                          }
+                        }}
+                        disabled={!isSelectable}
+                      />
                     </td>
-                    <td data-label="Amount">₱{Number(bill.amount).toLocaleString()}</td>
-                    <td data-label="Due Date">{bill.duedate}</td>
-                    <td data-label="Status" className={`status-${bill.status.toLowerCase()}`}>
+                    <td>{bill.billid}</td>
+                    <td>{bill.billtype}</td>
+                    <td>₱{Number(bill.amount).toLocaleString()}</td>
+                    <td>{bill.duedate}</td>
+                    <td className={`status status-${bill.status.toLowerCase()}`}>
                       {bill.status}
                     </td>
-                    <td data-label="Action">
-                      <a
-                        href={
-                          !isUnpaid && bill.GCash_receipt
-                            ? `http://localhost:5000/uploads/gcash_receipts/${b.GCash_receipt}`
-                            : "#"
-                        }
-                        className={`action-link action-${isUnpaid ? "pay-now" : "receipt"}`}
-                        onClick={isUnpaid ? handleOpenModal : undefined}
-                        target={!isUnpaid ? "_blank" : undefined} // ✅ open receipt in new tab
-                        rel="noopener noreferrer"
-                      >
-                        {isUnpaid ? "Pay Now" : "Receipt"}
-                      </a>
-
+                    <td style={{ textAlign: 'center' }}>
+                      {isUnpaid ? (
+                        <button className="action-btn pay-now-btn">
+                          Pay Now
+                        </button>
+                      ) : isPending ? (
+                        <button className="action-btn pending-btn" disabled>
+                          For Validation
+                        </button>
+                      ) : (
+                        <button 
+                          className="action-btn receipt-btn"
+                          onClick={() => handleViewReceipt(bill.billid)}
+                        >
+                          View Receipt
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );
               })
             ) : (
               <tr>
-                <td colSpan="5" style={{ textAlign: "center" }}>
+                <td colSpan="7" style={{ textAlign: "center" }}>
                   No bills found.
                 </td>
               </tr>
@@ -205,10 +204,12 @@ const MyBills = () => {
             <div className="modal-content">
               {/* Compact Bill Summary */}
               <div className="bill-summary-compact">
-                <p><strong>Selected Bills ({selectedBills.length}):</strong></p>
+                <p>
+                  <strong>Selected Bills ({selectedBills.length}):</strong>
+                </p>
                 <div className="compact-bill-list">
                   {sampleBills
-                    .filter(bill => selectedBills.includes(bill.billid))
+                    .filter((bill) => selectedBills.includes(bill.billid))
                     .map((bill) => (
                       <div key={bill.billid} className="compact-bill-item">
                         <span className="bill-type">#{bill.billid}</span>

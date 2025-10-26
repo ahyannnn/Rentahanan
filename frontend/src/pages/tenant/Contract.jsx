@@ -8,16 +8,29 @@ const Contract = () => {
   const [isSigning, setIsSigning] = useState(false);
   const sigCanvas = useRef();
 
-  const tenantId = localStorage.getItem("tenantId");
+  // ✅ FIX 1: Read tenantId from stored user object
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const tenantId = storedUser?.tenantid;
 
   useEffect(() => {
     const fetchContract = async () => {
       try {
+        if (!tenantId) {
+          console.error("No tenant ID found in localStorage.");
+          return;
+        }
+
         const response = await axios.get(
           `http://localhost:5000/api/contracts/tenant/${tenantId}`
         );
-        if (response.data.length > 0) {
-          setContract(response.data[0]);
+
+        const data = response.data;
+        if (Array.isArray(data) && data.length > 0) {
+          setContract(data[0]);
+        } else if (data && data.contractid) {
+          setContract(data);
+        } else {
+          console.warn("No contract found for tenant:", tenantId);
         }
       } catch (error) {
         console.error("Error fetching contract:", error);
@@ -94,8 +107,8 @@ const Contract = () => {
         </div>
         <div className="summary-card">
           <p className="label">Status</p>
-          <p className={`value status ${contract.status.toLowerCase()}`}>
-            {contract.status}
+          <p className={`value status ${contract.status ? contract.status.toLowerCase() : ""}`}>
+            {contract.status || "N/A"}
           </p>
         </div>
       </div>
@@ -104,10 +117,7 @@ const Contract = () => {
       <div className="contract-preview">
         <div className="pdf-icon">📄</div>
         <p><strong>Contract File:</strong></p>
-        <button
-          className="open-btn"
-          onClick={() => window.open(contractURL, "_blank")}
-        >
+        <button className="open-btn" onClick={() => window.open(contractURL, "_blank")}>
           Open Contract
         </button>
       </div>

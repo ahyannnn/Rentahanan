@@ -18,7 +18,7 @@ import {
   Edit,
   Save,
   RotateCcw,
-  User, // Add this import
+  User,
 } from "lucide-react";
 import "../styles/tenant/Layout.css";
 
@@ -31,10 +31,32 @@ const Layout = () => {
   const [userRole, setUserRole] = useState("tenant");
   const [profilePictureUrl, setProfilePictureUrl] = useState("/default-profile.png");
 
+  // ✅ Notifications
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications] = useState([
+    {
+      id: 1,
+      title: "Rental Payment Due",
+      message: "Your rent is due on October 30, 2025. Please make your payment soon.",
+      time: "2 days left",
+    },
+    {
+      id: 2,
+      title: "Scheduled Maintenance",
+      message: "Plumbing maintenance will occur on October 28.",
+      time: "in 2 days",
+    },
+    {
+      id: 3,
+      title: "Receipt Confirmation",
+      message: "Your last payment was received successfully.",
+      time: "3 days ago",
+    },
+  ]);
+
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ✅ Load user from localStorage
   useEffect(() => {
     try {
       const storedUserRaw = localStorage.getItem("user");
@@ -51,8 +73,6 @@ const Layout = () => {
         storedUser.application_status ||
         "Pending";
 
-      console.log("Loaded user from localStorage:", storedUser);
-
       setUserData(storedUser);
       setUserRole(storedRole.toLowerCase());
       setApplicationStatus(storedStatus);
@@ -62,30 +82,14 @@ const Layout = () => {
     }
   }, [navigate]);
 
-  // ✅ Listen for changes in localStorage
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const newUser = JSON.parse(localStorage.getItem("user"));
-      if (!newUser) {
-        navigate("/");
-        return;
-      }
-      setUserData(newUser);
-      setUserRole(localStorage.getItem("userRole")?.toLowerCase() || "tenant");
-      setApplicationStatus(
-        localStorage.getItem("applicationStatus") || newUser.application_status || "Pending"
-      );
-    };
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, [navigate]);
-
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
+
   const openProfileModal = () => {
     setIsProfileModalOpen(true);
     setIsEditing(false);
   };
+
   const closeProfileModal = () => setIsProfileModalOpen(false);
 
   const handleLogout = () => {
@@ -114,6 +118,15 @@ const Layout = () => {
     if (file) {
       const tempUrl = URL.createObjectURL(file);
       setProfilePictureUrl(tempUrl);
+    }
+  };
+
+  const handleViewAllNotifications = () => {
+    setShowNotifications(false);
+    if (userRole === "owner") {
+      navigate("/owner/notifications");
+    } else {
+      navigate("/tenant/notifications");
     }
   };
 
@@ -183,6 +196,7 @@ const Layout = () => {
               <X size={16} /> Close
             </button>
           </div>
+
           <div className="modal-body">
             <div className="current-pic-holder">
               <img
@@ -194,7 +208,12 @@ const Layout = () => {
               />
               <label className="upload-btn-icon-label">
                 <Camera size={18} />
-                <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: "none" }} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  style={{ display: "none" }}
+                />
               </label>
             </div>
 
@@ -271,11 +290,17 @@ const Layout = () => {
         <div className="logotitle">
           <h1>RenTahan</h1>
         </div>
+
         <div className="linkholderbody">
           {links.map((link, i) => {
             const Icon = link.icon;
             return (
-              <div key={i} className={`linkholder ${location.pathname === link.to ? "active" : ""}`}>
+              <div
+                key={i}
+                className={`linkholder ${
+                  location.pathname === link.to ? "active" : ""
+                }`}
+              >
                 <Link to={link.to} onClick={closeSidebar}>
                   <Icon size={18} style={{ marginRight: "8px" }} />
                   {link.name}
@@ -284,6 +309,7 @@ const Layout = () => {
             );
           })}
         </div>
+
         <button id="logout" onClick={handleLogout}>
           Log out
         </button>
@@ -296,23 +322,41 @@ const Layout = () => {
         </button>
         <h3>{pageTitle}</h3>
         <div className="notifprofile">
-          <button className="notif-btn">
-            <Bell size={20} />
-          </button>
-          <img
-            src={profilePictureUrl}
-            alt="Profile"
-            width="40"
-            height="40"
-            style={{ borderRadius: "50%", cursor: "pointer", objectFit: "cover" }}
-            onClick={openProfileModal}
-          >
-            <User size={24} color="white" />
+          <div className="notif-wrapper">
+            <button
+              className="notif-btn"
+              onClick={() => setShowNotifications(!showNotifications)}
+            >
+              <Bell size={20} color="white" />
+            </button>
+
+            {showNotifications && (
+              <div className="notif-dropdown">
+                <h4>Notifications</h4>
+                {notifications.map((notif) => (
+                  <div key={notif.id} className="notif-card">
+                    <h5>{notif.title}</h5>
+                    <p>{notif.message}</p>
+                    <span className="notif-time">{notif.time}</span>
+                  </div>
+                ))}
+                <button
+                  className="view-all-btn"
+                  onClick={handleViewAllNotifications}
+                >
+                  View All Notifications →
+                </button>
+              </div>
+            )}
           </div>
+
+          <button className="notif-btn" onClick={openProfileModal}>
+            <User size={20} color="white" />
+          </button>
         </div>
       </div>
 
-      {/* MAIN */}
+      {/* MAIN CONTENT */}
       <div className="main">
         <Outlet />
       </div>

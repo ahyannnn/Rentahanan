@@ -220,16 +220,126 @@
 }
 
 /* ===== Ensure text stays dark on mobile ===== */
+/* ===== Mobile Responsive Table ===== */
 @media (max-width: 768px) {
+    .dashboard-container { 
+        padding: 15px !important; 
+    }
+
+    /* Fix white text for headings ONLY */
+    .current-bills-section h3,
+    .transaction-overview-section h3 {
+        color: #1e293b !important;
+        font-weight: 600 !important;
+    }
+
+    .bills-overview-cards { 
+        grid-template-columns: 1fr !important; 
+    }
+
+    /* KEEP CARD TEXT WHITE */
+    .blue-card,
+    .yellow-card,
+    .red-card {
+        color: #fff !important;
+    }
+
+    .blue-card h2,
+    .yellow-card h2,
+    .red-card h2,
+    .blue-card p,
+    .yellow-card p,
+    .red-card p {
+        color: #fff !important;
+    }
+
+    .unit-lease-info { 
+        flex-direction: column !important; 
+        gap: 5px !important; 
+    }
+
+    /* Convert table to card layout on mobile */
+    .bills-table, 
+    .bills-table thead, 
+    .bills-table tbody, 
+    .bills-table th, 
+    .bills-table td, 
+    .bills-table tr {
+        display: block !important;
+    }
+
+    .bills-table thead tr {
+        position: absolute !important;
+        top: -9999px !important;
+        left: -9999px !important;
+    }
+
+    .bills-table tr {
+        margin-bottom: 15px !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 10px !important;
+        padding: 15px !important;
+        background: white !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    }
+
+    .bills-table td {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 10px 0 !important;
+        border: none !important;
+        text-align: right !important;
+        font-size: 14px !important;
+        color: #333 !important;
+    }
+
+    .bills-table td::before {
+        content: attr(data-label) !important;
+        font-weight: 600 !important;
+        color: #333 !important;
+        text-align: left !important;
+    }
+
+    /* Add data labels for each cell */
+    .bills-table td:nth-of-type(1):before { content: "Bill Type:" !important; }
+    .bills-table td:nth-of-type(2):before { content: "Amount:" !important; }
+    .bills-table td:nth-of-type(3):before { content: "Due Date:" !important; }
+    .bills-table td:nth-of-type(4):before { content: "Status:" !important; }
+    .bills-table td:nth-of-type(5):before { content: "Action:" !important; }
+
+    /* Make action button full width and centered below */
+    .action-cell {
+        display: flex !important;
+        justify-content: center !important;
+        padding-top: 15px !important;
+        border-top: 1px solid #e5e7eb !important;
+    }
+
+    .action-cell::before {
+        display: none !important;
+    }
+
+    .bills-table td a.action-link {
+        width: 100% !important;
+        max-width: 200px !important;
+        margin: 0 auto !important;
+    }
+
+    .chart-container { 
+        gap: 10px !important; 
+    }
+
+    /* Force only specific text to be dark in mobile view */
     body, 
     .dashboard-container,
     .welcome-header p,
     .welcome-header span,
-    .current-bills-section h3,
-    .transaction-overview-section h3,
+    .current-bills-section,
+    .transaction-overview-section,
     table,
     th,
     td {
-        color: #1e293b !important;  /* ✅ Force dark gray text */
+        color: #1e293b !important;
     }
 }

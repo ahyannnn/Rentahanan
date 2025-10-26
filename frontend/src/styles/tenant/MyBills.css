@@ -59,7 +59,69 @@
     transition: 0.2s;
 }
 
-/* ===== Status (Pure Text Only - NO BACKGROUNDS) ===== */
+/* ===== Action Buttons ===== */
+.action-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100px;
+    height: 36px;
+    text-align: center;
+    display: block;
+    line-height: 20px;
+    margin: 0 auto;
+}
+
+.pay-now-btn {
+    background: #0a2d8d !important;
+    color: white !important;
+    border: 1px solid #0a2d8d !important;
+}
+
+.pay-now-btn:hover {
+    background: #072d6d !important;
+    border-color: #072d6d !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(10, 45, 141, 0.3);
+}
+
+.view-btn {
+    background: #ff9800 !important;
+    color: white !important;
+    border: 1px solid #ff9800 !important;
+}
+
+.view-btn:hover {
+    background: #f57c00 !important;
+    border-color: #f57c00 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3);
+}
+
+.receipt-btn {
+    background: #28a745 !important;
+    color: white !important;
+    border: 1px solid #28a745 !important;
+}
+
+.receipt-btn:hover {
+    background: #1e7e34 !important;
+    border-color: #1e7e34 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+/* Ensure table cell centers the button */
+.bills-table td:last-child {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* ===== Status Text Colors Only ===== */
 .status {
     font-weight: 700;
     background: none !important;
@@ -68,19 +130,19 @@
 }
 
 .status.unpaid {
-    color: #dc3545; /* Red */
+    color: #dc3545;
 }
 
 .status.paid {
-    color: #198754; /* Green */
+    color: #198754;
 }
 
 .status.pending {
-    color: #d39e00; /* Yellow/Gold - NO BACKGROUND */
+    color: #d39e00;
 }
 
 .status.forvalidation {
-    color: #d39e00; /* Yellow/Gold - NO BACKGROUND */
+    color: #d39e00;
 }
 
 /* ===== Checkbox Styles ===== */
@@ -116,7 +178,7 @@
     border-radius: 8px;
     border: 1px solid #e9ecef;
     min-width: 250px;
-    margin-right: auto; /* This pushes it to the left */
+    margin-right: auto;
 }
 
 .total-label {
@@ -134,9 +196,9 @@
 }
 
 .proceed-btn {
-    background: #0a2d8d;
-    color: white;
-    border: none;
+    background: #0a2d8d !important;
+    color: white !important;
+    border: none !important;
     padding: 12px 24px;
     border-radius: 8px;
     cursor: pointer;
@@ -144,16 +206,17 @@
     transition: 0.3s ease;
     white-space: nowrap;
     min-width: 160px;
-    margin-left: auto; /* This pushes it to the right */
+    margin-left: auto;
 }
 
 .proceed-btn:hover:not(:disabled) {
-    background: #031c5d;
+    background: #072d6d !important;
     transform: translateY(-1px);
 }
 
 .proceed-btn:disabled {
-    background: #ccc;
+    background: #ccc !important;
+    color: #888 !important;
     cursor: not-allowed;
     transform: none;
 }
@@ -176,8 +239,8 @@
     background: #fff;
     border-radius: 16px;
     width: 440px;
-    max-height: 85vh; /* Reduced from 90vh */
-    overflow: hidden; /* Changed from auto to hidden */
+    max-height: 85vh;
+    overflow: hidden;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
@@ -213,11 +276,11 @@
 }
 
 .back-btn {
-    background: none;
-    border: none;
+    background: none !important;
+    border: none !important;
     font-size: 1.5rem;
     cursor: pointer;
-    color: #061a53;
+    color: #061a53 !important;
     padding: 8px;
     margin: -8px;
     z-index: 2;
@@ -293,14 +356,14 @@
 }
 
 .payment-card:hover {
-    border-color: #007bff;
-    box-shadow: 0 2px 6px rgba(0, 123, 255, 0.15);
+    border-color: #0a2d8d !important;
+    box-shadow: 0 2px 6px rgba(10, 45, 141, 0.15);
 }
 
 .payment-card.selected {
-    border-color: #007bff;
+    border-color: #0a2d8d !important;
     background: #f0f7ff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+    box-shadow: 0 0 0 2px rgba(10, 45, 141, 0.2);
 }
 
 .payment-card h4 {
@@ -380,19 +443,19 @@
 
 .choose-file-btn {
     display: inline-block;
-    background: #e9ecef;
+    background: #e9ecef !important;
+    color: #000 !important;
     padding: 0.5rem 1rem;
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.85rem;
-    color: #000;
-    border: 1px solid #ccc;
+    border: 1px solid #ccc !important;
     transition: 0.2s ease;
     margin-top: 0.3rem;
 }
 
 .choose-file-btn:hover {
-    background: #dee2e6;
+    background: #dee2e6 !important;
 }
 
 .file-name {
@@ -415,8 +478,8 @@
     padding: 0.8rem;
     border: none;
     border-radius: 8px;
-    background: #007bff;
-    color: #fff;
+    background: #0a2d8d !important;
+    color: #fff !important;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
@@ -424,17 +487,17 @@
 }
 
 .submit-btn:hover:not(:disabled) {
-    background: #0056d8;
+    background: #072d6d !important;
     transform: translateY(-1px);
 }
 
 .submit-btn:disabled {
-    background: #ccc;
+    background: #ccc !important;
+    color: #888 !important;
     cursor: not-allowed;
     transform: none;
 }
 
-/* ===== MOBILE ONLY FIXES ===== */
 /* ===== MOBILE ONLY FIXES ===== */
 @media (max-width: 768px) {
     .bills-invoice-container {
@@ -483,6 +546,7 @@
 
     .bills-table td:last-child {
         border-bottom: none;
+        justify-content: center;
     }
 
     /* Select Checkbox */
@@ -539,6 +603,15 @@
         text-align: left;
     }
 
+    /* Action */
+    .bills-table td:nth-child(7)::before {
+        content: "Action";
+        font-weight: 600;
+        color: #444;
+        flex-basis: 40%;
+        text-align: left;
+    }
+
     /* MOBILE STATUS FIX - NO BACKGROUNDS */
     .status {
         background: none !important;
@@ -561,6 +634,48 @@
         color: #d39e00 !important;
     }
 
+    /* MOBILE ACTION BUTTONS */
+    .action-btn {
+        width: 90px !important;
+        height: 34px !important;
+        font-size: 0.8rem !important;
+        margin: 0 auto !important;
+        line-height: 18px !important;
+    }
+
+    .pay-now-btn {
+        background: #0a2d8d !important;
+        color: white !important;
+        border: 1px solid #0a2d8d !important;
+    }
+
+    .pay-now-btn:hover {
+        background: #072d6d !important;
+        border-color: #072d6d !important;
+    }
+
+    .view-btn {
+        background: #ff9800 !important;
+        color: white !important;
+        border: 1px solid #ff9800 !important;
+    }
+
+    .view-btn:hover {
+        background: #f57c00 !important;
+        border-color: #f57c00 !important;
+    }
+
+    .receipt-btn {
+        background: #28a745 !important;
+        color: white !important;
+        border: 1px solid #28a745 !important;
+    }
+
+    .receipt-btn:hover {
+        background: #1e7e34 !important;
+        border-color: #1e7e34 !important;
+    }
+
     .bottom-actions {
         justify-content: center;
     }
@@ -580,6 +695,12 @@
     .proceed-btn {
         width: 100%;
         margin-left: 0;
+        background: #0a2d8d !important;
+        color: white !important;
+    }
+
+    .proceed-btn:hover:not(:disabled) {
+        background: #072d6d !important;
     }
 
     .bill-checkbox {
@@ -637,7 +758,7 @@
 
     /* FIX SUBMIT BUTTON COLOR */
     .submit-btn {
-        background: #007bff !important;
+        background: #0a2d8d !important;
         color: #ffffff !important;
         border: none !important;
         padding: 0.8rem !important;
@@ -649,7 +770,7 @@
     }
 
     .submit-btn:hover:not(:disabled) {
-        background: #0056d8 !important;
+        background: #072d6d !important;
         color: #ffffff !important;
     }
 
@@ -769,6 +890,15 @@
     .payment-card p {
         color: #666666 !important;
     }
+
+    /* MOBILE PAYMENT CARD HOVER FIX */
+    .payment-card:hover {
+        border-color: #0a2d8d !important;
+    }
+    
+    .payment-card.selected {
+        border-color: #0a2d8d !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -809,5 +939,31 @@
     .bills-table td {
         padding: 10px 8px;
         font-size: 13px;
+    }
+
+    /* Mobile action buttons for very small screens */
+    .action-btn {
+        width: 85px !important;
+        height: 32px !important;
+        font-size: 0.75rem !important;
+        line-height: 16px !important;
+    }
+
+    /* Ensure all mobile buttons keep their colors */
+    .pay-now-btn,
+    .view-btn,
+    .receipt-btn,
+    .proceed-btn,
+    .submit-btn {
+        background: #0a2d8d !important;
+        color: white !important;
+    }
+
+    .view-btn {
+        background: #ff9800 !important;
+    }
+
+    .receipt-btn {
+        background: #28a745 !important;
     }
 }
