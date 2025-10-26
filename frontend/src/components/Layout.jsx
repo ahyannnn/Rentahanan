@@ -11,13 +11,14 @@ import {
   HelpCircle,
   ClipboardList,
   Camera,
-  X, // Still used for the close button icon
-  Mail, 
+  X,
+  Mail,
   Phone,
-  Calendar, 
-  Edit, 
+  Calendar,
+  Edit,
   Save,
   RotateCcw,
+  User, // Add this import
 } from "lucide-react";
 import "../styles/tenant/Layout.css";
 
@@ -40,9 +41,9 @@ const mockUsersData = {
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  
+
   // Controls the Edit/View mode of the profile details
-  const [isEditing, setIsEditing] = useState(false); 
+  const [isEditing, setIsEditing] = useState(false);
 
   // Initialize role and application status
   const initialRole = (localStorage.getItem("userRole") || "tenant").toLowerCase();
@@ -52,7 +53,7 @@ const Layout = () => {
   const [userData, setUserData] = useState(JSON.parse(JSON.stringify(mockUsersData[initialRole])));
   // Keep track of original data for "Cancel" functionality
   const [originalData, setOriginalData] = useState(JSON.parse(JSON.stringify(mockUsersData[initialRole])));
-  
+
   const [applicationStatus, setApplicationStatus] = useState(
     initialRole === "tenant"
       ? localStorage.getItem("applicationStatus") || "Pending"
@@ -70,7 +71,7 @@ const Layout = () => {
       const role = localStorage.getItem("userRole") || "tenant";
       const newRole = role.toLowerCase();
       setUserRole(newRole);
-      
+
       const newUserData = JSON.parse(JSON.stringify(mockUsersData[newRole] || mockUsersData.tenant));
       setUserData(newUserData);
       setOriginalData(newUserData); // Update original data as well
@@ -89,15 +90,15 @@ const Layout = () => {
 
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
-  }, []); 
+  }, []);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
 
   // HANDLERS FOR THE PROFILE MODAL
   const openProfileModal = () => {
-      setIsProfileModalOpen(true);
-      setIsEditing(false); // Always start in View mode
+    setIsProfileModalOpen(true);
+    setIsEditing(false); // Always start in View mode
   }
   const closeProfileModal = () => setIsProfileModalOpen(false);
 
@@ -105,22 +106,22 @@ const Layout = () => {
   const toggleEditMode = () => setIsEditing(true);
 
   const handleCancelEdit = () => {
-      // Revert changes to original data
-      setUserData(originalData); 
-      setIsEditing(false);
+    // Revert changes to original data
+    setUserData(originalData);
+    setIsEditing(false);
   };
 
   const handleSaveEdit = () => {
-      // In a real application, you would make an API call here.
-      // After a successful save:
-      setOriginalData(JSON.parse(JSON.stringify(userData))); // Update original data
-      console.log("Saving changes:", userData);
-      setIsEditing(false);
+    // In a real application, you would make an API call here.
+    // After a successful save:
+    setOriginalData(JSON.parse(JSON.stringify(userData))); // Update original data
+    console.log("Saving changes:", userData);
+    setIsEditing(false);
   };
-  
+
   const handleInputChange = (e) => {
-      const { name, value } = e.target;
-      setUserData(prev => ({ ...prev, [name]: value }));
+    const { name, value } = e.target;
+    setUserData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleLogout = () => {
@@ -146,7 +147,7 @@ const Layout = () => {
       if (!dateString) return "N/A";
       const parts = dateString.split(' ')[0].split('-');
       // Assuming YYYY-MM-DD format
-      return `${parts[1]}/${parts[2]}/${parts[0]}`; 
+      return `${parts[1]}/${parts[2]}/${parts[0]}`;
     }
 
     return (
@@ -173,90 +174,90 @@ const Layout = () => {
                 height="120"
                 style={{ borderRadius: "50%", background: "#eee", objectFit: "cover" }}
               />
-               {/* Separate Upload Button */}
-               <label className="upload-btn-icon-label" title="Change Profile Picture">
-                    <Camera size={18} />
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileUpload}
-                        style={{ display: "none" }}
-                    />
-                </label>
+              {/* Separate Upload Button */}
+              <label className="upload-btn-icon-label" title="Change Profile Picture">
+                <Camera size={18} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  style={{ display: "none" }}
+                />
+              </label>
             </div>
-            
+
             {/* Display User Details */}
             <h3 className="user-full-name">{userData.fullName}</h3>
             <p className="user-role-label">Role: {userRole.charAt(0).toUpperCase() + userRole.slice(1)}</p>
 
             <div className="user-details-list">
-                {/* Email - Editable */}
-                <div className="detail-item">
-                    <Mail size={18} className="detail-icon" />
-                    {isEditing ? (
-                        <input
-                            type="email"
-                            name="email"
-                            value={userData.email}
-                            onChange={handleInputChange}
-                            className="editable-input"
-                        />
-                    ) : (
-                        <span>{userData.email}</span>
-                    )}
-                </div>
-                {/* Phone - Editable */}
-                <div className="detail-item">
-                    <Phone size={18} className="detail-icon" />
-                    {isEditing ? (
-                        <input
-                            type="tel"
-                            name="phone"
-                            value={userData.phone}
-                            onChange={handleInputChange}
-                            className="editable-input"
-                        />
-                    ) : (
-                        <span>{userData.phone}</span>
-                    )}
-                </div>
-                {/* Date Created - View Only */}
-                <div className="detail-item detail-view-only">
-                    <Calendar size={18} className="detail-icon" />
-                    <span title={userData.dateCreated}>
-                       Joined: {formatDate(userData.dateCreated)}
-                    </span>
-                </div>
+              {/* Email - Editable */}
+              <div className="detail-item">
+                <Mail size={18} className="detail-icon" />
+                {isEditing ? (
+                  <input
+                    type="email"
+                    name="email"
+                    value={userData.email}
+                    onChange={handleInputChange}
+                    className="editable-input"
+                  />
+                ) : (
+                  <span>{userData.email}</span>
+                )}
+              </div>
+              {/* Phone - Editable */}
+              <div className="detail-item">
+                <Phone size={18} className="detail-icon" />
+                {isEditing ? (
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={userData.phone}
+                    onChange={handleInputChange}
+                    className="editable-input"
+                  />
+                ) : (
+                  <span>{userData.phone}</span>
+                )}
+              </div>
+              {/* Date Created - View Only */}
+              <div className="detail-item detail-view-only">
+                <Calendar size={18} className="detail-icon" />
+                <span title={userData.dateCreated}>
+                  Joined: {formatDate(userData.dateCreated)}
+                </span>
+              </div>
             </div>
 
             {/* ACTION BUTTONS */}
             <div className="modal-actions">
-                {isEditing ? (
-                    <>
-                        <button className="btn-save" onClick={handleSaveEdit}>
-                            <Save size={16} style={{ marginRight: "5px" }} />
-                            Save Changes
-                        </button>
-                        <button className="btn-cancel" onClick={handleCancelEdit}>
-                            <RotateCcw size={16} style={{ marginRight: "5px" }} />
-                            Cancel
-                        </button>
-                    </>
-                ) : (
-                    <button className="btn-edit" onClick={toggleEditMode}>
-                        <Edit size={16} style={{ marginRight: "5px" }} />
-                        Edit Profile
-                    </button>
-                )}
+              {isEditing ? (
+                <>
+                  <button className="btn-save" onClick={handleSaveEdit}>
+                    <Save size={16} style={{ marginRight: "5px" }} />
+                    Save Changes
+                  </button>
+                  <button className="btn-cancel" onClick={handleCancelEdit}>
+                    <RotateCcw size={16} style={{ marginRight: "5px" }} />
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <button className="btn-edit" onClick={toggleEditMode}>
+                  <Edit size={16} style={{ marginRight: "5px" }} />
+                  Edit Profile
+                </button>
+              )}
             </div>
-            
+
             <p className="modal-tip">JPG or PNG allowed. Max size 2MB.</p>
           </div>
         </div>
       </div>
     );
   };
-  
+
 
   // Tenant links by application status
   const tenantLinksByStatus = {
@@ -294,7 +295,7 @@ const Layout = () => {
     { name: "Notifications", to: "/owner/notifications", icon: Bell },
     { name: "User Management", to: "/owner/user", icon: UserCog },
   ];
-  
+
   const links =
     userRole.toLowerCase() === "owner"
       ? ownerLinks
@@ -352,14 +353,22 @@ const Layout = () => {
           <button className="notif-btn">
             <Bell size={20} />
           </button>
-          <img
-            src={profilePictureUrl} 
-            alt="Profile"
-            width="40"
-            height="40"
-            style={{ borderRadius: "50%", background: "#ccc", cursor: "pointer", objectFit: "cover" }}
+          {/* Replace the img with User icon */}
+          <div
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              background: "#0a2d8d",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
             onClick={openProfileModal}
-          />
+          >
+            <User size={24} color="white" />
+          </div>
         </div>
       </div>
 
