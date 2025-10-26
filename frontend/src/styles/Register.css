@@ -417,7 +417,7 @@ input:focus {
   .auth-card,
   label,
   .show-btn {
-    color: white;
+    color: white !important;
   }
 
   .auth-title,

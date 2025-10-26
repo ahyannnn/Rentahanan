@@ -151,7 +151,7 @@ const Forgot = () => {
           <div className="forgot-text">
             <h1>Forgot Password?</h1>
             <p>
-              Don’t worry — we’ve got you covered. Follow the steps to reset your
+              Don't worry — we've got you covered. Follow the steps to reset your
               password.
             </p>
           </div>
@@ -211,7 +211,7 @@ const Forgot = () => {
                     {loading ? "Verifying..." : "Verify Code"}
                   </button>
                   <div className="forgot-bottom-text">
-                    Didn’t receive code?{" "}
+                    Didn't receive code?{" "}
                     <span onClick={() => handleForgot()} className="resend-link">
                       Resend it
                     </span>
@@ -220,47 +220,51 @@ const Forgot = () => {
               </>
             )}
 
-            {/* Step 3: New password */}
+            {/* Step 3: New password - FIXED STRUCTURE */}
             {step === 3 && (
               <>
                 <h2 className="forgot-title">Set New Password</h2>
                 <form onSubmit={handleResetPassword}>
                   {/* New Password */}
-                  <div className="forgot-input-wrapper">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="New Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="forgot-input"
-                      required
-                    />
-                    <span
-                      className="toggle-password"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? "Hide" : "Show"}
-                    </span>
+                  <div className="forgot-form-group">
+                    <label>New Password</label>
+                    <div className="forgot-input-wrapper">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter new password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="toggle-password"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? "HIDE" : "SHOW"}
+                      </button>
+                    </div>
                   </div>
 
                   {/* Confirm Password */}
-                  <div className="forgot-input-wrapper">
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Confirm Password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="forgot-input"
-                      required
-                    />
-                    <span
-                      className="toggle-password"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                    >
-                      {showConfirmPassword ? "Hide" : "Show"}
-                    </span>
+                  <div className="forgot-form-group">
+                    <label>Confirm Password</label>
+                    <div className="forgot-input-wrapper">
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Confirm new password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="toggle-password"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        {showConfirmPassword ? "HIDE" : "SHOW"}
+                      </button>
+                    </div>
                   </div>
 
                   {error && <p className="error-text">{error}</p>}
