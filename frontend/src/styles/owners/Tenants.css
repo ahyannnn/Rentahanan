@@ -1,3 +1,128 @@
+.tenants-container {
+    padding: 30px;
+    background-color: #f4f6f9;
+    min-height: 100vh;
+    font-family: "Poppins", sans-serif;
+}
+
+.tenants-title {
+    color: #061a53 !important;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+/* === HEADER WITH TABS AND SEARCH === */
+.tenants-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.tab {
+    padding: 10px 20px;
+    border: 2px solid #0a2d8d !important;
+    background: white !important;
+    color: #0a2d8d !important;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tab:hover {
+    background: #0a2d8d !important;
+    color: white !important;
+}
+
+.tab.active {
+    background: #0a2d8d !important;
+    color: white !important;
+}
+
+.search-input {
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    min-width: 250px;
+    transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #0a2d8d;
+}
+
+/* === CARDS GRID === */
+.tenants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.tenant-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.tenant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.tenant-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    margin-bottom: 15px;
+}
+
+.tenant-info h4 {
+    color: #061a53 !important;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.tenant-info p {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 4px 0;
+}
+
+/* === BUTTONS WITH !important === */
+.view-profile-btn {
+    background: #0a2d8d !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.view-profile-btn:hover {
+    background: #072d6d !important;
+    transform: translateY(-1px);
+}
+
+/* === MODAL STYLES === */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -10,133 +135,83 @@
     align-items: center;
     z-index: 1000;
     padding: 15px;
-    overflow: hidden; /* No page scroll */
+    overflow: hidden;
 }
 
 .modal-content {
     background: #fff;
     border-radius: 16px;
     padding: 25px 30px;
-    max-width: 400px;
+    max-width: 500px;
     width: 100%;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     position: relative;
     font-family: "Poppins", sans-serif;
-    text-align: left; 
-    display: block; 
-    /* TINANGGAL LAHAT NG HEIGHT/SCROLL RULES */
-}
-.approve-section {
-  margin-top: 30px;
-  text-align: center;
+    text-align: left;
+    display: block;
 }
 
-.approve-btn {
-  background-color: #28a745;
-  color: white;
-  font-size: 1.2rem;
-  font-weight: bold;
-  padding: 15px 40px;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.approve-btn:hover {
-  background-color: #218838;
-  transform: scale(1.05);
-}
-
-.reject-btn {
-  background-color: #d9534f;
-  color: white;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 6px;
-  margin-left: 10px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.reject-btn:hover {
-  background-color: #c9302c;
-}
-
-.approve-section {
-  margin-top: 20px;
-  text-align: center;
-}
-
-/* --- HEADER FIX (Full Name + Close Button) --- */
 .modal-header-fixed {
     display: flex;
     justify-content: space-between;
-    align-items: center; 
+    align-items: center;
     padding-bottom: 15px;
     border-bottom: 1px solid #eee;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .modal-content h2 {
-    margin: 0; /* Remove default margin for h2 */
+    margin: 0;
     font-size: 1.5rem;
-    color: #0b3c91;
-    text-align: left; 
+    color: #061a53 !important;
+    text-align: left;
 }
 
-/* --- CLOSE BUTTON (Final, Guaranteed Style) --- */
-/* --- CLOSE BUTTON (Final Style with Color Fixes) --- */
 .close-btn {
-    /* Padding at Font Size - Dapat nagwo-work na ito */
-    padding: 7px 15px !important; 
-    font-size: 13px !important; 
+    padding: 7px 15px !important;
+    font-size: 13px !important;
     font-weight: 500;
-    border: none;
+    border: none !important;
     border-radius: 8px;
     cursor: pointer;
     transition: 0.2s ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    
-    /* FIX FOR BACKGROUND AND TEXT COLOR */
-    background-color: #f0f0f0 !important; /* Siguraduhin natin na aabutan ang background */
-    color: #0b3c91 !important;           /* Siguraduhin natin ang text color */
+    background: #f0f0f0 !important;
+    color: #061a53 !important;
 }
 
 .close-btn:hover {
-    background-color: #0b3c91 !important; /* Siguraduhin ang hover background */
-    color: #fff !important;               /* Siguraduhin ang hover text color (Puti) */
-    box-shadow: 0 2px 5px rgba(11, 60, 145, 0.4);
+    background: #0a2d8d !important;
+    color: #fff !important;
 }
-/* --- CONTENT STYLING --- */
+
 .modal-content p {
     font-size: 14px;
     color: #333;
-    margin: 8px 0; 
+    margin: 10px 0;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .modal-content p strong {
-    font-weight: 600; 
-    color: #0b3c91;
+    font-weight: 600;
+    color: #061a53 !important;
     display: inline-block;
-    min-width: 110px;
+    min-width: 120px;
     flex-shrink: 0;
-    margin-right: 5px; 
 }
 
+/* === DOCUMENT BUTTONS === */
 .document-row {
-    margin: 10px 0;
+    margin: 15px 0;
 }
 
-/* Document Button Styling */
 .document-btn {
-    background-color: #f0f0f0; 
-    color: #0b3c91;
-    border: 1px solid #ccc;
-    padding: 4px 10px;
+    background: #f0f0f0 !important;
+    color: #061a53 !important;
+    border: 1px solid #ccc !important;
+    padding: 6px 12px;
     font-size: 12px;
     font-weight: 500;
     border-radius: 6px;
@@ -145,29 +220,186 @@
 }
 
 .document-btn:hover {
-    background-color: #e0e0e0;
+    background: #e0e0e0 !important;
 }
 
 .document-btn.action-primary {
-    background-color: #0b3c91;
-    color: #fff;
-    border-color: #0b3c91;
+    background: #0a2d8d !important;
+    color: #fff !important;
+    border-color: #0a2d8d !important;
 }
 
 .document-btn.action-primary:hover {
-    background-color: #072d6d;
+    background: #072d6d !important;
 }
 
-/* --- RESPONSIVE FIXES --- */
-@media (max-width: 600px) {
-    .modal-header-fixed {
+/* === ACTION BUTTONS === */
+.issue-contract-btn,
+.advance-payment-btn {
+    background: #0a2d8d !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 10px 5px;
+    width: calc(50% - 10px);
+}
+
+.issue-contract-btn:hover,
+.advance-payment-btn:hover {
+    background: #072d6d !important;
+    transform: translateY(-1px);
+}
+
+/* === APPROVE SECTION === */
+.approve-section {
+    margin-top: 25px;
+    text-align: center;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.approve-btn {
+    background: #28a745 !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 10px;
+}
+
+.approve-btn:hover:not(:disabled) {
+    background: #218838 !important;
+    transform: translateY(-1px);
+}
+
+.approve-btn:disabled {
+    background: #ccc !important;
+    color: #888 !important;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.reject-btn {
+    background: #dc3545 !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reject-btn:hover {
+    background: #c82333 !important;
+    transform: translateY(-1px);
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+    .tenants-container {
+        padding: 20px;
+    }
+
+    .tenants-header {
         flex-direction: column;
         align-items: stretch;
-        gap: 10px;
     }
-    
+
+    .tabs {
+        justify-content: center;
+    }
+
+    .search-input {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .tenants-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        padding: 20px;
+        margin: 10px;
+    }
+
+    .modal-header-fixed {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+
     .close-btn {
         width: 100%;
-        max-width: none;
     }
+
+    .issue-contract-btn,
+    .advance-payment-btn {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    .approve-section {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .approve-btn,
+    .reject-btn {
+        width: 100%;
+        margin: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .tenants-container {
+        padding: 15px;
+    }
+
+    .tenant-card {
+        padding: 15px;
+    }
+
+    .modal-content {
+        padding: 15px;
+    }
+
+    .modal-content p {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .modal-content p strong {
+        min-width: auto;
+    }
+}
+
+/* Force dark text colors */
+.tenants-container,
+.tenants-container * {
+    color: #1e1e2f !important;
+}
+
+.tenant-card,
+.tenant-card * {
+    color: #1e1e2f !important;
+}
+
+.modal-content,
+.modal-content * {
+    color: #1e1e2f !important;
+}
+
+.view-profile-btn {
+    color: #fff !important;
 }

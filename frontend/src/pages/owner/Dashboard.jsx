@@ -4,7 +4,7 @@ import {
   Home,
   FileWarning,
   Wallet,
-} from "lucide-react"; // professional icons
+} from "lucide-react";
 import "../../styles/owners/Dashboard.css";
 
 const Dashboard = () => {
@@ -54,7 +54,7 @@ const Dashboard = () => {
       <div className="table-section">
         <div className="data-card">
           <h3>Pending Applications</h3>
-          <table className="data-table uniform-table">
+          <table className="data-table pending-applications">
             <thead>
               <tr>
                 <th style={{ width: "40%" }}>Name</th>
@@ -65,9 +65,9 @@ const Dashboard = () => {
             <tbody>
               {[1, 2, 3].map((i) => (
                 <tr key={i}>
-                  <td>Juan Dela Cruz</td>
-                  <td>House 2</td>
-                  <td>
+                  <td data-label="Name">Juan Dela Cruz</td>
+                  <td data-label="Unit">House 2</td>
+                  <td data-label="Action">
                     <button className="view-btn">View</button>
                   </td>
                 </tr>
@@ -78,7 +78,7 @@ const Dashboard = () => {
 
         <div className="data-card">
           <h3>Recent Invoices</h3>
-          <table className="data-table uniform-table">
+          <table className="data-table recent-invoices">
             <thead>
               <tr>
                 <th style={{ width: "40%" }}>Name</th>
@@ -89,9 +89,9 @@ const Dashboard = () => {
             <tbody>
               {[1, 2, 3].map((i) => (
                 <tr key={i}>
-                  <td>Juan Dela Cruz</td>
-                  <td>2025-09-0{i}</td>
-                  <td>P25090{i}</td>
+                  <td data-label="Name">Juan Dela Cruz</td>
+                  <td data-label="Date">2025-09-0{i}</td>
+                  <td data-label="Invoice No.">P25090{i}</td>
                 </tr>
               ))}
             </tbody>
