@@ -145,41 +145,42 @@ const Forgot = () => {
   };
 
   return (
-    <div className="forgot-container">
-      <div className="forgot-wrapper">
-        <div className="forgot-left">
-          <div className="forgot-text">
-            <h1>Forgot Password?</h1>
-            <p>
+    <div className="forgot-container-Forgot">
+      <div className="forgot-wrapper-Forgot">
+        <div className="forgot-left-Forgot">
+          <div className="forgot-text-Forgot">
+            <h1 className="forgot-heading-Forgot">Forgot Password?</h1>
+            <p className="forgot-description-Forgot">
               Don't worry — we've got you covered. Follow the steps to reset your
               password.
             </p>
           </div>
         </div>
 
-        <div className="forgot-right">
-          <div className="forgot-card">
+        <div className="forgot-right-Forgot">
+          <div className="forgot-card-Forgot">
             {/* Step 1: Enter email */}
             {step === 1 && (
               <>
-                <h2 className="forgot-title">Reset Password</h2>
-                <form onSubmit={handleForgot}>
-                  <div className="forgot-form-group">
-                    <label>Email Address</label>
+                <h2 className="forgot-title-Forgot">Reset Password</h2>
+                <form onSubmit={handleForgot} className="forgot-form-Forgot">
+                  <div className="forgot-form-group-Forgot">
+                    <label className="forgot-label-Forgot">Email Address</label>
                     <input
+                      className="forgot-input-Forgot"
                       type="email"
                       placeholder="Enter your email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
-                    {error && <p className="error-text">{error}</p>}
+                    {error && <p className="error-text-Forgot">{error}</p>}
                   </div>
-                  <button type="submit" className="forgot-btn" disabled={loading}>
+                  <button type="submit" className="forgot-btn-Forgot" disabled={loading}>
                     {loading ? "Sending..." : "Send Code"}
                   </button>
-                  <div className="forgot-bottom-text">
-                    Remembered password? <Link to="/login">Back to Login</Link>
+                  <div className="forgot-bottom-text-Forgot">
+                    Remembered password? <Link to="/login" className="forgot-link-Forgot">Back to Login</Link>
                   </div>
                 </form>
               </>
@@ -188,12 +189,12 @@ const Forgot = () => {
             {/* Step 2: Enter verification code */}
             {step === 2 && (
               <>
-                <h2 className="forgot-title">Enter Verification Code</h2>
-                <p style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+                <h2 className="forgot-title-Forgot">Enter Verification Code</h2>
+                <p className="forgot-instruction-Forgot">
                   Please enter the 6-digit code sent to your email.
                 </p>
-                <form onSubmit={handleVerify}>
-                  <div className="code-input-group">
+                <form onSubmit={handleVerify} className="forgot-form-Forgot">
+                  <div className="code-input-group-Forgot">
                     {code.map((digit, index) => (
                       <input
                         key={index}
@@ -202,17 +203,17 @@ const Forgot = () => {
                         value={digit}
                         ref={(el) => (codeRefs.current[index] = el)}
                         onChange={(e) => handleCodeChange(e.target.value, index)}
-                        className="code-input"
+                        className="code-input-Forgot"
                       />
                     ))}
                   </div>
-                  {error && <p className="error-text">{error}</p>}
-                  <button type="submit" className="forgot-btn" disabled={loading}>
+                  {error && <p className="error-text-Forgot">{error}</p>}
+                  <button type="submit" className="forgot-btn-Forgot" disabled={loading}>
                     {loading ? "Verifying..." : "Verify Code"}
                   </button>
-                  <div className="forgot-bottom-text">
+                  <div className="forgot-bottom-text-Forgot">
                     Didn't receive code?{" "}
-                    <span onClick={() => handleForgot()} className="resend-link">
+                    <span onClick={() => handleForgot()} className="resend-link-Forgot">
                       Resend it
                     </span>
                   </div>
@@ -220,16 +221,17 @@ const Forgot = () => {
               </>
             )}
 
-            {/* Step 3: New password - FIXED STRUCTURE */}
+            {/* Step 3: New password */}
             {step === 3 && (
               <>
-                <h2 className="forgot-title">Set New Password</h2>
-                <form onSubmit={handleResetPassword}>
+                <h2 className="forgot-title-Forgot">Set New Password</h2>
+                <form onSubmit={handleResetPassword} className="forgot-form-Forgot">
                   {/* New Password */}
-                  <div className="forgot-form-group">
-                    <label>New Password</label>
-                    <div className="forgot-input-wrapper">
+                  <div className="forgot-form-group-Forgot">
+                    <label className="forgot-label-Forgot">New Password</label>
+                    <div className="forgot-input-wrapper-Forgot">
                       <input
+                        className="forgot-input-Forgot"
                         type={showPassword ? "text" : "password"}
                         placeholder="Enter new password"
                         value={password}
@@ -238,7 +240,7 @@ const Forgot = () => {
                       />
                       <button
                         type="button"
-                        className="toggle-password"
+                        className="toggle-password-Forgot"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? "HIDE" : "SHOW"}
@@ -247,10 +249,11 @@ const Forgot = () => {
                   </div>
 
                   {/* Confirm Password */}
-                  <div className="forgot-form-group">
-                    <label>Confirm Password</label>
-                    <div className="forgot-input-wrapper">
+                  <div className="forgot-form-group-Forgot">
+                    <label className="forgot-label-Forgot">Confirm Password</label>
+                    <div className="forgot-input-wrapper-Forgot">
                       <input
+                        className="forgot-input-Forgot"
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Confirm new password"
                         value={confirmPassword}
@@ -259,7 +262,7 @@ const Forgot = () => {
                       />
                       <button
                         type="button"
-                        className="toggle-password"
+                        className="toggle-password-Forgot"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       >
                         {showConfirmPassword ? "HIDE" : "SHOW"}
@@ -267,9 +270,9 @@ const Forgot = () => {
                     </div>
                   </div>
 
-                  {error && <p className="error-text">{error}</p>}
+                  {error && <p className="error-text-Forgot">{error}</p>}
 
-                  <button type="submit" className="forgot-btn" disabled={loading}>
+                  <button type="submit" className="forgot-btn-Forgot" disabled={loading}>
                     {loading ? "Resetting..." : "Reset Password"}
                   </button>
                 </form>
@@ -278,13 +281,13 @@ const Forgot = () => {
 
             {/* Step 4: Success message */}
             {step === 4 && (
-              <div className="forgot-success">
-                <h2 className="forgot-title">Password Changed Successfully</h2>
-                <p style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+              <div className="forgot-success-Forgot">
+                <h2 className="forgot-title-Forgot">Password Changed Successfully</h2>
+                <p className="forgot-success-message-Forgot">
                   Your password has been updated. You can now log in using your new password.
                 </p>
                 <button
-                  className="forgot-btn"
+                  className="forgot-btn-Forgot"
                   onClick={() => (window.location.href = "/login")}
                 >
                   Back to Login

@@ -31,106 +31,126 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="dashboard-content">
+    <div className="dashboard-content-Tenant-Dashboard">
       {/* Header */}
-      <div className="welcome-header">
-        <p>
-          Welcome back, <span>Juan!</span>
+      <div className="welcome-header-Tenant-Dashboard">
+        <p className="welcome-text-Tenant-Dashboard">
+          Welcome back, <span className="welcome-name-Tenant-Dashboard">Juan!</span>
         </p>
-        <div className="unit-lease-info">
-          <span>Unit: 1</span>
-          <span>Lease: Since Jan 01, 2001</span>
+        <div className="unit-lease-info-Tenant-Dashboard">
+          <span className="unit-info-Tenant-Dashboard">Unit: 1</span>
+          <span className="lease-info-Tenant-Dashboard">Lease: Since Jan 01, 2001</span>
         </div>
       </div>
 
-      {/* Overview Cards (ENHANCED with Lucide Icons) */}
-      <div className="bills-overview-cards">
+      {/* Overview Cards */}
+      <div className="bills-overview-cards-Tenant-Dashboard">
         {/* Card 1: Current Bills (Blue Card) */}
-        <div className="card blue-card">
-          <div className="card-header">
-            <p>Current Bills</p>
-            {getCardIcon("Current Bills")}
+        <div className="card-Tenant-Dashboard blue-card-Tenant-Dashboard">
+          <div className="card-header-Tenant-Dashboard">
+            <p className="card-title-Tenant-Dashboard">Current Bills</p>
+            <div className="card-icon-Tenant-Dashboard">
+              {getCardIcon("Current Bills")}
+            </div>
           </div>
-          <h2>2</h2>
+          <h2 className="card-value-Tenant-Dashboard">2</h2>
         </div>
 
         {/* Card 2: Due Date (Yellow Card) */}
-        <div className="card yellow-card">
-          <div className="card-header">
-            <p>Due Date</p>
-            {getCardIcon("Due Date")}
+        <div className="card-Tenant-Dashboard yellow-card-Tenant-Dashboard">
+          <div className="card-header-Tenant-Dashboard">
+            <p className="card-title-Tenant-Dashboard">Due Date</p>
+            <div className="card-icon-Tenant-Dashboard">
+              {getCardIcon("Due Date")}
+            </div>
           </div>
-          <h2>01-01-0001</h2>
+          <h2 className="card-value-Tenant-Dashboard">01-01-0001</h2>
         </div>
 
         {/* Card 3: Balance (Red Card) */}
-        <div className="card red-card">
-          <div className="card-header">
-            <p>Balance</p>
-            {getCardIcon("Balance")}
+        <div className="card-Tenant-Dashboard red-card-Tenant-Dashboard">
+          <div className="card-header-Tenant-Dashboard">
+            <p className="card-title-Tenant-Dashboard">Balance</p>
+            <div className="card-icon-Tenant-Dashboard">
+              {getCardIcon("Balance")}
+            </div>
           </div>
-          <h2>₱0.00</h2>
+          <h2 className="card-value-Tenant-Dashboard">₱0.00</h2>
         </div>
       </div>
 
-      {/* Current Bills Table */}
-      <div className="current-bills-section">
-        <h3>Current Bills</h3>
-        <table className="bills-table">
-          <thead>
-            <tr>
-              <th>Bill Type</th>
-              <th>Amount</th>
-              <th>Due Date</th>
-              <th>Status</th>
-              <th className="action-header">Action</th> {/* Added class for alignment */}
-            </tr>
-          </thead>
-          <tbody>
-            {billsData.map((bill, index) => (
-              <tr key={index}>
-                <td data-label="Bill Type">{bill.billType}</td>
-                <td data-label="Amount">{bill.amount}</td>
-                <td data-label="Due Date">{bill.dueDate}</td>
-                {/* TASK 1: Removed the class for coloring the status cell */}
-                <td data-label="Status">
-                  {bill.status}
-                </td>
-                {/* TASK 2: Added class for aligning the button/link */}
-                <td data-label="Action" className="action-cell">
-                  <a
-                    href="#"
-                    className={`action-link action-${bill.action
-                      .toLowerCase()
-                      .replace(" ", "-")}`}
-                  >
-                    {bill.action}
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Main Content Grid */}
+      <div className="dashboard-main-grid-Tenant-Dashboard">
+        {/* Current Bills Table */}
+        <div className="current-bills-section-Tenant-Dashboard">
+          <div className="section-header-Tenant-Dashboard">
+            <h3 className="section-title-Tenant-Dashboard">Current Bills</h3>
+          </div>
+          <div className="table-container-Tenant-Dashboard">
+            <table className="bills-table-Tenant-Dashboard">
+              <thead className="table-header-Tenant-Dashboard">
+                <tr className="table-header-row-Tenant-Dashboard">
+                  <th className="table-heading-Tenant-Dashboard">Bill Type</th>
+                  <th className="table-heading-Tenant-Dashboard">Amount</th>
+                  <th className="table-heading-Tenant-Dashboard">Due Date</th>
+                  <th className="table-heading-Tenant-Dashboard">Status</th>
+                  <th className="table-heading-Tenant-Dashboard action-heading-Tenant-Dashboard">Action</th>
+                </tr>
+              </thead>
+              <tbody className="table-body-Tenant-Dashboard">
+                {billsData.map((bill, index) => (
+                  <tr key={index} className="table-row-Tenant-Dashboard">
+                    <td className="table-data-Tenant-Dashboard" data-label="Bill Type">
+                      <span className="bill-type-text-Tenant-Dashboard">{bill.billType}</span>
+                    </td>
+                    <td className="table-data-Tenant-Dashboard" data-label="Amount">
+                      <span className="amount-text-Tenant-Dashboard">{bill.amount}</span>
+                    </td>
+                    <td className="table-data-Tenant-Dashboard" data-label="Due Date">
+                      <span className="due-date-text-Tenant-Dashboard">{bill.dueDate}</span>
+                    </td>
+                    <td className="table-data-Tenant-Dashboard" data-label="Status">
+                      <span className={`status-text-Tenant-Dashboard status-${bill.status.toLowerCase()}-Tenant-Dashboard`}>
+                        {bill.status}
+                      </span>
+                    </td>
+                    <td className="table-data-Tenant-Dashboard action-cell-Tenant-Dashboard" data-label="Action">
+                      <a
+                        href="#"
+                        className={`action-link-Tenant-Dashboard action-${bill.action
+                          .toLowerCase()
+                          .replace(" ", "-")}-Tenant-Dashboard`}
+                      >
+                        {bill.action}
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-      {/* Transaction Overview */}
-      <div className="transaction-overview-section">
-        {/* ... (Transaction Overview remains unchanged) ... */}
-        <h3>Transaction Overview</h3>
-        <div className="chart-container">
-          {transactionData.map((data, index) => (
-            <div key={index} className="chart-bar-wrapper">
-              <div
-                className="chart-bar"
-                style={{
-                  height: data.amount.includes("6.4K") ? "100px" : "90px",
-                }}
-              ></div>
-              <p>
-                {data.month} {data.amount.replace("₱", "")}
-              </p>
-            </div>
-          ))}
+        {/* Transaction Overview */}
+        <div className="transaction-overview-section-Tenant-Dashboard">
+          <div className="section-header-Tenant-Dashboard">
+            <h3 className="section-title-Tenant-Dashboard">Transaction Overview</h3>
+          </div>
+          <div className="chart-container-Tenant-Dashboard">
+            {transactionData.map((data, index) => (
+              <div key={index} className="chart-bar-wrapper-Tenant-Dashboard">
+                <div
+                  className="chart-bar-Tenant-Dashboard"
+                  style={{
+                    height: data.amount.includes("6.4K") ? "100px" : "90px",
+                  }}
+                ></div>
+                <p className="chart-label-Tenant-Dashboard">
+                  {data.month} <span className="chart-amount-Tenant-Dashboard">{data.amount.replace("₱", "")}</span>
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

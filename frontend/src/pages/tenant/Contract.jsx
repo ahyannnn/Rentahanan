@@ -8,7 +8,6 @@ const Contract = () => {
   const [isSigning, setIsSigning] = useState(false);
   const sigCanvas = useRef();
 
-  // ✅ FIX 1: Read tenantId from stored user object
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const tenantId = storedUser?.tenantid;
 
@@ -76,7 +75,7 @@ const Contract = () => {
   const handleClear = () => sigCanvas.current.clear();
 
   if (!contract) {
-    return <p>Loading your contract...</p>;
+    return <p className="loading-text-Contract">Loading your contract...</p>;
   }
 
   const contractURL = contract.signed_contract
@@ -84,77 +83,85 @@ const Contract = () => {
     : `http://localhost:5000/uploads/contracts/${contract.generated_contract}`;
 
   return (
-    <div className="contract-container">
-      <h1 className="contract-title">My Contract</h1>
+    <div className="contract-container-Contract">
+      <h1 className="contract-title-Contract">My Contract</h1>
 
-      {/* ✅ Contract Summary Cards */}
-      <div className="contract-summary">
-        <div className="summary-card">
-          <p className="label">Unit</p>
-          <p className="value">{contract.unit_name}</p>
+      {/* Contract Summary Cards */}
+      <div className="contract-summary-Contract">
+        <div className="summary-card-Contract summary-card-unit-Contract">
+          <p className="summary-label-Contract">Unit</p>
+          <p className="summary-value-Contract">{contract.unit_name}</p>
         </div>
-        <div className="summary-card">
-          <p className="label">Price</p>
-          <p className="value">₱{contract.unit_price}</p>
+        <div className="summary-card-Contract summary-card-price-Contract">
+          <p className="summary-label-Contract">Price</p>
+          <p className="summary-value-Contract">₱{contract.unit_price}</p>
         </div>
-        <div className="summary-card">
-          <p className="label">Start Date</p>
-          <p className="value">{contract.start_date}</p>
+        <div className="summary-card-Contract summary-card-start-date-Contract">
+          <p className="summary-label-Contract">Start Date</p>
+          <p className="summary-value-Contract">{contract.start_date}</p>
         </div>
-        <div className="summary-card">
-          <p className="label">End Date</p>
-          <p className="value">{contract.end_date || "Ongoing"}</p>
+        <div className="summary-card-Contract summary-card-end-date-Contract">
+          <p className="summary-label-Contract">End Date</p>
+          <p className="summary-value-Contract">{contract.end_date || "Ongoing"}</p>
         </div>
-        <div className="summary-card">
-          <p className="label">Status</p>
-          <p className={`value status ${contract.status ? contract.status.toLowerCase() : ""}`}>
+        <div className="summary-card-Contract summary-card-status-Contract">
+          <p className="summary-label-Contract">Status</p>
+          <p className={`summary-value-Contract status-value-Contract status-${contract.status ? contract.status.toLowerCase() : ""}-Contract`}>
             {contract.status || "N/A"}
           </p>
         </div>
       </div>
 
-      {/* ✅ Contract Preview */}
-      <div className="contract-preview">
-        <div className="pdf-icon">📄</div>
-        <p><strong>Contract File:</strong></p>
-        <button className="open-btn" onClick={() => window.open(contractURL, "_blank")}>
+      {/* Contract Preview */}
+      <div className="contract-preview-Contract">
+        <div className="contract-file-info-Contract">
+          <div className="pdf-icon-Contract">📄</div>
+          <p className="file-label-Contract"><strong>Contract File:</strong></p>
+        </div>
+        <button 
+          className="open-btn-Contract" 
+          onClick={() => window.open(contractURL, "_blank")}
+        >
           Open Contract
         </button>
       </div>
 
-      {/* ✅ Signature Section */}
+      {/* Signature Section */}
       {!contract.signed_contract && !isSigning && (
-        <button className="sign-btn" onClick={handleSignClick}>
-          Sign Contract
-        </button>
+        <div className="sign-button-container-Contract">
+          <button className="sign-btn-Contract" onClick={handleSignClick}>
+            Sign Contract
+          </button>
+        </div>
       )}
 
       {isSigning && (
-        <div className="signature-area">
-          <p>Sign below:</p>
+        <div className="signature-area-Contract">
+          <p className="signature-instruction-Contract">Sign below:</p>
           <SignatureCanvas
             ref={sigCanvas}
             penColor="black"
             canvasProps={{
               width: 400,
               height: 200,
-              className: "sigCanvas",
+              className: "sigCanvas-Contract",
             }}
           />
-          <div className="signature-buttons">
-            <button onClick={handleClear}>Clear</button>
-            <button onClick={handleSaveSignature}>Save Signature</button>
+          <div className="signature-buttons-Contract">
+            <button className="clear-btn-Contract" onClick={handleClear}>Clear</button>
+            <button className="save-signature-btn-Contract" onClick={handleSaveSignature}>Save Signature</button>
           </div>
         </div>
       )}
 
       {contract.signed_contract && (
-        <div className="signed-message">
-          <p>You’ve already signed this contract.</p>
-          <p>
+        <div className="signed-message-Contract">
+          <p className="signed-text-Contract">You've already signed this contract.</p>
+          <p className="signed-file-info-Contract">
             Signed file:{" "}
-            <strong>{contract.signed_contract}</strong>{" "}
-            <button
+            <strong className="signed-filename-Contract">{contract.signed_contract}</strong>{" "}
+            <button 
+              className="view-signed-btn-Contract"
               onClick={() =>
                 window.open(
                   `http://localhost:5000/uploads/signed_contracts/${contract.signed_contract}`,

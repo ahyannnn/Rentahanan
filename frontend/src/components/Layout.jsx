@@ -188,17 +188,17 @@ const Layout = () => {
     };
 
     return (
-      <div className="modal-overlay" onClick={closeProfileModal}>
-        <div className="profile-modal-content" onClick={(e) => e.stopPropagation()}>
-          <div className="modal-header">
+      <div className="modal-overlay-Layout" onClick={closeProfileModal}>
+        <div className="profile-modal-content-Layout" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header-Layout">
             <h2>User Profile</h2>
-            <button className="close-text-btn" onClick={closeProfileModal}>
+            <button className="close-text-btn-Layout" onClick={closeProfileModal}>
               <X size={16} /> Close
             </button>
           </div>
 
-          <div className="modal-body">
-            <div className="current-pic-holder">
+          <div className="modal-body-Layout">
+            <div className="current-pic-holder-Layout">
               <img
                 src={profilePictureUrl}
                 alt="Profile"
@@ -206,7 +206,7 @@ const Layout = () => {
                 height="120"
                 style={{ borderRadius: "50%", background: "#eee", objectFit: "cover" }}
               />
-              <label className="upload-btn-icon-label">
+              <label className="upload-btn-icon-label-Layout">
                 <Camera size={18} />
                 <input
                   type="file"
@@ -217,62 +217,62 @@ const Layout = () => {
               </label>
             </div>
 
-            <h3 className="user-full-name">
+            <h3 className="user-full-name-Layout">
               {userData.firstname} {userData.middlename || ""} {userData.lastname}
             </h3>
-            <p className="user-role-label">
+            <p className="user-role-label-Layout">
               Role: {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
             </p>
 
-            <div className="user-details-list">
-              <div className="detail-item">
-                <Mail size={18} className="detail-icon" />
+            <div className="user-details-list-Layout">
+              <div className="detail-item-Layout">
+                <Mail size={18} className="detail-icon-Layout" />
                 {isEditing ? (
                   <input
                     type="email"
                     name="email"
                     value={userData.email || ""}
                     onChange={handleInputChange}
-                    className="editable-input"
+                    className="editable-input-Layout"
                   />
                 ) : (
                   <span>{userData.email || "N/A"}</span>
                 )}
               </div>
 
-              <div className="detail-item">
-                <Phone size={18} className="detail-icon" />
+              <div className="detail-item-Layout">
+                <Phone size={18} className="detail-icon-Layout" />
                 {isEditing ? (
                   <input
                     type="tel"
                     name="phone"
                     value={userData.phone || ""}
                     onChange={handleInputChange}
-                    className="editable-input"
+                    className="editable-input-Layout"
                   />
                 ) : (
                   <span>{userData.phone || "N/A"}</span>
                 )}
               </div>
 
-              <div className="detail-item detail-view-only">
-                <Calendar size={18} className="detail-icon" />
+              <div className="detail-item-Layout detail-view-only-Layout">
+                <Calendar size={18} className="detail-icon-Layout" />
                 <span>Joined: {formatDate(userData.datecreated || "")}</span>
               </div>
             </div>
 
-            <div className="modal-actions">
+            <div className="modal-actions-Layout">
               {isEditing ? (
                 <>
-                  <button className="btn-save" onClick={handleSaveEdit}>
+                  <button className="btn-save-Layout" onClick={handleSaveEdit}>
                     <Save size={16} /> Save
                   </button>
-                  <button className="btn-cancel" onClick={handleCancelEdit}>
+                  <button className="btn-cancel-Layout" onClick={handleCancelEdit}>
                     <RotateCcw size={16} /> Cancel
                   </button>
                 </>
               ) : (
-                <button className="btn-edit" onClick={() => setIsEditing(true)}>
+                <button className="btn-edit-Layout" onClick={() => setIsEditing(true)}>
                   <Edit size={16} /> Edit Profile
                 </button>
               )}
@@ -284,28 +284,28 @@ const Layout = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container-Layout">
       {/* SIDEBAR */}
-      <div className={`sidebar ${sidebarOpen ? "show" : ""}`} id="sidebar">
-        <div className="logotitle">
-          <div className="nav-brand">
-          <img
-            src="/logo.png"
-            alt="RenTahanan Logo"
-            className="logo"
-          />
-          <div className="nav-brand">RenTahanan</div>
-        </div>
+      <div className={`sidebar-Layout ${sidebarOpen ? "show-Layout" : ""}`} id="sidebar-Layout">
+        <div className="logotitle-Layout">
+          <div className="nav-brand-Layout">
+            <img
+              src="/logo.png"
+              alt="RenTahanan Logo"
+              className="logo-Layout"
+            />
+            <div className="nav-brand-Layout">RenTahanan</div>
+          </div>
         </div>
 
-        <div className="linkholderbody">
+        <div className="linkholderbody-Layout">
           {links.map((link, i) => {
             const Icon = link.icon;
             return (
               <div
                 key={i}
-                className={`linkholder ${
-                  location.pathname === link.to ? "active" : ""
+                className={`linkholder-Layout ${
+                  location.pathname === link.to ? "active-Layout" : ""
                 }`}
               >
                 <Link to={link.to} onClick={closeSidebar}>
@@ -317,38 +317,38 @@ const Layout = () => {
           })}
         </div>
 
-        <button id="logout" onClick={handleLogout}>
+        <button id="logout-Layout" onClick={handleLogout}>
           Log out
         </button>
       </div>
 
       {/* HEADER */}
-      <div className="header">
-        <button className="menu-btn" onClick={toggleSidebar}>
+      <div className="header-Layout">
+        <button className="menu-btn-Layout" onClick={toggleSidebar}>
           &#9776;
         </button>
         <h3>{pageTitle}</h3>
-        <div className="notifprofile">
-          <div className="notif-wrapper">
+        <div className="notifprofile-Layout">
+          <div className="notif-wrapper-Layout">
             <button
-              className="notif-btn"
+              className="notif-btn-Layout"
               onClick={() => setShowNotifications(!showNotifications)}
             >
               <Bell size={20} color="white" />
             </button>
 
             {showNotifications && (
-              <div className="notif-dropdown">
+              <div className="notif-dropdown-Layout">
                 <h4>Notifications</h4>
                 {notifications.map((notif) => (
-                  <div key={notif.id} className="notif-card">
+                  <div key={notif.id} className="notif-card-Layout">
                     <h5>{notif.title}</h5>
                     <p>{notif.message}</p>
-                    <span className="notif-time">{notif.time}</span>
+                    <span className="notif-time-Layout">{notif.time}</span>
                   </div>
                 ))}
                 <button
-                  className="view-all-btn"
+                  className="view-all-btn-Layout"
                   onClick={handleViewAllNotifications}
                 >
                   View All Notifications →
@@ -357,14 +357,14 @@ const Layout = () => {
             )}
           </div>
 
-          <button className="notif-btn" onClick={openProfileModal}>
+          <button className="notif-btn-Layout" onClick={openProfileModal}>
             <User size={20} color="white" />
           </button>
         </div>
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="main">
+      <div className="main-Layout">
         <Outlet />
       </div>
 

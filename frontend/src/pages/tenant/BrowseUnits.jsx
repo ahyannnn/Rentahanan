@@ -7,10 +7,8 @@ const BrowseUnits = () => {
   const [filterStatus, setFilterStatus] = useState("All");
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [showApplyForm, setShowApplyForm] = useState(false);
-  // Renamed to clarify: this holds the *application status*
   const [applicationStatus, setApplicationStatus] = useState({});
   const [hasApplied, setHasApplied] = useState(false);
-  // NEW STATE: For pre-filling the application form
   const [tenantDetails, setTenantDetails] = useState({}); 
 
   const tenantId = localStorage.getItem("userId");
@@ -30,12 +28,10 @@ const BrowseUnits = () => {
 
     const fetchApplication = async () => {
       try {
-        // CORRECTION 1: Used backticks for template literal
         const res = await fetch(`http://localhost:5000/api/application/${tenantId}`); 
-
         if (res.ok) {
           const data = await res.json();
-          setHasApplied(!!data.unit_id); // Check if application exists/has a unit_id
+          setHasApplied(!!data.unit_id);
           setApplicationStatus(data);
         } else if (res.status === 404) {
           setHasApplied(false);
@@ -51,13 +47,12 @@ const BrowseUnits = () => {
     fetchApplication();
   }, [tenantId]);
 
-  // NEW useEffect: 2b. Fetch tenant details for form pre-filling
+  // 3. Fetch tenant details for form pre-filling
   useEffect(() => {
     if (!tenantId) return;
 
     const fetchTenantDetails = async () => {
       try {
-        // Assuming there's an API endpoint for fetching tenant profile by ID
         const res = await fetch(`http://localhost:5000/api/tenant/${tenantId}`);
         if (res.ok) {
           const data = await res.json();
@@ -73,7 +68,7 @@ const BrowseUnits = () => {
     fetchTenantDetails();
   }, [tenantId]);
 
-  // 3. Combined search and filter logic (No change, looks good)
+  // 4. Combined search and filter logic
   const filteredUnits = useMemo(() => {
     const statusMap = {
       "All": () => true,
@@ -94,7 +89,7 @@ const BrowseUnits = () => {
 
   const handleApply = () => setShowApplyForm(true);
 
-  // 4. Handle form submission (API call with FormData)
+  // 5. Handle form submission
   const handleFormSubmit = (e) => {
     e.preventDefault();
 
@@ -111,7 +106,6 @@ const BrowseUnits = () => {
       alert("All required documents must be uploaded.");
       return;
     }
-    // Assuming file type validation is handled on the backend for simplicity here
 
     const formData = new FormData();
     formData.append("tenant_id", tenantId);
@@ -129,7 +123,7 @@ const BrowseUnits = () => {
         alert(data.message || "Application submitted successfully! Please wait for approval.");
         setShowApplyForm(false);
         setSelectedUnit(null);
-        setHasApplied(true); // Optimistically update
+        setHasApplied(true);
       })
       .catch((err) => {
         console.error("Error submitting application:", err);
@@ -137,139 +131,211 @@ const BrowseUnits = () => {
       });
   };
 
-
   return (
-    <div className="browse-units-container">
-      <h2 className="page-header">Browse Units 🏘️</h2>
-      <p className="page-subtext">Explore available units and find the one that fits your needs.</p>
-
+    <div className="browse-units-container-Browse">
+      <div className="page-header-section-Browse">
+        <h2 className="page-header-Browse">Browse Units 🏘️</h2>
+        <p className="page-subtext-Browse">Explore available units and find the one that fits your needs.</p>
+      </div>
 
       {/* --- Search and Filter Controls --- */}
-      <div className="controls-container">
-
-        <div className="status-filters">
-          {statusOptions.map((status) => (
-            <button
-              key={status}
-              className={`filter-btn ${filterStatus === status ? "active" : ""}`}
-              onClick={() => setFilterStatus(status)}
-            >
-              {status}
-            </button>
-          ))}
+      <div className="controls-container-Browse">
+        <div className="status-filters-container-Browse">
+          <div className="status-filters-Browse">
+            {statusOptions.map((status) => (
+              <button
+                key={status}
+                className={`filter-btn-Browse ${filterStatus === status ? "filter-btn-active-Browse" : ""}`}
+                onClick={() => setFilterStatus(status)}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <input
-          type="text"
-          placeholder="Search units by name or description..."
-          className="search-input"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className="search-container-Browse">
+          <input
+            type="text"
+            placeholder="Search units by name or description..."
+            className="search-input-Browse"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
-      {/* --- End Controls --- */}
 
-      {/* --- Units Grid/List Display --- */}
-      <div className="units-grid">
-        {filteredUnits.length > 0 ? (
-          filteredUnits.map((unit) => (
-            <div
-              key={unit.id}
-              className="unit-card"
-              onClick={() => setSelectedUnit(unit)}
-            >
-              {unit.imagepath ? (
-                <img
-                  src={`http://localhost:5000/uploads/houseimages/${unit.imagepath}`}
-                  alt={unit.name}
-                  className="unit-image"
-                />
-              ) : (
-                <div className="unit-image-placeholder">No Image</div>
-              )}
-              <div className="unit-info">
-                <h3 className="unit-name">{unit.name}</h3>
-                <p className="unit-price">₱{unit.price.toLocaleString()} / month</p>
-                <span className={`unit-status ${unit.status.toLowerCase()}`}>
-                  {unit.status}
-                </span>
+      {/* --- Units Grid Display --- */}
+      <div className="units-grid-container-Browse">
+        <div className="units-grid-Browse">
+          {filteredUnits.length > 0 ? (
+            filteredUnits.map((unit) => (
+              <div
+                key={unit.id}
+                className="unit-card-Browse"
+                onClick={() => setSelectedUnit(unit)}
+              >
+                <div className="unit-image-container-Browse">
+                  {unit.imagepath ? (
+                    <img
+                      src={`http://localhost:5000/uploads/houseimages/${unit.imagepath}`}
+                      alt={unit.name}
+                      className="unit-image-Browse"
+                    />
+                  ) : (
+                    <div className="unit-image-placeholder-Browse">No Image</div>
+                  )}
+                </div>
+                <div className="unit-info-Browse">
+                  <h3 className="unit-name-Browse">{unit.name}</h3>
+                  <p className="unit-price-Browse">₱{unit.price.toLocaleString()} / month</p>
+                  <span className={`unit-status-Browse unit-status-${unit.status.toLowerCase()}-Browse`}>
+                    {unit.status}
+                  </span>
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="no-results-container-Browse">
+              <p className="no-results-Browse">No units found matching your criteria. 😟</p>
             </div>
-          ))
-        ) : (
-          <p className="no-results">No units found matching your criteria. 😟</p>
-        )}
+          )}
+        </div>
       </div>
-      {/* --- End Units Grid --- */}
 
       {/* Unit Detail Modal */}
       {selectedUnit && !showApplyForm && (
-        <div className="modal-overlay" onClick={() => setSelectedUnit(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-
-            {/* Unit Image Display */}
-            {selectedUnit.imagepath ? (
-              <img
-                src={`http://localhost:5000/uploads/houseimages/${selectedUnit.imagepath}`}
-                alt={selectedUnit.name}
-                className="modal-image"
-              />
-            ) : (
-              <div className="unit-image-placeholder modal-placeholder">
-                No Image Available
+        <div className="modal-overlay-Browse" onClick={() => setSelectedUnit(null)}>
+          <div className="modal-content-Browse" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-image-container-Browse">
+              {selectedUnit.imagepath ? (
+                <img
+                  src={`http://localhost:5000/uploads/houseimages/${selectedUnit.imagepath}`}
+                  alt={selectedUnit.name}
+                  className="modal-image-Browse"
+                />
+              ) : (
+                <div className="modal-image-placeholder-Browse">
+                  No Image Available
+                </div>
+              )}
+            </div>
+            
+            <div className="modal-header-Browse">
+              <h2 className="modal-title-Browse">{selectedUnit.name}</h2>
+            </div>
+            
+            <div className="modal-details-Browse">
+              <p className="detail-price-Browse">
+                <strong>₱{selectedUnit.price.toLocaleString()}</strong> / month
+              </p>
+              <p className="detail-description-Browse">{selectedUnit.description}</p>
+              <div className="detail-status-container-Browse">
+                <span className="detail-status-label-Browse">Status: </span>
+                <span className={`unit-status-Browse unit-status-${selectedUnit.status.toLowerCase()}-Browse`}>
+                  {selectedUnit.status}
+                </span>
               </div>
-            )}
+            </div>
 
-            <h2>{selectedUnit.name}</h2>
-            <p className="detail-price">
-              <strong>₱{selectedUnit.price.toLocaleString()}</strong> / month
-            </p>
-            <p>{selectedUnit.description}</p>
-            <p>
-              Status: <span className={`unit-status ${selectedUnit.status.toLowerCase()}`}>{selectedUnit.status}</span>
-            </p>
-
-            <button
-              className="apply-btn"
-              disabled={hasApplied || selectedUnit.status.toLowerCase() !== "available"}
-              onClick={handleApply}
-            >
-              {/* CORRECTION 2: Used backticks for template literal */}
-              {selectedUnit.status.toLowerCase() !== "available"
-                ? selectedUnit.status === "Occupied" ? "Not Available" : `Status: ${selectedUnit.status}`
-                : hasApplied
-                  ? "Already Applied"
-                  : "Apply Now"}
-            </button>
+            <div className="modal-actions-Browse">
+              <button
+                className="apply-btn-Browse"
+                disabled={hasApplied || selectedUnit.status.toLowerCase() !== "available"}
+                onClick={handleApply}
+              >
+                {selectedUnit.status.toLowerCase() !== "available"
+                  ? selectedUnit.status === "Occupied" ? "Not Available" : `Status: ${selectedUnit.status}`
+                  : hasApplied
+                    ? "Already Applied"
+                    : "Apply Now"}
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Apply Form Modal */}
       {selectedUnit && showApplyForm && (
-        <div className="modal-overlay" onClick={() => setShowApplyForm(false)}>
-          <div className="modal-content form-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Application for {selectedUnit.name}</h2>
-            <form onSubmit={handleFormSubmit}>
-              <label>Full Name:
-                {/* CORRECTION 3: Use tenantDetails state */}
-                <input type="text" name="fullName" value={tenantDetails.fullName || ""} readOnly required /></label>
-              <label>Email:
-                {/* CORRECTION 3: Use tenantDetails state */}
-                <input type="email" name="email" value={tenantDetails.email || ""} readOnly required /></label>
-              <label>Phone Number:
-                {/* CORRECTION 3: Use tenantDetails state */}
-                <input type="tel" name="phone" value={tenantDetails.phone || ""} readOnly required /></label>
-              <label>Valid ID:
-                <input type="file" name="validId" accept="image/*,.pdf" required /></label>
-              <label>Barangay Clearance:
-                <input type="file" name="brgyClearance" accept="image/*,.pdf" required /></label>
-              <label>Proof of Income:
-                <input type="file" name="proofOfIncome" accept="image/*,.pdf" required /></label>
+        <div className="modal-overlay-Browse" onClick={() => setShowApplyForm(false)}>
+          <div className="modal-content-Browse form-modal-Browse" onClick={(e) => e.stopPropagation()}>
+            <div className="form-header-Browse">
+              <h2 className="form-title-Browse">Application for {selectedUnit.name}</h2>
+            </div>
+            
+            <form className="application-form-Browse" onSubmit={handleFormSubmit}>
+              <div className="form-field-Browse">
+                <label className="form-label-Browse">Full Name:</label>
+                <input 
+                  type="text" 
+                  name="fullName" 
+                  className="form-input-Browse form-input-readonly-Browse"
+                  value={tenantDetails.fullName || ""} 
+                  readOnly 
+                  required 
+                />
+              </div>
+              
+              <div className="form-field-Browse">
+                <label className="form-label-Browse">Email:</label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  className="form-input-Browse form-input-readonly-Browse"
+                  value={tenantDetails.email || ""} 
+                  readOnly 
+                  required 
+                />
+              </div>
+              
+              <div className="form-field-Browse">
+                <label className="form-label-Browse">Phone Number:</label>
+                <input 
+                  type="tel" 
+                  name="phone" 
+                  className="form-input-Browse form-input-readonly-Browse"
+                  value={tenantDetails.phone || ""} 
+                  readOnly 
+                  required 
+                />
+              </div>
+              
+              <div className="form-field-Browse">
+                <label className="form-label-Browse">Valid ID:</label>
+                <input 
+                  type="file" 
+                  name="validId" 
+                  className="form-file-input-Browse"
+                  accept="image/*,.pdf" 
+                  required 
+                />
+              </div>
+              
+              <div className="form-field-Browse">
+                <label className="form-label-Browse">Barangay Clearance:</label>
+                <input 
+                  type="file" 
+                  name="brgyClearance" 
+                  className="form-file-input-Browse"
+                  accept="image/*,.pdf" 
+                  required 
+                />
+              </div>
+              
+              <div className="form-field-Browse">
+                <label className="form-label-Browse">Proof of Income:</label>
+                <input 
+                  type="file" 
+                  name="proofOfIncome" 
+                  className="form-file-input-Browse"
+                  accept="image/*,.pdf" 
+                  required 
+                />
+              </div>
 
-              <div className="form-buttons">
-                <button type="submit">Submit Application</button>
-                <button type="button" onClick={() => setShowApplyForm(false)}>Cancel</button>
+              <div className="form-buttons-container-Browse">
+                <button type="submit" className="form-submit-btn-Browse">Submit Application</button>
+                <button type="button" className="form-cancel-btn-Browse" onClick={() => setShowApplyForm(false)}>Cancel</button>
               </div>
             </form>
           </div>

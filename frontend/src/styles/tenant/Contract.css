@@ -1,189 +1,357 @@
-.contract-container {
+/* ===== Main Container ===== */
+.contract-container-Contract {
   padding: 2rem;
-  /* Use a slightly darker background for better contrast with white/colored cards */
-  background-color: #f8fafc; /* Light gray background */
+  background-color: #f8fafc;
   font-family: "Inter", sans-serif;
   color: #1e293b;
-  min-height: 100vh; /* Ensure the background covers the full viewport height */
+  min-height: 100vh;
 }
 
-.contract-title {
-  font-size: 2rem; /* Slightly larger title */
-  font-weight: 800; /* Bolder title */
-  margin-bottom: 2rem; /* Increased spacing */
-  color: #0f172a; /* Darker title color */
+.contract-title-Contract {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  color: #0f172a;
 }
 
-/* --- Summary Card Row --- */
-.contract-summary {
+.loading-text-Contract {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+  padding: 2rem;
+}
+
+/* ===== Contract Summary ===== */
+.contract-summary-Contract {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem; /* Increased gap */
-  margin-bottom: 2.5rem; /* Increased spacing */
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
-.summary-card {
+.summary-card-Contract {
   flex: 1;
   min-width: 180px;
-  /* Removed white background and border from here for individual card styling */
   border-radius: 12px;
-  padding: 1.5rem 1rem; /* Increased vertical padding */
+  padding: 1.5rem 1rem;
   text-align: center;
-  /* Enhanced box-shadow for a lifted effect */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden; /* Contains card content */
+  overflow: hidden;
   position: relative;
 }
 
-.summary-card:hover {
-  transform: translateY(-5px); /* More pronounced lift on hover */
+.summary-card-Contract:hover {
+  transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-/* --- Individual Card Colors & Styling --- */
-
-/* Unit Card (Blue Tone) */
-.summary-card:nth-child(1) {
-  background-color: #eff6ff; /* Very light blue */
-  border-left: 5px solid #3b82f6; /* Blue accent bar */
+/* Individual Card Styles */
+.summary-card-unit-Contract {
+  background-color: #eff6ff;
+  border-left: 5px solid #3b82f6;
 }
 
-/* Price Card (Indigo Tone) */
-.summary-card:nth-child(2) {
-  background-color: #eef2ff; /* Very light indigo */
-  border-left: 5px solid #6366f1; /* Indigo accent bar */
+.summary-card-price-Contract {
+  background-color: #eef2ff;
+  border-left: 5px solid #6366f1;
 }
 
-/* Start Date Card (Yellow/Orange Tone) */
-.summary-card:nth-child(3) {
-  background-color: #fffbeb; /* Very light yellow */
-  border-left: 5px solid #f59e0b; /* Amber accent bar */
+.summary-card-start-date-Contract {
+  background-color: #fffbeb;
+  border-left: 5px solid #f59e0b;
 }
 
-/* End Date Card (Gray Tone) */
-.summary-card:nth-child(4) {
-  background-color: #f3f4f6; /* Very light gray */
-  border-left: 5px solid #6b7280; /* Gray accent bar */
+.summary-card-end-date-Contract {
+  background-color: #f3f4f6;
+  border-left: 5px solid #6b7280;
 }
 
-/* Status Card (Green Tone) */
-.summary-card:nth-child(5) {
-  /* Set green as the background for the status card */
-  background-color: #dcfce7; /* Very light green */
-  border-left: 5px solid #10b981; /* Green accent bar */
+.summary-card-status-Contract {
+  background-color: #dcfce7;
+  border-left: 5px solid #10b981;
 }
 
-/* Text color adjustments for better contrast on colored backgrounds */
-.summary-card .label {
-  font-size: 0.9rem; /* Slightly larger label */
-  color: #475569; /* Darker gray for better readability */
-  margin-bottom: 6px; /* Increased spacing */
+.summary-label-Contract {
+  font-size: 0.9rem;
+  color: #475569;
+  margin-bottom: 6px;
   letter-spacing: 0.5px;
 }
 
-.summary-card .value {
-  font-size: 1.3rem; /* Larger and more prominent value */
+.summary-value-Contract {
+  font-size: 1.3rem;
   font-weight: 700;
   color: #1e293b;
 }
 
-.summary-card .status {
-  text-transform: uppercase; /* Uppercase status for prominence */
-  font-weight: 800; /* Extra bold */
+.status-value-Contract {
+  text-transform: uppercase;
+  font-weight: 800;
   letter-spacing: 1px;
 }
-/* Ensure the status color remains strong */
-.status.signed { color: #059669; }
-.status.pending { color: #d97706; }
-.status.rejected { color: #b91c1c; }
 
-
-/* --- Contract Preview (File Bar) --- */
-.contract-preview {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Space out the file info and button */
-  gap: 20px;
-  background: #ffffff; /* White background for the file container */
-  border: 1px solid #cbd5e1; /* Slightly darker border */
-  border-radius: 10px;
-  padding: 18px 25px; /* More padding */
-  margin: 25px 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Nicer shadow */
+.status-signed-Contract { 
+  color: #059669; 
 }
 
-.contract-file-info {
+.status-pending-Contract { 
+  color: #d97706; 
+}
+
+.status-rejected-Contract { 
+  color: #b91c1c; 
+}
+
+/* ===== Contract Preview ===== */
+.contract-preview-Contract {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 18px 25px;
+  margin: 25px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.contract-file-info-Contract {
   display: flex;
   align-items: center;
   gap: 15px;
+}
+
+.pdf-icon-Contract {
+  font-size: 2.5rem;
+  color: #ef4444;
+}
+
+.file-label-Contract {
   font-weight: 600;
   color: #334155;
+  margin: 0;
 }
 
-.pdf-icon {
-  font-size: 2.5rem; /* Larger icon */
-  color: #ef4444; /* Red color for PDF icon */
-}
-
-.open-btn {
-  background-color: #3b82f6; /* Lighter blue */
+.open-btn-Contract {
+  background-color: #3b82f6;
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 10px 20px; /* Better padding */
+  padding: 10px 20px;
   cursor: pointer;
   font-weight: 600;
   transition: background-color 0.2s;
 }
 
-.open-btn:hover {
-  background-color: #2563eb; /* Darker blue on hover */
+.open-btn-Contract:hover {
+  background-color: #2563eb;
 }
 
-/* --- Signed Message (Alert Bar) --- */
-.signed-message {
-  margin-top: 15px;
-  background: #f0fdf4; /* Lighter green background */
-  border: 1px solid #34d399; /* Stronger green border */
-  padding: 15px 20px; /* More padding */
-  border-radius: 10px; /* Rounded corners */
-  color: #065f46;
-  font-size: 1rem; /* Slightly larger font */
+/* ===== Signature Section ===== */
+.sign-button-container-Contract {
+  margin: 25px 0;
+  text-align: center;
+}
+
+.sign-btn-Contract {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.sign-btn-Contract:hover {
+  background-color: #059669;
+}
+
+.signature-area-Contract {
+  margin-top: 25px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.signature-instruction-Contract {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.sigCanvas-Contract {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  margin: 0 auto;
+  display: block;
+}
+
+.signature-buttons-Contract {
   display: flex;
-  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 1rem;
+}
+
+.clear-btn-Contract {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.clear-btn-Contract:hover {
+  background-color: #4b5563;
+}
+
+.save-signature-btn-Contract {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.save-signature-btn-Contract:hover {
+  background-color: #2563eb;
+}
+
+/* ===== Signed Message ===== */
+.signed-message-Contract {
+  margin-top: 15px;
+  background: #f0fdf4;
+  border: 1px solid #34d399;
+  padding: 15px 20px;
+  border-radius: 10px;
+  color: #065f46;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   font-weight: 500;
 }
 
-.signed-message strong {
+.signed-text-Contract {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.signed-text-Contract::before {
+  content: "✓";
+  font-size: 1.2rem;
+  color: #10b981;
+}
+
+.signed-file-info-Contract {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.signed-filename-Contract {
   font-weight: 700;
   color: #047857;
 }
 
-.signed-message a {
-  color: #3b82f6; /* Blue link color */
-  text-decoration: none;
+.view-signed-btn-Contract {
+  background-color: transparent;
+  color: #3b82f6;
+  border: 1px solid #3b82f6;
+  border-radius: 6px;
+  padding: 4px 12px;
+  cursor: pointer;
   font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
 }
 
-.signed-message a:hover {
-  text-decoration: underline;
+.view-signed-btn-Contract:hover {
+  background-color: #3b82f6;
+  color: white;
 }
 
-/* Adding an icon for the signed message */
-.signed-message::before {
-  content: "✓"; /* Checkmark icon */
-  font-size: 1.5rem;
-  color: #10b981;
+/* ===== Mobile Responsive ===== */
+@media (max-width: 768px) {
+  .contract-container-Contract {
+    padding: 1rem;
+  }
+
+  .contract-title-Contract {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .contract-summary-Contract {
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .summary-card-Contract {
+    min-width: 140px;
+    padding: 1rem 0.5rem;
+  }
+
+  .summary-value-Contract {
+    font-size: 1.1rem;
+  }
+
+  .contract-preview-Contract {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .signature-area-Contract {
+    padding: 1rem;
+  }
+
+  .sigCanvas-Contract {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .signature-buttons-Contract {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .signed-file-info-Contract {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 }
 
-/* --- Signature Area (if it were visible) --- */
-/* (Styles for the signature area remain mostly the same but ensure they look good with the new theme) */
-.signature-area {
-  margin-top: 25px;
-  background: #ffffff; /* Use white background */
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.5rem;
-} 
+@media (max-width: 480px) {
+  .contract-summary-Contract {
+    flex-direction: column;
+  }
+
+  .summary-card-Contract {
+    min-width: auto;
+  }
+
+  .sigCanvas-Contract {
+    width: 100%;
+    height: 150px;
+  }
+}

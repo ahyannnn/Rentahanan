@@ -15,19 +15,17 @@ body {
   min-height: 100vh;
 }
 
-.auth-wrapper {
+.auth-wrapper-Register {
   display: flex;
   justify-content: center;
-  /* horizontal centering */
   align-items: center;
-  /* vertical centering */
   min-height: 100vh;
   width: 100%;
   background-color: #E8ECF3;
 }
 
 /* --- Layout --- */
-.auth-page {
+.auth-page-Register {
   display: flex;
   width: 100%;
   max-width: 1100px;
@@ -37,10 +35,9 @@ body {
   background-color: #fff;
 }
 
-/* --- Left Side --- */
-.auth-left {
+/* --- Left Side (Desktop Only) --- */
+.auth-left-Register {
   flex: 1;
-  /* Note: Placeholder for your image. Ensure the image is available at this path. */
   background-image: url("/images/house-bg.jpg");
   background-size: cover;
   background-position: center;
@@ -50,7 +47,7 @@ body {
   justify-content: center;
 }
 
-.overlay {
+.overlay-Register {
   position: absolute;
   top: 0;
   left: 0;
@@ -59,7 +56,7 @@ body {
   background: rgba(6, 26, 83, 0.85);
 }
 
-.auth-left-content {
+.auth-left-content-Register {
   position: relative;
   text-align: center;
   color: #fff;
@@ -67,25 +64,25 @@ body {
   max-width: 320px;
 }
 
-.auth-left-content h1 {
+.auth-left-content-Register h1 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
   color: #F5C542;
 }
 
-.auth-left-content span {
+.auth-left-content-Register span {
   color: #fff;
   font-weight: 700;
 }
 
-.auth-left-content p {
+.auth-left-content-Register p {
   font-size: 1.1rem;
   line-height: 1.6;
   color: #f0f0f0;
 }
 
-/* --- Right Side --- */
-.auth-right {
+/* --- Right Side (Main Form) --- */
+.auth-right-Register {
   flex: 1.2;
   background-color: #ffffff;
   display: flex;
@@ -94,8 +91,8 @@ body {
   padding: 3rem 2rem;
 }
 
-/* --- Card (Modified for Desktop Look) --- */
-.auth-card {
+/* --- Card (Desktop) --- */
+.auth-card-Register {
   background-color: transparent;
   box-shadow: none;
   border-radius: 0;
@@ -106,32 +103,22 @@ body {
   transition: all 0.3s ease;
 }
 
-.auth-card:hover {
-  transform: none;
-}
-
-/* --- Logo Box (Modified for Desktop Look) --- */
-.logo-box {
-  display: none;
-}
-
-.password-group {
+.password-group-Register {
   position: relative;
 }
 
-.password-wrapper {
+.password-wrapper-Register {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.password-wrapper input {
+.password-wrapper-Register .input-Register {
   width: 100%;
   padding-right: 4rem;
-  /* Space for the button */
 }
 
-.show-btn {
+.show-btn-Register {
   position: absolute;
   right: 1rem;
   background: none;
@@ -143,24 +130,20 @@ body {
   transition: color 0.2s;
 }
 
-.show-btn:hover {
-  color: #0b287d;
-}
-
-/* --- Inputs --- */
-.form-group {
+/* --- Inputs (General/Desktop) --- */
+.form-group-Register {
   margin-bottom: 1.5rem;
   text-align: left;
 }
 
-label {
+.label-Register {
   display: block;
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: #444;
 }
 
-input {
+.input-Register {
   width: 100%;
   padding: 1rem;
   border: 1px solid #ddd;
@@ -171,34 +154,44 @@ input {
   transition: 0.3s;
 }
 
-input:focus {
+.input-Register:focus {
   border-color: #061A53;
   box-shadow: 0 0 0 1px rgba(6, 26, 83, 0.4);
 }
 
 /* --- ERROR STYLING --- */
-.error-text {
+.error-text-Register {
   color: #dc3545;
-  /* Red color for errors */
   font-size: 0.9rem;
   margin: 0.25rem 0 0 0;
-  /* Minimal top margin, zero elsewhere */
   text-align: left;
 }
 
-/* FIX: Specific alignment for email error */
-.error-email {
+.error-email-Register {
   display: flex;
   justify-content: flex-start;
-  /* Forces content to the far left, overriding inherited centering */
   width: 100%;
 }
 
+/* --- Success Step --- */
+.success-step-Register {
+  text-align: center;
+  padding: 2rem 0;
+}
 
-/* --- Button Styles --- */
-.btn {
+.success-step-Register h2 {
+  color: #061A53;
+  margin-bottom: 1rem;
+}
+
+.success-step-Register p {
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+
+/* --- Button Styles (General/Desktop) --- */
+.btn-Register {
   background-color: #007bff;
-  /* Primary blue */
   color: white;
   border: none;
   padding: 1rem;
@@ -212,97 +205,35 @@ input:focus {
   margin-bottom: 1.5rem;
 }
 
-.btn:hover {
+.btn-Register:hover {
   background-color: #0056b3;
 }
 
-/* Back / Secondary Button - Light Blue */
-.btn.secondary {
+.btn-Register.secondary-Register {
   background-color: #e6f0ff;
   color: #007bff;
   border: 1px solid #007bff;
 }
 
-.btn.secondary:hover {
+.btn-Register.secondary-Register:hover {
   background-color: #cce0ff;
 }
 
-
-/* --- OR Text (Kept original logic) --- */
-.or-text {
-  display: block;
-  margin: 1.5rem 0;
-  font-weight: 600;
-  color: #777;
-  text-align: center;
-  position: relative;
-  line-height: 0;
-}
-
-.or-text::before,
-.or-text::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: 40%;
-  height: 1px;
-  background: #ddd;
-}
-
-.or-text::before {
-  left: 0;
-}
-
-.or-text::after {
-  right: 0;
-}
-
-
-/* --- Social Buttons (Kept original logic) --- */
-.social-login {
-  display: block;
-  margin-top: 1.5rem;
-}
-
-.social-login button {
-  width: 100%;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fff;
-  font-weight: 600;
-  margin-bottom: 0.8rem;
-  cursor: pointer;
-  transition: 0.3s;
-  color: #555;
-  font-size: 1rem;
-}
-
-.social-login button:hover {
-  background-color: #f0f0f0;
-  border-color: #ccc;
-}
-
-
-/* --- Bottom Text (Kept original logic) --- */
-.bottom-text {
+/* --- Bottom Text (General) --- */
+.bottom-text-Register {
   margin-top: 2rem;
   font-size: 0.95rem;
   color: #555;
   text-align: center;
 }
 
-.bottom-text a {
+.bottom-text-Register a {
   color: #061A53;
   font-weight: 600;
   text-decoration: none;
 }
 
-.bottom-text a:hover {
-  text-decoration: underline;
-}
-
-.auth-title {
+.auth-title-Register {
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 2rem;
@@ -310,150 +241,153 @@ input:focus {
   color: #061A53;
 }
 
-/* Buttons group for modal */
-.form-buttons {
+.form-buttons-Register {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
   margin-top: 1.5rem;
 }
 
-.success-step {
-  text-align: center;
-  padding: 50px 20px;
-}
-
-.success-step h2 {
-  color: #007bff;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.success-step p {
-  color: #555;
-  font-size: 15px;
-}
-
 /* --- NEW THREE-COLUMN GRID LAYOUT (STEP 2) --- */
-
-.three-column-grid {
+.three-column-grid-Register {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  /* Three equal columns */
   gap: 1rem 1.5rem;
-  /* Row gap and Column gap */
   width: 100%;
 }
 
-.three-column-grid .form-group {
+.three-column-grid-Register .form-group-Register {
   margin-bottom: 0;
-  /* Remove form-group margin for cleaner grid spacing */
 }
 
-/* Fields that need to be "mahaba" (long/wider) */
-.span-2 {
+.span-2-Register {
   grid-column: span 2;
-  /* Email will take 2/3rds of the row */
 }
 
-.span-3 {
+.span-3-Register {
   grid-column: span 3;
-  /* Street Address will take the full row width */
 }
 
+/* ====================================================== */
 /* --- Responsive (Mobile View) --- */
+/* ====================================================== */
 @media (max-width: 850px) {
-  /* Existing mobile styles... */
-
-  .two-columns {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .three-column-grid {
-    grid-template-columns: 1fr;
-    /* Stack columns on mobile */
-    gap: 0;
-  }
-
-  .span-2,
-  .span-3 {
-    grid-column: span 1;
-    /* Reset spans to single column on mobile */
-  }
-
-  /* Ensure mobile text colors are correct for errors */
-  .error-text {
-    color: #ff9999;
-    /* Lighter red for contrast on dark blue mobile background */
-  }
-
-  /* Other mobile styles... */
-
+  /* 1. Ensure Full Blue Coverage */
   body {
     background-color: #061A53;
   }
 
-  .auth-left {
-    display: none;
+  .auth-wrapper-Register {
+    background-color: #061A53;
+    padding: 0;
   }
 
-  .auth-right {
+  .auth-page-Register {
+    flex-direction: column;
+    box-shadow: none;
+    background-color: #061A53;
+    border-radius: 0;
+    min-height: 100vh;
+  }
+
+  .auth-right-Register {
     flex: 1;
     background: transparent;
     padding: 2rem 1rem;
     justify-content: flex-start;
   }
 
-  .auth-page {
-    flex-direction: column;
-    box-shadow: none;
-    background-color: #061A53;
+  .auth-card-Register {
+    max-width: none;
+    padding: 0 1rem;
+  }
+
+  /* 2. Input Field Style Matching the Image (Dark field) */
+  .input-Register {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: none !important;
+  }
+
+  .input-Register:focus {
+    border-color: white !important;
+  }
+
+  .input-Register::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  /* 3. Button Styles Matching the Image (White primary/Dark secondary) */
+  .btn-Register {
+    background-color: white !important;
+    color: #061A53 !important;
+    border: none;
+  }
+
+  .btn-Register:hover {
+    background-color: #f0f0f0 !important;
+  }
+
+  .btn-Register.secondary-Register {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    color: white !important;
+    border: 1px solid white !important;
+  }
+
+  .btn-Register.secondary-Register:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  /* 4. Text and other elements */
+  .auth-left-Register {
+    display: none;
   }
 
   /* Text color overrides for mobile */
-  .auth-page,
-  .auth-right,
-  .auth-card,
-  label,
-  .show-btn {
+  .auth-title-Register,
+  .bottom-text-Register,
+  .label-Register,
+  .show-btn-Register {
     color: white !important;
   }
 
-  .auth-title,
-  .bottom-text {
-    color: white;
+  .error-text-Register {
+    color: #ff9999 !important;
   }
 
-  /* Input overrides for mobile */
-  input {
-    color: white;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid white;
-  }
-
-  input::placeholder {
-    color: rgba(255, 255, 255, 0.8);
-  }
-
-  /* Button overrides for mobile */
-  .btn {
-    background-color: white;
-    color: #061A53;
-  }
-
-  .btn.secondary {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 1px solid white;
-  }
-
-  .btn.secondary:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-
-  .bottom-text a {
+  .bottom-text-Register a {
     color: #FFD700;
   }
 
+  /* Success step mobile styles */
+  .success-step-Register h2 {
+    color: white !important;
+  }
+
+  .success-step-Register p {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  /* Layout fixes */
+  .three-column-grid-Register {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .span-2-Register,
+  .span-3-Register {
+    grid-column: span 1;
+  }
+
+  /* Date input specific styles */
+  .input-Register[type="date"] {
+    color: white !important;
+  }
+
+  .input-Register[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+    font-size: 1.25rem;
+  }
 }
