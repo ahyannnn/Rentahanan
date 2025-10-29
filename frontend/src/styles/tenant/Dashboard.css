@@ -2,154 +2,328 @@
 .dashboard-content-Tenant-Dashboard {
     padding: 30px;
     min-height: 100vh;
-    background: #f9fafb;
-    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    font-family: "Inter", sans-serif;
     display: flex;
     flex-direction: column;
     gap: 30px;
 }
 
-/* ===== Welcome Header ===== */
-.welcome-header-Tenant-Dashboard {
+/* ===== Dashboard Header ===== */
+.dashboard-header-Tenant-Dashboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     margin-bottom: 10px;
 }
 
+.welcome-section-Tenant-Dashboard {
+    flex: 1;
+}
+
 .welcome-text-Tenant-Dashboard {
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin: 0 0 10px 0;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
     color: #1e293b;
+    line-height: 1.2;
 }
 
 .welcome-name-Tenant-Dashboard {
     color: #0b3c91;
-    font-weight: 700;
+    background: linear-gradient(135deg, #0b3c91 0%, #1e6af5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.welcome-subtitle-Tenant-Dashboard {
+    font-size: 1.1rem;
+    color: #64748b;
+    margin: 0;
+    font-weight: 500;
 }
 
 .unit-lease-info-Tenant-Dashboard {
     display: flex;
-    gap: 25px;
-    margin-top: 5px;
-    font-size: 14px;
-    color: #64748b;
+    gap: 15px;
 }
 
-.unit-info-Tenant-Dashboard,
-.lease-info-Tenant-Dashboard {
-    background: #fff;
-    padding: 8px 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    font-weight: 500;
+.info-badge-Tenant-Dashboard {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
+}
+
+.info-label-Tenant-Dashboard {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.info-value-Tenant-Dashboard {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+/* ===== Quick Actions ===== */
+.quick-actions-Tenant-Dashboard {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.quick-action-btn-Tenant-Dashboard {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 24px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    color: #374151;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.quick-action-btn-Tenant-Dashboard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: #3b82f6;
+}
+
+.quick-action-btn-Tenant-Dashboard.blue-action:hover {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    color: #1d4ed8;
+}
+
+.quick-action-btn-Tenant-Dashboard.green-action:hover {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    color: #15803d;
+}
+
+.quick-action-btn-Tenant-Dashboard.orange-action:hover {
+    background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+    color: #ea580c;
+}
+
+.action-icon-Tenant-Dashboard {
+    padding: 10px;
+    border-radius: 10px;
+    background: #f8fafc;
+    transition: all 0.3s ease;
+}
+
+.quick-action-btn-Tenant-Dashboard:hover .action-icon-Tenant-Dashboard {
+    transform: scale(1.1);
+}
+
+.action-arrow-Tenant-Dashboard {
+    margin-left: auto;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.quick-action-btn-Tenant-Dashboard:hover .action-arrow-Tenant-Dashboard {
+    transform: translate(2px, -2px);
+    opacity: 1;
 }
 
 /* ===== Overview Cards ===== */
 .bills-overview-cards-Tenant-Dashboard {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 25px;
     margin-bottom: 10px;
 }
 
 .card-Tenant-Dashboard {
-    background: #fff;
-    border-radius: 16px;
-    padding: 25px;
-    text-align: left;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: transform 0.3s, box-shadow 0.3s;
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
     position: relative;
     overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-Tenant-Dashboard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
 }
 
 .card-Tenant-Dashboard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
-.blue-card-Tenant-Dashboard { 
-    background: linear-gradient(135deg, #2a3d66 0%, #1e2a4a 100%); 
-    color: #fff; 
+.blue-card-Tenant-Dashboard {
+    --gradient-start: #3b82f6;
+    --gradient-end: #1d4ed8;
 }
 
-.yellow-card-Tenant-Dashboard { 
-    background: linear-gradient(135deg, #d19a00 0%, #b8860b 100%); 
-    color: #fff; 
+.yellow-card-Tenant-Dashboard {
+    --gradient-start: #f59e0b;
+    --gradient-end: #d97706;
 }
 
-.red-card-Tenant-Dashboard { 
-    background: linear-gradient(135deg, #b71c1c 0%, #8b0000 100%); 
-    color: #fff; 
+.green-card-Tenant-Dashboard {
+    --gradient-start: #10b981;
+    --gradient-end: #059669;
 }
 
 .card-header-Tenant-Dashboard {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.card-title-section-Tenant-Dashboard {
+    flex: 1;
 }
 
 .card-title-Tenant-Dashboard {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
+    color: #64748b;
+    margin: 0 0 4px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-subtitle-Tenant-Dashboard {
+    font-size: 0.9rem;
+    color: #94a3b8;
     margin: 0;
-    opacity: 0.95;
 }
 
 .card-icon-Tenant-Dashboard {
-    opacity: 0.9;
-    transition: transform 0.3s;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    transition: all 0.3s ease;
 }
 
 .card-Tenant-Dashboard:hover .card-icon-Tenant-Dashboard {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(5deg);
 }
 
 .card-value-Tenant-Dashboard {
-    margin: 0;
-    font-size: 2.2rem;
-    font-weight: 700;
-    line-height: 1.2;
+    margin: 0 0 15px 0;
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #1e293b;
+}
+
+.card-trend-Tenant-Dashboard {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.card-trend-Tenant-Dashboard.positive {
+    color: #10b981;
 }
 
 /* ===== Main Content Grid ===== */
 .dashboard-main-grid-Tenant-Dashboard {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.2fr 0.8fr;
     gap: 30px;
     align-items: start;
 }
 
 /* ===== Current Bills Section ===== */
 .current-bills-section-Tenant-Dashboard {
-    background: #fff;
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    grid-column: 1;
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .section-header-Tenant-Dashboard {
-    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 25px;
+}
+
+.section-title-group-Tenant-Dashboard {
+    flex: 1;
 }
 
 .section-title-Tenant-Dashboard {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #1e293b;
+    margin: 0 0 8px 0;
+}
+
+.section-subtitle-Tenant-Dashboard {
+    font-size: 0.95rem;
+    color: #64748b;
     margin: 0;
+    font-weight: 500;
+}
+
+.view-all-btn-Tenant-Dashboard {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.view-all-btn-Tenant-Dashboard:hover {
+    background: #eff6ff;
+    transform: translateX(4px);
 }
 
 .table-container-Tenant-Dashboard {
     overflow-x: auto;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    background: #fafbfc;
 }
 
 .bills-table-Tenant-Dashboard {
     width: 100%;
     border-collapse: collapse;
-    background: #fff;
+    background: white;
 }
 
 .table-header-Tenant-Dashboard {
@@ -161,26 +335,28 @@
 }
 
 .table-heading-Tenant-Dashboard {
-    padding: 16px 20px;
+    padding: 18px 20px;
     text-align: left;
     font-weight: 600;
     color: #475569;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    background: #f8fafc;
 }
 
 .table-body-Tenant-Dashboard {
-    background: #fff;
+    background: white;
 }
 
 .table-row-Tenant-Dashboard {
     border-bottom: 1px solid #f1f5f9;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
 }
 
 .table-row-Tenant-Dashboard:hover {
-    background-color: #f8fafc;
+    background: #f8fafc;
+    transform: scale(1.01);
 }
 
 .table-row-Tenant-Dashboard:last-child {
@@ -188,11 +364,24 @@
 }
 
 .table-data-Tenant-Dashboard {
-    padding: 16px 20px;
+    padding: 18px 20px;
     text-align: left;
     vertical-align: middle;
-    font-size: 14px;
+    font-size: 0.9rem;
     color: #475569;
+}
+
+.bill-type-cell-Tenant-Dashboard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.bill-icon-Tenant-Dashboard {
+    padding: 8px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    color: #64748b;
 }
 
 .bill-type-text-Tenant-Dashboard {
@@ -203,36 +392,46 @@
 .amount-text-Tenant-Dashboard {
     font-weight: 700;
     color: #0b3c91;
+    font-size: 1rem;
 }
 
 .due-date-text-Tenant-Dashboard {
     color: #64748b;
+    font-weight: 500;
 }
 
-/* Status Styles */
-.status-text-Tenant-Dashboard {
+/* Status Badges */
+.status-badge-Tenant-Dashboard {
     font-weight: 600;
-    padding: 6px 12px;
+    padding: 8px 16px;
     border-radius: 20px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.status-unpaid-Tenant-Dashboard {
-    background: #fee2e2;
+.status-unpaid {
+    background: #fef2f2;
     color: #dc2626;
+    border: 1px solid #fecaca;
 }
 
-.status-paid-Tenant-Dashboard {
-    background: #dcfce7;
+.status-paid {
+    background: #f0fdf4;
     color: #16a34a;
+    border: 1px solid #bbf7d0;
 }
 
-.status-pending-Tenant-Dashboard {
-    background: #fef3c7;
+.status-pending {
+    background: #fffbeb;
     color: #d97706;
+    border: 1px solid #fed7aa;
 }
 
-/* Action Styles */
+/* Action Buttons */
 .action-heading-Tenant-Dashboard {
     text-align: center;
 }
@@ -241,69 +440,99 @@
     text-align: center;
 }
 
-.action-link-Tenant-Dashboard {
-    display: inline-block;
-    width: 110px;
-    padding: 10px 0;
+.action-btn-Tenant-Dashboard {
+    padding: 10px 20px;
     font-size: 0.85rem;
     font-weight: 600;
-    border-radius: 8px;
-    color: #fff;
-    text-decoration: none;
-    text-align: center;
-    transition: all 0.2s ease-in-out;
+    border-radius: 10px;
+    color: white;
     border: none;
     cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.action-pay-now-Tenant-Dashboard {
-    background: linear-gradient(135deg, #0b3c91 0%, #072d6d 100%);
+.action-pay-now {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
 }
 
-.action-pay-now-Tenant-Dashboard:hover {
-    background: linear-gradient(135deg, #072d6d 0%, #051f4d 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(11, 60, 145, 0.3);
+.action-pay-now:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
-.action-receipt-Tenant-Dashboard {
-    background: linear-gradient(135deg, #16a34a 0%, #0d7b33 100%);
+.action-receipt {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
-.action-receipt-Tenant-Dashboard:hover {
-    background: linear-gradient(135deg, #0d7b33 0%, #0a5c27 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+.action-receipt:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
-.action-view-Tenant-Dashboard {
+.action-view {
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
 }
 
-.action-view-Tenant-Dashboard:hover {
+.action-view:hover {
     background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
 }
 
 /* ===== Transaction Overview ===== */
 .transaction-overview-section-Tenant-Dashboard {
-    background: #fff;
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    grid-column: 2;
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.chart-legend-Tenant-Dashboard {
+    display: flex;
+    gap: 15px;
+}
+
+.legend-item-Tenant-Dashboard {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.legend-color-Tenant-Dashboard {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-color-Tenant-Dashboard.blue {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
 }
 
 .chart-container-Tenant-Dashboard {
+    position: relative;
+    padding: 30px 20px;
+    background: #f8fafc;
+    border-radius: 16px;
+    min-height: 250px;
+    margin-bottom: 20px;
+}
+
+.chart-bars-Tenant-Dashboard {
     display: flex;
     gap: 40px;
     align-items: flex-end;
     justify-content: center;
-    padding: 30px 20px;
-    background: #f8fafc;
-    border-radius: 12px;
-    min-height: 200px;
+    height: 100%;
+    position: relative;
+    z-index: 2;
 }
 
 .chart-bar-wrapper-Tenant-Dashboard {
@@ -315,34 +544,103 @@
 
 .chart-bar-Tenant-Dashboard {
     width: 50px;
-    background: linear-gradient(180deg, #0b3c91 0%, #1e6af5 100%);
+    background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
     border-radius: 8px 8px 0 0;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
     cursor: pointer;
+    position: relative;
 }
 
 .chart-bar-Tenant-Dashboard:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(11, 60, 145, 0.3);
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.chart-bar-Tenant-Dashboard::after {
+    content: attr(data-amount);
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.chart-bar-Tenant-Dashboard:hover::after {
+    opacity: 1;
+    top: -45px;
 }
 
 .chart-label-Tenant-Dashboard {
-    margin-top: 12px;
-    font-size: 14px;
+    margin-top: 15px;
+    font-size: 0.9rem;
     color: #475569;
     text-align: center;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .chart-amount-Tenant-Dashboard {
     display: block;
     font-weight: 700;
     color: #0b3c91;
-    margin-top: 4px;
+    margin-top: 6px;
+    font-size: 1rem;
+}
+
+.chart-grid-Tenant-Dashboard {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 1;
+}
+
+.grid-line-Tenant-Dashboard {
+    border-top: 1px dashed #e2e8f0;
+    width: 100%;
+}
+
+.chart-stats-Tenant-Dashboard {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
+.stat-item-Tenant-Dashboard {
+    text-align: center;
+}
+
+.stat-label-Tenant-Dashboard {
+    display: block;
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.stat-value-Tenant-Dashboard {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1e293b;
 }
 
 /* ===== Responsive Design ===== */
-@media (max-width: 1200px) {
+/* ===== Responsive Design ===== */
+
+/* Tablet Styles (768px to 1199px) */
+@media (max-width: 1199px) {
     .dashboard-main-grid-Tenant-Dashboard {
         grid-template-columns: 1fr;
         gap: 25px;
@@ -351,21 +649,54 @@
     .transaction-overview-section-Tenant-Dashboard {
         grid-column: 1;
     }
+    
+    .chart-bars-Tenant-Dashboard {
+        gap: 30px;
+    }
 }
 
+/* Mobile Styles (768px and below) */
 @media (max-width: 768px) {
     .dashboard-content-Tenant-Dashboard {
         padding: 20px 15px;
         gap: 20px;
     }
 
+    .dashboard-header-Tenant-Dashboard {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+
     .welcome-text-Tenant-Dashboard {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
+        text-align: center;
+    }
+
+    .welcome-subtitle-Tenant-Dashboard {
+        text-align: center;
     }
 
     .unit-lease-info-Tenant-Dashboard {
+        width: 100%;
+        justify-content: center;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .info-badge-Tenant-Dashboard {
+        min-width: 140px;
+        flex: 1;
+    }
+
+    .quick-actions-Tenant-Dashboard {
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
+    }
+
+    .quick-action-btn-Tenant-Dashboard {
+        width: 100%;
     }
 
     .bills-overview-cards-Tenant-Dashboard {
@@ -374,12 +705,42 @@
     }
 
     .card-Tenant-Dashboard {
-        padding: 20px;
+        padding: 25px;
     }
 
     .current-bills-section-Tenant-Dashboard,
     .transaction-overview-section-Tenant-Dashboard {
-        padding: 20px;
+        padding: 25px;
+    }
+
+    .section-header-Tenant-Dashboard {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .section-title-group-Tenant-Dashboard {
+        text-align: center;
+    }
+
+    .view-all-btn-Tenant-Dashboard {
+        align-self: center;
+    }
+
+    .chart-bars-Tenant-Dashboard {
+        gap: 20px;
+        justify-content: space-around;
+    }
+
+    .chart-bar-Tenant-Dashboard {
+        width: 35px;
+    }
+
+    .chart-stats-Tenant-Dashboard {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
     }
 
     /* Mobile Table Styles */
@@ -432,51 +793,213 @@
         font-weight: 600;
         color: #475569;
         font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .action-cell-Tenant-Dashboard::before {
         display: none;
     }
 
-    .action-link-Tenant-Dashboard {
+    .action-btn-Tenant-Dashboard {
         width: 100%;
         max-width: 200px;
         margin: 0 auto;
     }
 
-    .chart-container-Tenant-Dashboard {
-        gap: 20px;
-        padding: 20px 15px;
-        min-height: 150px;
-    }
-
-    .chart-bar-Tenant-Dashboard {
-        width: 35px;
+    .bill-type-cell-Tenant-Dashboard {
+        justify-content: space-between;
     }
 }
 
+/* Small Mobile Styles (480px and below) */
 @media (max-width: 480px) {
     .dashboard-content-Tenant-Dashboard {
         padding: 15px 10px;
+        gap: 15px;
+    }
+
+    .welcome-text-Tenant-Dashboard {
+        font-size: 1.4rem;
+    }
+
+    .welcome-subtitle-Tenant-Dashboard {
+        font-size: 0.9rem;
+    }
+
+    .unit-lease-info-Tenant-Dashboard {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .info-badge-Tenant-Dashboard {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .quick-action-btn-Tenant-Dashboard {
+        padding: 16px;
+        font-size: 0.9rem;
+    }
+
+    .card-Tenant-Dashboard {
+        padding: 20px;
+    }
+
+    .card-value-Tenant-Dashboard {
+        font-size: 2rem;
+    }
+
+    .card-trend-Tenant-Dashboard {
+        font-size: 0.8rem;
+    }
+
+    .current-bills-section-Tenant-Dashboard,
+    .transaction-overview-section-Tenant-Dashboard {
+        padding: 20px;
+    }
+
+    .section-title-Tenant-Dashboard {
+        font-size: 1.3rem;
+    }
+
+    .section-subtitle-Tenant-Dashboard {
+        font-size: 0.9rem;
+    }
+
+    .chart-container-Tenant-Dashboard {
+        padding: 20px 10px;
+    }
+
+    .chart-bars-Tenant-Dashboard {
+        gap: 15px;
+    }
+
+    .chart-bar-Tenant-Dashboard {
+        width: 30px;
+    }
+
+    .chart-label-Tenant-Dashboard {
+        font-size: 0.8rem;
+    }
+
+    .chart-amount-Tenant-Dashboard {
+        font-size: 0.8rem;
+    }
+
+    .table-row-Tenant-Dashboard {
+        padding: 15px;
+        margin-bottom: 12px;
+    }
+
+    .table-data-Tenant-Dashboard {
+        padding: 10px 0;
+        font-size: 0.85rem;
+    }
+
+    .action-btn-Tenant-Dashboard {
+        padding: 10px 16px;
+        font-size: 0.8rem;
+        min-width: 120px;
+    }
+
+    .status-badge-Tenant-Dashboard {
+        font-size: 0.7rem;
+        padding: 6px 10px;
+    }
+}
+
+/* Extra Small Mobile Styles (360px and below) */
+@media (max-width: 360px) {
+    .dashboard-content-Tenant-Dashboard {
+        padding: 12px 8px;
+        gap: 12px;
     }
 
     .welcome-text-Tenant-Dashboard {
         font-size: 1.3rem;
     }
 
+    .card-Tenant-Dashboard {
+        padding: 18px;
+    }
+
     .card-value-Tenant-Dashboard {
         font-size: 1.8rem;
     }
 
-    .section-title-Tenant-Dashboard {
-        font-size: 1.2rem;
+    .current-bills-section-Tenant-Dashboard,
+    .transaction-overview-section-Tenant-Dashboard {
+        padding: 18px;
     }
 
-    .chart-container-Tenant-Dashboard {
-        gap: 15px;
+    .chart-bars-Tenant-Dashboard {
+        gap: 12px;
     }
 
     .chart-bar-Tenant-Dashboard {
-        width: 30px;
+        width: 25px;
+    }
+
+    .table-row-Tenant-Dashboard {
+        padding: 12px;
+    }
+
+    .table-data-Tenant-Dashboard {
+        padding: 8px 0;
+        font-size: 0.8rem;
+    }
+
+    .action-btn-Tenant-Dashboard {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        min-width: 100px;
+    }
+}
+
+/* Fix for very tall mobile screens */
+@media (max-height: 700px) and (max-width: 768px) {
+    .dashboard-content-Tenant-Dashboard {
+        min-height: auto;
+        padding: 15px 10px;
+    }
+    
+    .bills-overview-cards-Tenant-Dashboard {
+        gap: 12px;
+    }
+    
+    .card-Tenant-Dashboard {
+        padding: 18px;
+    }
+}
+
+/* Landscape Mobile Optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+    .dashboard-header-Tenant-Dashboard {
+        flex-direction: row;
+        text-align: left;
+    }
+    
+    .welcome-section-Tenant-Dashboard {
+        text-align: left;
+    }
+    
+    .unit-lease-info-Tenant-Dashboard {
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+    
+    .bills-overview-cards-Tenant-Dashboard {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .quick-actions-Tenant-Dashboard {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .quick-action-btn-Tenant-Dashboard {
+        flex: 1;
+        min-width: 120px;
     }
 }
