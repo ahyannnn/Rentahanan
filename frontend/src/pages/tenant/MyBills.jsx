@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { CreditCard, DollarSign, Upload, CheckCircle, Clock, AlertCircle, ChevronLeft, Search, Filter } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { CreditCard, DollarSign, Upload, CheckCircle, Clock, AlertCircle, ChevronLeft, Search } from "lucide-react";
 import "../../styles/tenant/MyBills.css";
 
 const MyBills = () => {
+  const [bills, setBills] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [gcashRef, setGcashRef] = useState("");
@@ -12,50 +13,39 @@ const MyBills = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const sampleBills = [
-    { 
-      billid: "BI01", 
-      billtype: "Water", 
-      amount: 450, 
-      duedate: "2025-10-30", 
-      status: "Unpaid",
-      category: "Utilities"
-    },
-    { 
-      billid: "BI02", 
-      billtype: "Electricity", 
-      amount: 980, 
-      duedate: "2025-10-31", 
-      status: "Unpaid",
-      category: "Utilities"
-    },
-    { 
-      billid: "BI03", 
-      billtype: "Rent", 
-      amount: 5000, 
-      duedate: "2025-10-25", 
-      status: "Pending",
-      category: "Rent"
-    },
-    { 
-      billid: "BI04", 
-      billtype: "Internet", 
-      amount: 1200, 
-      duedate: "2025-11-05", 
-      status: "Paid",
-      category: "Utilities"
-    },
-  ];
+  const storedUser = JSON.parse(localStorage.getItem("user")) || {};
+  const tenantId = storedUser.tenantid || storedUser.userid || null;
 
-  const filteredBills = sampleBills.filter(bill => {
-    const matchesSearch = bill.billid.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         bill.billtype.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || bill.status.toLowerCase() === statusFilter;
+  useEffect(() => {
+    if (!tenantId) {
+      console.warn("Tenant ID is missing!");
+      return;
+    }
+
+    const fetchBills = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/bills/${tenantId}`);
+        const data = await res.json();
+        setBills(data);
+      } catch (error) {
+        console.error("Error fetching bills:", error);
+      }
+    };
+
+    fetchBills();
+  }, [tenantId]);
+
+  const filteredBills = bills.filter(bill => {
+    const matchesSearch =
+      String(bill.billid).toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (bill.billtype && bill.billtype.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    const matchesStatus = statusFilter === "all" || (bill.status && bill.status.toLowerCase() === statusFilter);
     return matchesSearch && matchesStatus;
   });
 
   const selectedTotalAmount = selectedBills.reduce((sum, billId) => {
-    const bill = sampleBills.find((b) => b.billid === billId);
+    const bill = bills.find(b => b.billid === billId);
     return sum + (bill ? bill.amount : 0);
   }, 0);
 
@@ -108,6 +98,10 @@ const MyBills = () => {
       alert("Bills submitted for validation!");
       handleCloseModal();
       setSelectedBills([]);
+      // Refresh bills data
+      const res = await fetch(`http://localhost:5000/api/bills/${tenantId}`);
+      const data = await res.json();
+      setBills(data);
     } catch (error) {
       console.error("Error submitting payment:", error);
       alert(error.message || "Failed to submit payment. Please try again.");
@@ -116,31 +110,34 @@ const MyBills = () => {
     }
   };
 
-  const handleViewReceipt = (billId) => {
-    alert(`Viewing receipt for ${billId}`);
+  const handleViewReceipt = async (billId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/transactions/receipt/${billId}`);
+      const receiptData = await response.json();
+
+      if (response.ok && receiptData.receiptUrl) {
+        // Construct the URL using your existing uploads route
+        const receiptFullUrl = `http://localhost:5000/uploads/receipts/${receiptData.receiptUrl}`;
+        window.open(receiptFullUrl, '_blank');
+      } else {
+        alert(receiptData.error || `No receipt available for bill ${billId}`);
+      }
+    } catch (error) {
+      console.error('Error fetching receipt:', error);
+      alert('Error loading receipt. Please try again.');
+    }
   };
 
   const getStatusIcon = (status) => {
     switch (status.toLowerCase()) {
       case "paid":
         return <CheckCircle size={16} />;
-      case "pending":
+      case "for validation":
         return <Clock size={16} />;
       case "unpaid":
         return <AlertCircle size={16} />;
       default:
         return <AlertCircle size={16} />;
-    }
-  };
-
-  const getCategoryColor = (category) => {
-    switch (category.toLowerCase()) {
-      case "rent":
-        return "category-rent";
-      case "utilities":
-        return "category-utilities";
-      default:
-        return "category-other";
     }
   };
 
@@ -158,7 +155,7 @@ const MyBills = () => {
               <AlertCircle size={20} />
             </div>
             <div className="stat-info-Tenant-Bills">
-              <span className="stat-number-Tenant-Bills">{sampleBills.filter(b => b.status === "Unpaid").length}</span>
+              <span className="stat-number-Tenant-Bills">{bills.filter(b => b.status.toLowerCase() === "unpaid").length}</span>
               <span className="stat-label-Tenant-Bills">Unpaid</span>
             </div>
           </div>
@@ -167,8 +164,8 @@ const MyBills = () => {
               <Clock size={20} />
             </div>
             <div className="stat-info-Tenant-Bills">
-              <span className="stat-number-Tenant-Bills">{sampleBills.filter(b => b.status === "Pending").length}</span>
-              <span className="stat-label-Tenant-Bills">Pending</span>
+              <span className="stat-number-Tenant-Bills">{bills.filter(b => b.status.toLowerCase() === "for validation").length}</span>
+              <span className="stat-label-Tenant-Bills">For Validation</span>
             </div>
           </div>
           <div className="stat-card-Tenant-Bills">
@@ -176,7 +173,7 @@ const MyBills = () => {
               <CheckCircle size={20} />
             </div>
             <div className="stat-info-Tenant-Bills">
-              <span className="stat-number-Tenant-Bills">{sampleBills.filter(b => b.status === "Paid").length}</span>
+              <span className="stat-number-Tenant-Bills">{bills.filter(b => b.status.toLowerCase() === "paid").length}</span>
               <span className="stat-label-Tenant-Bills">Paid</span>
             </div>
           </div>
@@ -187,36 +184,36 @@ const MyBills = () => {
       <div className="bills-controls-Tenant-Bills">
         <div className="search-container-Tenant-Bills">
           <Search size={20} className="search-icon-Tenant-Bills" />
-          <input 
-            type="text" 
-            placeholder="Search bills..." 
+          <input
+            type="text"
+            placeholder="Search bills..."
             className="search-input-Tenant-Bills"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        
+
         <div className="filter-controls-Tenant-Bills">
           <div className="filter-tabs-Tenant-Bills">
-            <button 
+            <button
               className={`filter-btn-Tenant-Bills ${statusFilter === "all" ? "filter-btn-active-Tenant-Bills" : ""}`}
               onClick={() => setStatusFilter("all")}
             >
               All Bills
             </button>
-            <button 
+            <button
               className={`filter-btn-Tenant-Bills ${statusFilter === "unpaid" ? "filter-btn-active-Tenant-Bills" : ""}`}
               onClick={() => setStatusFilter("unpaid")}
             >
               Unpaid
             </button>
-            <button 
-              className={`filter-btn-Tenant-Bills ${statusFilter === "pending" ? "filter-btn-active-Tenant-Bills" : ""}`}
-              onClick={() => setStatusFilter("pending")}
+            <button
+              className={`filter-btn-Tenant-Bills ${statusFilter === "for validation" ? "filter-btn-active-Tenant-Bills" : ""}`}
+              onClick={() => setStatusFilter("for validation")}
             >
-              Pending
+              For Validation
             </button>
-            <button 
+            <button
               className={`filter-btn-Tenant-Bills ${statusFilter === "paid" ? "filter-btn-active-Tenant-Bills" : ""}`}
               onClick={() => setStatusFilter("paid")}
             >
@@ -233,7 +230,6 @@ const MyBills = () => {
             <tr className="table-header-row-Tenant-Bills">
               <th className="table-heading-Tenant-Bills">Select</th>
               <th className="table-heading-Tenant-Bills">Bill ID</th>
-              <th className="table-heading-Tenant-Bills">Category</th>
               <th className="table-heading-Tenant-Bills">Type</th>
               <th className="table-heading-Tenant-Bills">Amount</th>
               <th className="table-heading-Tenant-Bills">Due Date</th>
@@ -244,10 +240,10 @@ const MyBills = () => {
           <tbody className="table-body-Tenant-Bills">
             {filteredBills.map((bill) => {
               const isUnpaid = bill.status.toLowerCase() === "unpaid";
-              const isPending = bill.status.toLowerCase() === "pending";
+              const isForValidation = bill.status.toLowerCase() === "for validation";
               const isPaid = bill.status.toLowerCase() === "paid";
               const isSelectable = isUnpaid;
-              
+
               return (
                 <tr key={bill.billid} className="table-row-Tenant-Bills">
                   <td className="table-data-Tenant-Bills">
@@ -267,11 +263,6 @@ const MyBills = () => {
                   </td>
                   <td className="table-data-Tenant-Bills bill-id-Tenant-Bills">
                     {bill.billid}
-                  </td>
-                  <td className="table-data-Tenant-Bills">
-                    <span className={`category-badge-Tenant-Bills ${getCategoryColor(bill.category)}`}>
-                      {bill.category}
-                    </span>
                   </td>
                   <td className="table-data-Tenant-Bills bill-type-Tenant-Bills">
                     {bill.billtype}
@@ -293,12 +284,12 @@ const MyBills = () => {
                       <button className="action-btn-Tenant-Bills pay-now-btn-Tenant-Bills">
                         Pay Now
                       </button>
-                    ) : isPending ? (
+                    ) : isForValidation ? (
                       <button className="action-btn-Tenant-Bills pending-btn-Tenant-Bills" disabled>
                         For Validation
                       </button>
                     ) : (
-                      <button 
+                      <button
                         className="action-btn-Tenant-Bills receipt-btn-Tenant-Bills"
                         onClick={() => handleViewReceipt(bill.billid)}
                       >
@@ -317,7 +308,7 @@ const MyBills = () => {
       <div className="mobile-bills-container-Tenant-Bills">
         {filteredBills.map((bill) => {
           const isUnpaid = bill.status.toLowerCase() === "unpaid";
-          const isPending = bill.status.toLowerCase() === "pending";
+          const isForValidation = bill.status.toLowerCase() === "for validation";
           const isPaid = bill.status.toLowerCase() === "paid";
           const isSelectable = isUnpaid;
 
@@ -326,9 +317,6 @@ const MyBills = () => {
               <div className="mobile-bill-header-Tenant-Bills">
                 <div className="mobile-bill-info-Tenant-Bills">
                   <span className="mobile-bill-id-Tenant-Bills">{bill.billid}</span>
-                  <span className={`mobile-category-badge-Tenant-Bills ${getCategoryColor(bill.category)}`}>
-                    {bill.category}
-                  </span>
                 </div>
                 <input
                   type="checkbox"
@@ -368,12 +356,12 @@ const MyBills = () => {
                   <button className="mobile-action-btn-Tenant-Bills pay-now-btn-Tenant-Bills">
                     Pay Now
                   </button>
-                ) : isPending ? (
+                ) : isForValidation ? (
                   <button className="mobile-action-btn-Tenant-Bills mobile-pending-btn-Tenant-Bills" disabled>
                     For Validation
                   </button>
                 ) : (
-                  <button 
+                  <button
                     className="mobile-action-btn-Tenant-Bills mobile-receipt-btn-Tenant-Bills"
                     onClick={() => handleViewReceipt(bill.billid)}
                   >
@@ -424,7 +412,7 @@ const MyBills = () => {
               <div className="bill-summary-Tenant-Bills">
                 <h4 className="summary-title-Tenant-Bills">Selected Bills</h4>
                 <div className="bill-list-Tenant-Bills">
-                  {sampleBills
+                  {bills
                     .filter((bill) => selectedBills.includes(bill.billid))
                     .map((bill) => (
                       <div key={bill.billid} className="bill-item-Tenant-Bills">
@@ -445,7 +433,7 @@ const MyBills = () => {
               {/* Payment Methods */}
               <div className="payment-methods-Tenant-Bills">
                 <h4 className="methods-title-Tenant-Bills">Choose Payment Method</h4>
-                
+
                 {/* Cash Option */}
                 <div
                   className={`payment-method-card-Tenant-Bills ${paymentMethod === "cash" ? "method-selected-Tenant-Bills" : ""}`}
@@ -490,7 +478,7 @@ const MyBills = () => {
                           </div>
                           <div className="account-detail-Tenant-Bills">
                             <span className="detail-label-Tenant-Bills">Mobile Number:</span>
-                            <span className="detail-value-Tenant-Bills">0917-XXX-XXXX</span>
+                            <span className="detail-value-Tenant-Bills">0917-213-5123</span>
                           </div>
                         </div>
                       </div>

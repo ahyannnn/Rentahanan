@@ -9,9 +9,12 @@ const BrowseUnits = () => {
   const [showApplyForm, setShowApplyForm] = useState(false);
   const [applicationStatus, setApplicationStatus] = useState({});
   const [hasApplied, setHasApplied] = useState(false);
-  const [tenantDetails, setTenantDetails] = useState({}); 
+  const [tenantDetails, setTenantDetails] = useState({});
 
-  const tenantId = localStorage.getItem("userId");
+  // Get the whole user object from localStorage
+  const storedUser = JSON.parse(localStorage.getItem("user")) || {};
+  const tenantId = storedUser.userid; // ✅ Now this will be correct
+
   const statusOptions = ["All", "Available", "Occupied", "Pending"];
 
   // 1. Fetch all units on mount
@@ -28,7 +31,7 @@ const BrowseUnits = () => {
 
     const fetchApplication = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/application/${tenantId}`); 
+        const res = await fetch(`http://localhost:5000/api/application/${tenantId}`);
         if (res.ok) {
           const data = await res.json();
           setHasApplied(!!data.unit_id);
@@ -53,10 +56,11 @@ const BrowseUnits = () => {
 
     const fetchTenantDetails = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/tenant/${tenantId}`);
+        const res = await fetch(`http://localhost:5000/api/application/${tenantId}`);
         if (res.ok) {
           const data = await res.json();
           setTenantDetails(data);
+
         } else {
           console.error("Failed to fetch tenant details:", res.status);
         }
@@ -67,7 +71,7 @@ const BrowseUnits = () => {
 
     fetchTenantDetails();
   }, [tenantId]);
-
+  console.log(tenantId)
   // 4. Combined search and filter logic
   const filteredUnits = useMemo(() => {
     const statusMap = {
@@ -76,6 +80,7 @@ const BrowseUnits = () => {
       "Occupied": (unit) => unit.status === "Occupied",
       "Pending": (unit) => unit.status === "Pending",
     };
+
 
     return units.filter((unit) => {
       const matchesSearch = unit.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -144,7 +149,7 @@ const BrowseUnits = () => {
       <div className="page-header-section-Browse">
         <h2 className="page-header-Browse">Browse Units 🏘️</h2>
         <p className="page-subtext-Browse">Discover available rental units that match your lifestyle and budget</p>
-        
+
         {/* Stats Cards */}
         <div className="stats-container-Browse">
           <div className="stat-card-Browse">
@@ -185,7 +190,7 @@ const BrowseUnits = () => {
                 className={`filter-btn-Browse ${filterStatus === status ? "filter-btn-active-Browse" : ""}`}
                 onClick={() => setFilterStatus(status)}
               >
-                {status} {status === "All" ? "" : units.filter(unit => 
+                {status} {status === "All" ? "" : units.filter(unit =>
                   status === "All" ? true : unit.status === status
                 ).length}
               </button>
@@ -197,7 +202,7 @@ const BrowseUnits = () => {
       {/* Units Grid Section */}
       <div className="units-grid-container-Browse">
         <h2 className="section-title-Browse">Available Properties</h2>
-        
+
         <div className="units-grid-Browse">
           {filteredUnits.length > 0 ? (
             filteredUnits.map((unit) => (
@@ -223,12 +228,12 @@ const BrowseUnits = () => {
                     {unit.status}
                   </div>
                 </div>
-                
+
                 <div className="unit-info-Browse">
                   <h3 className="unit-name-Browse">{unit.name}</h3>
                   <p className="unit-price-Browse">₱{unit.price?.toLocaleString() || '0'} / month</p>
                   <p className="unit-description-Browse">{unit.description}</p>
-                  
+
                   <div className="unit-features-Browse">
                     {unit.features && unit.features.split(',').map((feature, index) => (
                       <span key={index} className="feature-tag-Browse">
@@ -253,7 +258,7 @@ const BrowseUnits = () => {
         <div className="modal-overlay-Browse" onClick={() => setSelectedUnit(null)}>
           <div className="modal-content-Browse" onClick={(e) => e.stopPropagation()}>
             <button className="close-btn-Browse" onClick={() => setSelectedUnit(null)}>×</button>
-            
+
             <div className="modal-image-container-Browse">
               {selectedUnit.imagepath ? (
                 <img
@@ -268,20 +273,20 @@ const BrowseUnits = () => {
                 </div>
               )}
             </div>
-            
+
             <div className="modal-header-Browse">
               <h2 className="modal-title-Browse">{selectedUnit.name}</h2>
               <div className={`unit-status-Browse unit-status-${selectedUnit.status.toLowerCase()}-Browse`}>
                 {selectedUnit.status}
               </div>
             </div>
-            
+
             <div className="modal-details-Browse">
               <div className="detail-item-Browse">
                 <span className="detail-label-Browse">Price:</span>
                 <span className="detail-price-Browse">₱{selectedUnit.price?.toLocaleString() || '0'} / month</span>
               </div>
-              
+
               <div className="detail-item-Browse">
                 <span className="detail-label-Browse">Description:</span>
                 <p className="detail-description-Browse">{selectedUnit.description}</p>
@@ -323,51 +328,51 @@ const BrowseUnits = () => {
         <div className="modal-overlay-Browse" onClick={() => setShowApplyForm(false)}>
           <div className="modal-content-Browse form-modal-Browse" onClick={(e) => e.stopPropagation()}>
             <button className="close-btn-Browse" onClick={() => setShowApplyForm(false)}>×</button>
-            
+
             <div className="form-header-Browse">
               <h2 className="form-title-Browse">Application for {selectedUnit.name}</h2>
               <p className="form-subtitle-Browse">Please fill out the application form below</p>
             </div>
-            
+
             <form className="application-form-Browse" onSubmit={handleFormSubmit}>
               <div className="form-section-Browse">
                 <h3 className="form-section-title-Browse">Personal Information</h3>
-                
+
                 <div className="form-row-Browse">
                   <div className="form-field-Browse">
                     <label className="form-label-Browse">Full Name:</label>
-                    <input 
-                      type="text" 
-                      name="fullName" 
+                    <input
+                      type="text"
+                      name="fullName"
                       className="form-input-Browse form-input-readonly-Browse"
-                      value={tenantDetails.fullName || ""} 
-                      readOnly 
-                      required 
+                      value={tenantDetails.fullName || ""}
+                      readOnly
+                      required
                     />
                   </div>
-                  
+
                   <div className="form-field-Browse">
                     <label className="form-label-Browse">Email:</label>
-                    <input 
-                      type="email" 
-                      name="email" 
+                    <input
+                      type="email"
+                      name="email"
                       className="form-input-Browse form-input-readonly-Browse"
-                      value={tenantDetails.email || ""} 
-                      readOnly 
-                      required 
+                      value={tenantDetails.email || ""}
+                      readOnly
+                      required
                     />
                   </div>
                 </div>
 
                 <div className="form-field-Browse">
                   <label className="form-label-Browse">Phone Number:</label>
-                  <input 
-                    type="tel" 
-                    name="phone" 
+                  <input
+                    type="tel"
+                    name="phone"
                     className="form-input-Browse form-input-readonly-Browse"
-                    value={tenantDetails.phone || ""} 
-                    readOnly 
-                    required 
+                    value={tenantDetails.phone || ""}
+                    readOnly
+                    required
                   />
                 </div>
               </div>
@@ -375,37 +380,37 @@ const BrowseUnits = () => {
               <div className="form-section-Browse">
                 <h3 className="form-section-title-Browse">Required Documents</h3>
                 <p className="form-help-text-Browse">Please upload clear photos or scans of the following documents:</p>
-                
+
                 <div className="form-field-Browse">
                   <label className="form-label-Browse">Valid ID (Government Issued):</label>
-                  <input 
-                    type="file" 
-                    name="validId" 
+                  <input
+                    type="file"
+                    name="validId"
                     className="form-file-input-Browse"
-                    accept="image/*,.pdf" 
-                    required 
+                    accept="image/*,.pdf"
+                    required
                   />
                 </div>
-                
+
                 <div className="form-field-Browse">
                   <label className="form-label-Browse">Barangay Clearance:</label>
-                  <input 
-                    type="file" 
-                    name="brgyClearance" 
+                  <input
+                    type="file"
+                    name="brgyClearance"
                     className="form-file-input-Browse"
-                    accept="image/*,.pdf" 
-                    required 
+                    accept="image/*,.pdf"
+                    required
                   />
                 </div>
-                
+
                 <div className="form-field-Browse">
                   <label className="form-label-Browse">Proof of Income:</label>
-                  <input 
-                    type="file" 
-                    name="proofOfIncome" 
+                  <input
+                    type="file"
+                    name="proofOfIncome"
                     className="form-file-input-Browse"
-                    accept="image/*,.pdf" 
-                    required 
+                    accept="image/*,.pdf"
+                    required
                   />
                 </div>
               </div>

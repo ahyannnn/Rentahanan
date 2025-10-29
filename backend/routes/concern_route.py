@@ -70,7 +70,6 @@ def add_concern():
 @concern_bp.route("/concerns", methods=["GET"])
 def get_all_concerns():
     try:
-        # ✅ Use JOIN to combine related tables
         results = (
             db.session.query(
                 Concern.concernid,
@@ -83,12 +82,12 @@ def get_all_concerns():
                 Concern.landlordimage,
                 User.firstname,
                 User.lastname,
-                House.name.label("unit_name")  # ✅ Label the unit name properly
+                House.name.label("unit_name")  # Label the unit name properly
             )
             .join(Tenant, Tenant.tenantid == Concern.tenantid)
             .join(User, User.userid == Tenant.userid)
-            .join(Application, Application.applicationid == Tenant.applicationid)
-            .join(House, House.unitid == Application.unitid)
+            .outerjoin(Application, Application.applicationid == Tenant.applicationid)  # ✅ Outer join
+            .outerjoin(House, House.unitid == Application.unitid)  # ✅ Outer join
             .order_by(Concern.creationdate.desc())
             .all()
         )
@@ -97,7 +96,6 @@ def get_all_concerns():
         for c in results:
             fullname = f"{c.firstname} {c.lastname}".strip()
 
-            # ✅ Choose which image to show based on status
             if c.status and c.status.lower() == "pending":
                 display_image = c.tenantimage
             elif c.status and c.status.lower() in ["fixed", "resolved"]:
@@ -110,11 +108,11 @@ def get_all_concerns():
                 "concerntype": c.concerntype,
                 "subject": c.subject,
                 "description": c.description,
-                "image":c.tenantimage,
+                "image": c.tenantimage,
                 "status": c.status,
                 "creationdate": c.creationdate,
                 "tenant_name": fullname,
-                "unit": c.unit_name,  # ✅ now works because of .label("unit_name")
+                "unit": c.unit_name if c.unit_name else "",  # Return empty string if no unit
                 "display_image": display_image
             })
 
@@ -123,6 +121,7 @@ def get_all_concerns():
     except Exception as e:
         print("Error fetching concerns:", e)
         return jsonify({"error": str(e)}), 500
+
 
 
 
