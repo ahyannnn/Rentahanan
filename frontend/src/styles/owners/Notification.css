@@ -21,6 +21,41 @@
   font-weight: 700;
   margin-bottom: 8px;
 }
+.owner-view-photo-btn {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.owner-view-photo-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.owner-upload-photo-btn {
+  background-color: #f59e0b;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.owner-upload-photo-btn:hover {
+  background-color: #d97706;
+}
 
 .owner-notifications-title-section p {
   color: #64748b;
