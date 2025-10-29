@@ -131,15 +131,52 @@ const BrowseUnits = () => {
       });
   };
 
+  // Calculate stats from actual data
+  const statsData = {
+    total: units.length,
+    available: units.filter(unit => unit.status === "Available").length,
+    occupied: units.filter(unit => unit.status === "Occupied").length
+  };
+
   return (
     <div className="browse-units-container-Browse">
+      {/* Header Section */}
       <div className="page-header-section-Browse">
         <h2 className="page-header-Browse">Browse Units 🏘️</h2>
-        <p className="page-subtext-Browse">Explore available units and find the one that fits your needs.</p>
+        <p className="page-subtext-Browse">Discover available rental units that match your lifestyle and budget</p>
+        
+        {/* Stats Cards */}
+        <div className="stats-container-Browse">
+          <div className="stat-card-Browse">
+            <div className="stat-number-Browse">{statsData.total}</div>
+            <div className="stat-label-Browse">Total Units</div>
+          </div>
+          <div className="stat-card-Browse">
+            <div className="stat-number-Browse">{statsData.available}</div>
+            <div className="stat-label-Browse">Available</div>
+          </div>
+          <div className="stat-card-Browse">
+            <div className="stat-number-Browse">{statsData.occupied}</div>
+            <div className="stat-label-Browse">Occupied</div>
+          </div>
+        </div>
       </div>
 
-      {/* --- Search and Filter Controls --- */}
+      {/* Search and Filter Section */}
       <div className="controls-container-Browse">
+        <div className="search-container-Browse">
+          <div className="search-box-Browse">
+            <i className="search-icon-Browse">🔍</i>
+            <input
+              type="text"
+              placeholder="Search by unit name, description, or features..."
+              className="search-input-Browse"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
         <div className="status-filters-container-Browse">
           <div className="status-filters-Browse">
             {statusOptions.map((status) => (
@@ -148,25 +185,19 @@ const BrowseUnits = () => {
                 className={`filter-btn-Browse ${filterStatus === status ? "filter-btn-active-Browse" : ""}`}
                 onClick={() => setFilterStatus(status)}
               >
-                {status}
+                {status} {status === "All" ? "" : units.filter(unit => 
+                  status === "All" ? true : unit.status === status
+                ).length}
               </button>
             ))}
           </div>
         </div>
-
-        <div className="search-container-Browse">
-          <input
-            type="text"
-            placeholder="Search units by name or description..."
-            className="search-input-Browse"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
       </div>
 
-      {/* --- Units Grid Display --- */}
+      {/* Units Grid Section */}
       <div className="units-grid-container-Browse">
+        <h2 className="section-title-Browse">Available Properties</h2>
+        
         <div className="units-grid-Browse">
           {filteredUnits.length > 0 ? (
             filteredUnits.map((unit) => (
@@ -183,21 +214,35 @@ const BrowseUnits = () => {
                       className="unit-image-Browse"
                     />
                   ) : (
-                    <div className="unit-image-placeholder-Browse">No Image</div>
+                    <div className="unit-image-placeholder-Browse">
+                      <div className="placeholder-icon-Browse">🏠</div>
+                      <span>No Image Available</span>
+                    </div>
                   )}
+                  <div className={`unit-status-Browse unit-status-${unit.status.toLowerCase()}-Browse`}>
+                    {unit.status}
+                  </div>
                 </div>
+                
                 <div className="unit-info-Browse">
                   <h3 className="unit-name-Browse">{unit.name}</h3>
-                  <p className="unit-price-Browse">₱{unit.price.toLocaleString()} / month</p>
-                  <span className={`unit-status-Browse unit-status-${unit.status.toLowerCase()}-Browse`}>
-                    {unit.status}
-                  </span>
+                  <p className="unit-price-Browse">₱{unit.price?.toLocaleString() || '0'} / month</p>
+                  <p className="unit-description-Browse">{unit.description}</p>
+                  
+                  <div className="unit-features-Browse">
+                    {unit.features && unit.features.split(',').map((feature, index) => (
+                      <span key={index} className="feature-tag-Browse">
+                        {feature.trim()}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))
           ) : (
             <div className="no-results-container-Browse">
-              <p className="no-results-Browse">No units found matching your criteria. 😟</p>
+              <div className="no-results-icon-Browse">😟</div>
+              <p className="no-results-Browse">No units found matching your criteria.</p>
             </div>
           )}
         </div>
@@ -207,6 +252,8 @@ const BrowseUnits = () => {
       {selectedUnit && !showApplyForm && (
         <div className="modal-overlay-Browse" onClick={() => setSelectedUnit(null)}>
           <div className="modal-content-Browse" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn-Browse" onClick={() => setSelectedUnit(null)}>×</button>
+            
             <div className="modal-image-container-Browse">
               {selectedUnit.imagepath ? (
                 <img
@@ -216,26 +263,42 @@ const BrowseUnits = () => {
                 />
               ) : (
                 <div className="modal-image-placeholder-Browse">
-                  No Image Available
+                  <div className="placeholder-icon-Browse">🏠</div>
+                  <span>No Image Available</span>
                 </div>
               )}
             </div>
             
             <div className="modal-header-Browse">
               <h2 className="modal-title-Browse">{selectedUnit.name}</h2>
+              <div className={`unit-status-Browse unit-status-${selectedUnit.status.toLowerCase()}-Browse`}>
+                {selectedUnit.status}
+              </div>
             </div>
             
             <div className="modal-details-Browse">
-              <p className="detail-price-Browse">
-                <strong>₱{selectedUnit.price.toLocaleString()}</strong> / month
-              </p>
-              <p className="detail-description-Browse">{selectedUnit.description}</p>
-              <div className="detail-status-container-Browse">
-                <span className="detail-status-label-Browse">Status: </span>
-                <span className={`unit-status-Browse unit-status-${selectedUnit.status.toLowerCase()}-Browse`}>
-                  {selectedUnit.status}
-                </span>
+              <div className="detail-item-Browse">
+                <span className="detail-label-Browse">Price:</span>
+                <span className="detail-price-Browse">₱{selectedUnit.price?.toLocaleString() || '0'} / month</span>
               </div>
+              
+              <div className="detail-item-Browse">
+                <span className="detail-label-Browse">Description:</span>
+                <p className="detail-description-Browse">{selectedUnit.description}</p>
+              </div>
+
+              {selectedUnit.features && (
+                <div className="detail-item-Browse">
+                  <span className="detail-label-Browse">Features:</span>
+                  <div className="features-list-Browse">
+                    {selectedUnit.features.split(',').map((feature, index) => (
+                      <span key={index} className="feature-tag-Browse">
+                        {feature.trim()}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="modal-actions-Browse">
@@ -259,78 +322,92 @@ const BrowseUnits = () => {
       {selectedUnit && showApplyForm && (
         <div className="modal-overlay-Browse" onClick={() => setShowApplyForm(false)}>
           <div className="modal-content-Browse form-modal-Browse" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn-Browse" onClick={() => setShowApplyForm(false)}>×</button>
+            
             <div className="form-header-Browse">
               <h2 className="form-title-Browse">Application for {selectedUnit.name}</h2>
+              <p className="form-subtitle-Browse">Please fill out the application form below</p>
             </div>
             
             <form className="application-form-Browse" onSubmit={handleFormSubmit}>
-              <div className="form-field-Browse">
-                <label className="form-label-Browse">Full Name:</label>
-                <input 
-                  type="text" 
-                  name="fullName" 
-                  className="form-input-Browse form-input-readonly-Browse"
-                  value={tenantDetails.fullName || ""} 
-                  readOnly 
-                  required 
-                />
+              <div className="form-section-Browse">
+                <h3 className="form-section-title-Browse">Personal Information</h3>
+                
+                <div className="form-row-Browse">
+                  <div className="form-field-Browse">
+                    <label className="form-label-Browse">Full Name:</label>
+                    <input 
+                      type="text" 
+                      name="fullName" 
+                      className="form-input-Browse form-input-readonly-Browse"
+                      value={tenantDetails.fullName || ""} 
+                      readOnly 
+                      required 
+                    />
+                  </div>
+                  
+                  <div className="form-field-Browse">
+                    <label className="form-label-Browse">Email:</label>
+                    <input 
+                      type="email" 
+                      name="email" 
+                      className="form-input-Browse form-input-readonly-Browse"
+                      value={tenantDetails.email || ""} 
+                      readOnly 
+                      required 
+                    />
+                  </div>
+                </div>
+
+                <div className="form-field-Browse">
+                  <label className="form-label-Browse">Phone Number:</label>
+                  <input 
+                    type="tel" 
+                    name="phone" 
+                    className="form-input-Browse form-input-readonly-Browse"
+                    value={tenantDetails.phone || ""} 
+                    readOnly 
+                    required 
+                  />
+                </div>
               </div>
-              
-              <div className="form-field-Browse">
-                <label className="form-label-Browse">Email:</label>
-                <input 
-                  type="email" 
-                  name="email" 
-                  className="form-input-Browse form-input-readonly-Browse"
-                  value={tenantDetails.email || ""} 
-                  readOnly 
-                  required 
-                />
-              </div>
-              
-              <div className="form-field-Browse">
-                <label className="form-label-Browse">Phone Number:</label>
-                <input 
-                  type="tel" 
-                  name="phone" 
-                  className="form-input-Browse form-input-readonly-Browse"
-                  value={tenantDetails.phone || ""} 
-                  readOnly 
-                  required 
-                />
-              </div>
-              
-              <div className="form-field-Browse">
-                <label className="form-label-Browse">Valid ID:</label>
-                <input 
-                  type="file" 
-                  name="validId" 
-                  className="form-file-input-Browse"
-                  accept="image/*,.pdf" 
-                  required 
-                />
-              </div>
-              
-              <div className="form-field-Browse">
-                <label className="form-label-Browse">Barangay Clearance:</label>
-                <input 
-                  type="file" 
-                  name="brgyClearance" 
-                  className="form-file-input-Browse"
-                  accept="image/*,.pdf" 
-                  required 
-                />
-              </div>
-              
-              <div className="form-field-Browse">
-                <label className="form-label-Browse">Proof of Income:</label>
-                <input 
-                  type="file" 
-                  name="proofOfIncome" 
-                  className="form-file-input-Browse"
-                  accept="image/*,.pdf" 
-                  required 
-                />
+
+              <div className="form-section-Browse">
+                <h3 className="form-section-title-Browse">Required Documents</h3>
+                <p className="form-help-text-Browse">Please upload clear photos or scans of the following documents:</p>
+                
+                <div className="form-field-Browse">
+                  <label className="form-label-Browse">Valid ID (Government Issued):</label>
+                  <input 
+                    type="file" 
+                    name="validId" 
+                    className="form-file-input-Browse"
+                    accept="image/*,.pdf" 
+                    required 
+                  />
+                </div>
+                
+                <div className="form-field-Browse">
+                  <label className="form-label-Browse">Barangay Clearance:</label>
+                  <input 
+                    type="file" 
+                    name="brgyClearance" 
+                    className="form-file-input-Browse"
+                    accept="image/*,.pdf" 
+                    required 
+                  />
+                </div>
+                
+                <div className="form-field-Browse">
+                  <label className="form-label-Browse">Proof of Income:</label>
+                  <input 
+                    type="file" 
+                    name="proofOfIncome" 
+                    className="form-file-input-Browse"
+                    accept="image/*,.pdf" 
+                    required 
+                  />
+                </div>
               </div>
 
               <div className="form-buttons-container-Browse">
