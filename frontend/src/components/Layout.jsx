@@ -137,18 +137,18 @@ const Layout = () => {
       { name: "Browse Units", to: "/tenant/browse-units", icon: Building2 },
       { name: "My Bills", to: "/tenant/bills", icon: CreditCard },
       { name: "Contract", to: "/tenant/contract", icon: ClipboardList },
-      { name: "Support", to: "/tenant/support", icon: HelpCircle },
+      { name: "Concern", to: "/tenant/support", icon: HelpCircle },
     ],
     Approved: [
       { name: "Dashboard", to: "/tenant", icon: Home },
       { name: "My Bills", to: "/tenant/bills", icon: CreditCard },
       { name: "Payment History", to: "/tenant/payment", icon: FileText },
       { name: "Contract", to: "/tenant/contract", icon: ClipboardList },
-      { name: "Support", to: "/tenant/support", icon: HelpCircle },
+      { name: "Concern", to: "/tenant/support", icon: HelpCircle },
     ],
     Rejected: [
       { name: "Dashboard", to: "/tenant", icon: Home },
-      { name: "Support", to: "/tenant/support", icon: HelpCircle },
+      { name: "Concern", to: "/tenant/support", icon: HelpCircle },
     ],
   };
 
@@ -159,7 +159,7 @@ const Layout = () => {
     { name: "Transactions", to: "/owner/transactions", icon: FileText },
     { name: "Billing", to: "/owner/billing", icon: CreditCard },
     { name: "Contract", to: "/owner/contract", icon: ClipboardList },
-    { name: "Notifications", to: "/owner/notifications", icon: Bell },
+    { name: "Concern Center", to: "/owner/notifications", icon: Bell },
     // { name: "User Management", to: "/owner/user", icon: UserCog },
   ];
 
