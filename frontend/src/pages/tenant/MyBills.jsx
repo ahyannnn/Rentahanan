@@ -9,7 +9,6 @@ const MyBills = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedBills, setSelectedBills] = useState([]);
 
-  // 🔹 Static example bills for UI preview
   const sampleBills = [
     { billid: "BI01", billtype: "Water", amount: 450, duedate: "2025-10-30", status: "Unpaid" },
     { billid: "BI02", billtype: "Electricity", amount: 980, duedate: "2025-10-31", status: "Unpaid" },
@@ -17,7 +16,6 @@ const MyBills = () => {
     { billid: "BI04", billtype: "Internet", amount: 1200, duedate: "2025-11-05", status: "Paid" },
   ];
 
-  // Calculate selected total
   const selectedTotalAmount = selectedBills.reduce((sum, billId) => {
     const bill = sampleBills.find((b) => b.billid === billId);
     return sum + (bill ? bill.amount : 0);
@@ -34,15 +32,12 @@ const MyBills = () => {
   const handleSubmitPayment = async () => {
     if (selectedBills.length === 0) return;
 
-    // 🔹 Validate input before submitting
     if (paymentMethod === "gcash") {
       const refPattern = /^\d{13}$/;
-
       if (!gcashRef || !refPattern.test(gcashRef)) {
         alert("Please enter a valid 13-digit GCash reference number.");
         return;
       }
-
       if (!gcashReceipt) {
         alert("Please upload your GCash receipt before submitting.");
         return;
@@ -74,7 +69,7 @@ const MyBills = () => {
 
       alert("Bills submitted for validation!");
       handleCloseModal();
-      setSelectedBills([]); // Clear selection after successful payment
+      setSelectedBills([]);
     } catch (error) {
       console.error("Error submitting payment:", error);
       alert(error.message || "Failed to submit payment. Please try again.");
@@ -83,105 +78,165 @@ const MyBills = () => {
     }
   };
 
-  // Function to handle receipt view
   const handleViewReceipt = (billId) => {
     alert(`Viewing receipt for ${billId}`);
-    // Add receipt viewing logic here
   };
 
   return (
-    <div className="bills-invoice-container">
-      <div className="page-header">
-        <h2>My Bills & Invoices</h2>
-        <p className="bills-description">View, manage, and keep track of your recent bills.</p>
+    <div className="bills-invoice-container-Tenant-Bills">
+      <div className="page-header-Tenant-Bills">
+        <h2 className="page-title-Tenant-Bills">My Bills & Invoices</h2>
+        <p className="page-description-Tenant-Bills">View, manage, and keep track of your recent bills.</p>
       </div>
 
-      {/* 🧾 Bills Table */}
-      <div className="bills-table-wrapper">
-        <table className="bills-table">
-          <thead>
-            <tr>
-              <th>Select</th>
-              <th>Bill ID</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Due Date</th>
-              <th>Status</th>
-              <th>Action</th>
+      {/* Desktop Table */}
+      <div className="bills-table-wrapper-Tenant-Bills">
+        <table className="bills-table-Tenant-Bills">
+          <thead className="table-header-Tenant-Bills">
+            <tr className="table-header-row-Tenant-Bills">
+              <th className="table-heading-Tenant-Bills">Select</th>
+              <th className="table-heading-Tenant-Bills">Bill ID</th>
+              <th className="table-heading-Tenant-Bills">Type</th>
+              <th className="table-heading-Tenant-Bills">Amount</th>
+              <th className="table-heading-Tenant-Bills">Due Date</th>
+              <th className="table-heading-Tenant-Bills">Status</th>
+              <th className="table-heading-Tenant-Bills">Action</th>
             </tr>
           </thead>
-          <tbody>
-            {sampleBills.length > 0 ? (
-              sampleBills.map((bill) => {
-                const isUnpaid = bill.status.toLowerCase() === "unpaid";
-                const isPending = bill.status.toLowerCase() === "pending";
-                const isPaid = bill.status.toLowerCase() === "paid";
-                const isSelectable = isUnpaid; // Only unpaid bills can be selected
-                
-                return (
-                  <tr key={bill.billid}>
-                    <td>
-                      <input
-                        type="checkbox"
-                        className="bill-checkbox"
-                        checked={selectedBills.includes(bill.billid)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedBills([...selectedBills, bill.billid]);
-                          } else {
-                            setSelectedBills(selectedBills.filter((id) => id !== bill.billid));
-                          }
-                        }}
-                        disabled={!isSelectable}
-                      />
-                    </td>
-                    <td>{bill.billid}</td>
-                    <td>{bill.billtype}</td>
-                    <td>₱{Number(bill.amount).toLocaleString()}</td>
-                    <td>{bill.duedate}</td>
-                    <td className={`status status-${bill.status.toLowerCase()}`}>
-                      {bill.status}
-                    </td>
-                    <td style={{ textAlign: 'center' }}>
-                      {isUnpaid ? (
-                        <button className="action-btn pay-now-btn">
-                          Pay Now
-                        </button>
-                      ) : isPending ? (
-                        <button className="action-btn pending-btn" disabled>
-                          For Validation
-                        </button>
-                      ) : (
-                        <button 
-                          className="action-btn receipt-btn"
-                          onClick={() => handleViewReceipt(bill.billid)}
-                        >
-                          View Receipt
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan="7" style={{ textAlign: "center" }}>
-                  No bills found.
-                </td>
-              </tr>
-            )}
+          <tbody className="table-body-Tenant-Bills">
+            {sampleBills.map((bill) => {
+              const isUnpaid = bill.status.toLowerCase() === "unpaid";
+              const isPending = bill.status.toLowerCase() === "pending";
+              const isPaid = bill.status.toLowerCase() === "paid";
+              const isSelectable = isUnpaid;
+              
+              return (
+                <tr key={bill.billid} className="table-row-Tenant-Bills">
+                  <td className="table-data-Tenant-Bills">
+                    <input
+                      type="checkbox"
+                      className="bill-checkbox-Tenant-Bills"
+                      checked={selectedBills.includes(bill.billid)}
+                      onChange={(e) => {
+                        if (e.target.checked && isSelectable) {
+                          setSelectedBills([...selectedBills, bill.billid]);
+                        } else {
+                          setSelectedBills(selectedBills.filter((id) => id !== bill.billid));
+                        }
+                      }}
+                      disabled={!isSelectable}
+                    />
+                  </td>
+                  <td className="table-data-Tenant-Bills">{bill.billid}</td>
+                  <td className="table-data-Tenant-Bills">{bill.billtype}</td>
+                  <td className="table-data-Tenant-Bills">₱{bill.amount.toLocaleString()}</td>
+                  <td className="table-data-Tenant-Bills">{bill.duedate}</td>
+                  <td className={`table-data-Tenant-Bills status-Tenant-Bills status-${bill.status.toLowerCase()}-Tenant-Bills`}>
+                    {bill.status}
+                  </td>
+                  <td className="table-data-Tenant-Bills action-cell-Tenant-Bills">
+                    {isUnpaid ? (
+                      <button className="action-btn-Tenant-Bills pay-now-btn-Tenant-Bills">
+                        Pay Now
+                      </button>
+                    ) : isPending ? (
+                      <button className="action-btn-Tenant-Bills pending-btn-Tenant-Bills" disabled>
+                        For Validation
+                      </button>
+                    ) : (
+                      <button 
+                        className="action-btn-Tenant-Bills receipt-btn-Tenant-Bills"
+                        onClick={() => handleViewReceipt(bill.billid)}
+                      >
+                        View Receipt
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
 
-      <div className="bottom-actions">
-        <div className="payment-summary-row">
-          <div className="total-value">
-            <span className="total-label">Total Value:</span>
-            <span className="total-amount">₱{selectedTotalAmount.toLocaleString()}</span>
+      {/* Mobile Card View */}
+      <div className="mobile-bills-container-Tenant-Bills">
+        {sampleBills.map((bill) => {
+          const isUnpaid = bill.status.toLowerCase() === "unpaid";
+          const isPending = bill.status.toLowerCase() === "pending";
+          const isPaid = bill.status.toLowerCase() === "paid";
+          const isSelectable = isUnpaid;
+
+          return (
+            <div key={bill.billid} className="mobile-bill-card-Tenant-Bills">
+              <div className="mobile-bill-header-Tenant-Bills">
+                <span className="mobile-bill-id-Tenant-Bills">{bill.billid}</span>
+                <input
+                  type="checkbox"
+                  className="mobile-bill-checkbox-Tenant-Bills"
+                  checked={selectedBills.includes(bill.billid)}
+                  onChange={(e) => {
+                    if (e.target.checked && isSelectable) {
+                      setSelectedBills([...selectedBills, bill.billid]);
+                    } else {
+                      setSelectedBills(selectedBills.filter((id) => id !== bill.billid));
+                    }
+                  }}
+                  disabled={!isSelectable}
+                />
+              </div>
+              <div className="mobile-bill-details-Tenant-Bills">
+                <div className="mobile-bill-detail-Tenant-Bills">
+                  <span className="mobile-detail-label-Tenant-Bills">Type:</span>
+                  <span className="mobile-detail-value-Tenant-Bills">{bill.billtype}</span>
+                </div>
+                <div className="mobile-bill-detail-Tenant-Bills">
+                  <span className="mobile-detail-label-Tenant-Bills">Amount:</span>
+                  <span className="mobile-detail-value-Tenant-Bills mobile-bill-amount-Tenant-Bills">₱{bill.amount.toLocaleString()}</span>
+                </div>
+                <div className="mobile-bill-detail-Tenant-Bills">
+                  <span className="mobile-detail-label-Tenant-Bills">Due Date:</span>
+                  <span className="mobile-detail-value-Tenant-Bills">{bill.duedate}</span>
+                </div>
+                <div className="mobile-bill-detail-Tenant-Bills">
+                  <span className="mobile-detail-label-Tenant-Bills">Status:</span>
+                  <span className={`mobile-detail-value-Tenant-Bills status-Tenant-Bills status-${bill.status.toLowerCase()}-Tenant-Bills`}>
+                    {bill.status}
+                  </span>
+                </div>
+              </div>
+              <div className="mobile-bill-footer-Tenant-Bills">
+                {isUnpaid ? (
+                  <button className="mobile-action-btn-Tenant-Bills pay-now-btn-Tenant-Bills">
+                    Pay Now
+                  </button>
+                ) : isPending ? (
+                  <button className="mobile-action-btn-Tenant-Bills mobile-pending-btn-Tenant-Bills" disabled>
+                    For Validation
+                  </button>
+                ) : (
+                  <button 
+                    className="mobile-action-btn-Tenant-Bills mobile-receipt-btn-Tenant-Bills"
+                    onClick={() => handleViewReceipt(bill.billid)}
+                  >
+                    View Receipt
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Bottom Actions */}
+      <div className="bottom-actions-Tenant-Bills">
+        <div className="payment-summary-row-Tenant-Bills">
+          <div className="total-value-Tenant-Bills">
+            <span className="total-label-Tenant-Bills">Total Value:</span>
+            <span className="total-amount-Tenant-Bills">₱{selectedTotalAmount.toLocaleString()}</span>
           </div>
           <button
-            className="proceed-btn"
+            className="proceed-btn-Tenant-Bills"
             onClick={handleOpenModal}
             disabled={selectedBills.length === 0}
           >
@@ -190,97 +245,97 @@ const MyBills = () => {
         </div>
       </div>
 
-      {/* 💳 Payment Modal */}
+      {/* GCASH MODAL - COMPLETE */}
       {isModalOpen && (
-        <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="payments-modal no-scroll" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <button className="back-btn" onClick={handleCloseModal}>
+        <div className="modal-overlay-Tenant-Bills" onClick={handleCloseModal}>
+          <div className="payments-modal-Tenant-Bills" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header-Tenant-Bills">
+              <button className="back-btn-Tenant-Bills" onClick={handleCloseModal}>
                 &lt;
               </button>
-              <h3>Payments</h3>
+              <h3 className="modal-title-Tenant-Bills">Payments</h3>
             </div>
 
-            <div className="modal-content">
-              {/* Compact Bill Summary */}
-              <div className="bill-summary-compact">
-                <p>
+            <div className="modal-content-Tenant-Bills">
+              {/* Bill Summary */}
+              <div className="bill-summary-Tenant-Bills">
+                <p className="summary-title-Tenant-Bills">
                   <strong>Selected Bills ({selectedBills.length}):</strong>
                 </p>
-                <div className="compact-bill-list">
+                <div className="bill-list-Tenant-Bills">
                   {sampleBills
                     .filter((bill) => selectedBills.includes(bill.billid))
                     .map((bill) => (
-                      <div key={bill.billid} className="compact-bill-item">
-                        <span className="bill-type">#{bill.billid}</span>
-                        <span className="bill-amount">₱{bill.amount.toLocaleString()}</span>
+                      <div key={bill.billid} className="bill-item-Tenant-Bills">
+                        <span className="bill-type-Tenant-Bills">#{bill.billid}</span>
+                        <span className="bill-amount-Tenant-Bills">₱{bill.amount.toLocaleString()}</span>
                       </div>
                     ))}
                 </div>
-                <div className="total-amount-row">
+                <div className="total-amount-row-Tenant-Bills">
                   <span>Total Amount:</span>
                   <strong>₱{selectedTotalAmount.toLocaleString()}</strong>
                 </div>
               </div>
 
-              <div className="payment-method-section">
-                <p>
+              <div className="payment-method-section-Tenant-Bills">
+                <p className="method-title-Tenant-Bills">
                   <strong>Payment Method:</strong>
                 </p>
 
-                {/* Cash Card */}
+                {/* Cash Option */}
                 <div
-                  className={`payment-card ${paymentMethod === "cash" ? "selected" : ""}`}
+                  className={`payment-card-Tenant-Bills ${paymentMethod === "cash" ? "payment-card-selected-Tenant-Bills" : ""}`}
                   onClick={() => setPaymentMethod("cash")}
                 >
-                  <h4>💵 Cash</h4>
-                  <p>Prepare cash payment. Owner will validate.</p>
+                  <h4 className="payment-title-Tenant-Bills">💵 Cash</h4>
+                  <p className="payment-description-Tenant-Bills">Prepare cash payment. Owner will validate.</p>
                 </div>
 
-                {/* GCash Card */}
+                {/* GCash Option */}
                 <div
-                  className={`payment-card ${paymentMethod === "gcash" ? "selected" : ""}`}
+                  className={`payment-card-Tenant-Bills ${paymentMethod === "gcash" ? "payment-card-selected-Tenant-Bills" : ""}`}
                   onClick={() => setPaymentMethod("gcash")}
                 >
-                  <h4>📱 GCash</h4>
-                  <p>Send the total amount to the owner's GCash account.</p>
+                  <h4 className="payment-title-Tenant-Bills">📱 GCash</h4>
+                  <p className="payment-description-Tenant-Bills">Send the total amount to the owner's GCash account.</p>
 
                   {paymentMethod === "gcash" && (
-                    <div className="gcash-details-compact">
-                      <div className="gcash-account-info">
-                        <div className="account-info-row">
-                          <span className="account-label">Account Name:</span>
-                          <span className="account-value">Maria Dela Cruz</span>
+                    <div className="gcash-details-Tenant-Bills">
+                      <div className="gcash-account-info-Tenant-Bills">
+                        <div className="account-info-row-Tenant-Bills">
+                          <span className="account-label-Tenant-Bills">Account Name:</span>
+                          <span className="account-value-Tenant-Bills">Maria Dela Cruz</span>
                         </div>
-                        <div className="account-info-row">
-                          <span className="account-label">Account Number:</span>
-                          <span className="account-value">0917-XXX-XXXX</span>
+                        <div className="account-info-row-Tenant-Bills">
+                          <span className="account-label-Tenant-Bills">Account Number:</span>
+                          <span className="account-value-Tenant-Bills">0917-XXX-XXXX</span>
                         </div>
                       </div>
 
-                      <div className="gcash-input-row">
-                        <label>Ref No.:</label>
+                      <div className="gcash-input-row-Tenant-Bills">
+                        <label className="input-label-Tenant-Bills">Ref No.:</label>
                         <input
                           type="text"
                           placeholder="1234567890123"
-                          className="ref-input"
+                          className="ref-input-Tenant-Bills"
                           value={gcashRef}
                           onChange={(e) => setGcashRef(e.target.value)}
                         />
                       </div>
 
-                      <div className="gcash-input-row">
-                        <label>Upload Proof:</label>
-                        <label className="choose-file-btn">
+                      <div className="gcash-input-row-Tenant-Bills">
+                        <label className="input-label-Tenant-Bills">Upload Proof:</label>
+                        <label className="file-upload-btn-Tenant-Bills">
                           Choose File
                           <input
                             type="file"
                             accept="image/*"
-                            style={{ display: "none" }}
+                            className="file-input-Tenant-Bills"
                             onChange={(e) => setGcashReceipt(e.target.files[0])}
                           />
                         </label>
-                        {gcashReceipt && <span className="file-name">{gcashReceipt.name}</span>}
+                        {gcashReceipt && <span className="file-name-Tenant-Bills">{gcashReceipt.name}</span>}
                       </div>
                     </div>
                   )}
@@ -288,9 +343,9 @@ const MyBills = () => {
               </div>
             </div>
 
-            <div className="modal-footer">
+            <div className="modal-footer-Tenant-Bills">
               <button
-                className="submit-btn"
+                className="submit-btn-Tenant-Bills"
                 onClick={handleSubmitPayment}
                 disabled={isSubmitting}
               >

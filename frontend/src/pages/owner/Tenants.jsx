@@ -8,7 +8,7 @@ const Tenants = () => {
   const [applicants, setApplicants] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedDocument, setSelectedDocument] = useState(null); // ✅ added this
+  const [selectedDocument, setSelectedDocument] = useState(null);
   const navigate = useNavigate();
 
   // Fetch active tenants
@@ -38,8 +38,9 @@ const Tenants = () => {
 
   const openModal = (user) => {
     setSelectedUser(user);
-    setSelectedDocument(null); // reset document view when switching users
+    setSelectedDocument(null);
   };
+
   const closeModal = () => {
     setSelectedUser(null);
     setSelectedDocument(null);
@@ -47,16 +48,23 @@ const Tenants = () => {
 
   const renderCards = (data, type) =>
     data.map((item, index) => (
-      <div className="tenant-card" key={index}>
-        <div className="tenant-avatar"></div>
-        <div className="tenant-info">
+      <div className="Owner-Tenant-card" key={index}>
+        <div className="Owner-Tenant-avatar">
+          {item.fullname.split(' ').map(n => n[0]).join('').toUpperCase()}
+        </div>
+        <div className="Owner-Tenant-info">
           <h4>{item.fullname}</h4>
           <p>Email: {item.email}</p>
           <p>Phone: {item.phone}</p>
           <p>Unit: {item.unit_name || "N/A"}</p>
+          {type === "applicant" && (
+            <div className="Owner-Tenant-status-badge">
+              {item.contract_signed ? "Contract Signed" : "Pending Contract"}
+            </div>
+          )}
         </div>
-        <button className="view-profile-btn" onClick={() => openModal(item)}>
-          {type === "active" ? "View Profile" : "Review"}
+        <button className="Owner-Tenant-view-profile-btn" onClick={() => openModal(item)}>
+          {type === "active" ? "View Profile" : "Review Application"}
         </button>
       </div>
     ));
@@ -135,170 +143,204 @@ const Tenants = () => {
   };
 
   return (
-    <div className="tenants-container">
-      <h2 className="tenants-title">TENANTS</h2>
+    <div className="Owner-Tenant-container">
+      <div className="Owner-Tenant-header-section">
+        <h2 className="Owner-Tenant-title">Tenant Management</h2>
+        <p className="Owner-Tenant-subtitle">Manage active tenants and review applications</p>
+      </div>
 
       {/* Tabs + Search */}
-      <div className="tenants-header">
-        <div className="tabs">
+      <div className="Owner-Tenant-header">
+        <div className="Owner-Tenant-tabs">
           <button
-            className={activeTab === "active" ? "tab active" : "tab"}
+            className={`Owner-Tenant-tab ${activeTab === "active" ? "Owner-Tenant-tab-active" : ""}`}
             onClick={() => setActiveTab("active")}
           >
-            Active
+            <span className="Owner-Tenant-tab-icon">👥</span>
+            Active Tenants
+            <span className="Owner-Tenant-tab-badge">{tenants.length}</span>
           </button>
           <button
-            className={activeTab === "applications" ? "tab active" : "tab"}
+            className={`Owner-Tenant-tab ${activeTab === "applications" ? "Owner-Tenant-tab-active" : ""}`}
             onClick={() => setActiveTab("applications")}
           >
-            Applicant
+            <span className="Owner-Tenant-tab-icon">📋</span>
+            Applications
+            <span className="Owner-Tenant-tab-badge">{applicants.length}</span>
           </button>
         </div>
-        <input
-          type="text"
-          placeholder="Search"
-          className="search-input"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="Owner-Tenant-search-container">
+          <input
+            type="text"
+            placeholder="Search by name..."
+            className="Owner-Tenant-search-input"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <span className="Owner-Tenant-search-icon">🔍</span>
+        </div>
       </div>
 
       {/* Cards Grid */}
-      <div className="tenants-grid">
+      <div className="Owner-Tenant-grid">
         {activeTab === "active"
           ? renderCards(filterData(tenants), "active")
           : renderCards(filterData(applicants), "applicant")}
+        
+        {filterData(activeTab === "active" ? tenants : applicants).length === 0 && (
+          <div className="Owner-Tenant-empty-state">
+            <div className="Owner-Tenant-empty-icon">📭</div>
+            <h3>No {activeTab === "active" ? "active tenants" : "applications"} found</h3>
+            <p>
+              {search ? "Try adjusting your search terms" : 
+               activeTab === "active" ? "No tenants are currently active" : "No pending applications"}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Modal */}
       {selectedUser && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header-fixed">
-              <h2>{selectedUser.fullname}</h2>
-              <button className="close-btn" onClick={closeModal}>
-                Close
+        <div className="Owner-Tenant-modal-overlay" onClick={closeModal}>
+          <div className="Owner-Tenant-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="Owner-Tenant-modal-header">
+              <div className="Owner-Tenant-modal-user-info">
+                <div className="Owner-Tenant-modal-avatar">
+                  {selectedUser.fullname.split(' ').map(n => n[0]).join('').toUpperCase()}
+                </div>
+                <div>
+                  <h2>{selectedUser.fullname}</h2>
+                  <p className="Owner-Tenant-modal-email">{selectedUser.email}</p>
+                </div>
+              </div>
+              <button className="Owner-Tenant-close-btn" onClick={closeModal}>
+                ✕
               </button>
             </div>
 
-            <p><strong>Email:</strong> {selectedUser.email}</p>
-            <p><strong>Phone:</strong> {selectedUser.phone}</p>
-            <p><strong>Unit:</strong> {selectedUser.unit_name || "N/A"}</p>
-            <p><strong>DOB:</strong> {selectedUser.dateofbirth}</p>
-            <p><strong>Address:</strong> {selectedUser.address}</p>
+            <div className="Owner-Tenant-modal-body">
+              <div className="Owner-Tenant-info-grid">
+                <div className="Owner-Tenant-info-item">
+                  <label>Phone</label>
+                  <span>{selectedUser.phone}</span>
+                </div>
+                <div className="Owner-Tenant-info-item">
+                  <label>Unit</label>
+                  <span>{selectedUser.unit_name || "N/A"}</span>
+                </div>
+                <div className="Owner-Tenant-info-item">
+                  <label>Date of Birth</label>
+                  <span>{selectedUser.dateofbirth}</span>
+                </div>
+                <div className="Owner-Tenant-info-item Owner-Tenant-info-full">
+                  <label>Address</label>
+                  <span>{selectedUser.address}</span>
+                </div>
+              </div>
 
-            {activeTab === "applications" && (
-              <>
-                <p className="document-row">
-                  <strong>Valid ID:</strong>
-                  <button
-                    className="document-btn action-primary"
-                    onClick={() =>
-                      window.open(
-                        `http://localhost:5000/uploads/valid_ids/${selectedUser.valid_id}`,
-                        "_blank"
-                      )
-                    }
-                  >
-                    Review Document
-                  </button>
-                </p>
+              {activeTab === "applications" && (
+                <>
+                  <div className="Owner-Tenant-documents-section">
+                    <h3>Required Documents</h3>
+                    <div className="Owner-Tenant-documents-grid">
+                      <div className="Owner-Tenant-document-item">
+                        <span className="Owner-Tenant-document-label">Valid ID</span>
+                        <button
+                          className="Owner-Tenant-document-btn"
+                          onClick={() =>
+                            window.open(
+                              `http://localhost:5000/uploads/valid_ids/${selectedUser.valid_id}`,
+                              "_blank"
+                            )
+                          }
+                        >
+                          View Document
+                        </button>
+                      </div>
+                      <div className="Owner-Tenant-document-item">
+                        <span className="Owner-Tenant-document-label">Barangay Clearance</span>
+                        <button
+                          className="Owner-Tenant-document-btn"
+                          onClick={() =>
+                            window.open(
+                              `http://localhost:5000/uploads/brgy_clearances/${selectedUser.brgy_clearance}`,
+                              "_blank"
+                            )
+                          }
+                        >
+                          View Document
+                        </button>
+                      </div>
+                      <div className="Owner-Tenant-document-item">
+                        <span className="Owner-Tenant-document-label">Proof of Income</span>
+                        <button
+                          className="Owner-Tenant-document-btn"
+                          onClick={() =>
+                            window.open(
+                              `http://localhost:5000/uploads/proof_of_income/${selectedUser.proof_of_income}`,
+                              "_blank"
+                            )
+                          }
+                        >
+                          View Document
+                        </button>
+                      </div>
+                    </div>
+                  </div>
 
-                <p className="document-row">
-                  <strong>Clearance:</strong>
-                  <button
-                    className="document-btn action-primary"
-                    onClick={() =>
-                      window.open(
-                        `http://localhost:5000/uploads/brgy_clearances/${selectedUser.brgy_clearance}`,
-                        "_blank"
-                      )
-                    }
-                  >
-                    Review Document
-                  </button>
-                </p>
-
-                <p className="document-row">
-                  <strong>Proof of Income:</strong>
-                  <button
-                    className="document-btn action-primary"
-                    onClick={() =>
-                      window.open(
-                        `http://localhost:5000/uploads/proof_of_income/${selectedUser.proof_of_income}`,
-                        "_blank"
-                      )
-                    }
-                  >
-                    Review Document
-                  </button>
-                </p>
-
-
-                {/* Show selected document */}
-                {selectedDocument && (
-                  <div className="document-preview">
-                    <h3>{selectedDocument.type}</h3>
-                    <img
-                      src={selectedDocument.path}
-                      alt={selectedDocument.type}
-                      className="document-image"
-                    />
+                  <div className="Owner-Tenant-action-buttons">
                     <button
-                      className="close-document-btn"
-                      onClick={() => setSelectedDocument(null)}
+                      className="Owner-Tenant-action-btn Owner-Tenant-contract-btn"
+                      onClick={() => handleIssueContract(selectedUser.applicationid)}
                     >
-                      Close Document
+                      📄 Issue Contract
+                    </button>
+                    <button
+                      className="Owner-Tenant-action-btn Owner-Tenant-payment-btn"
+                      onClick={() => handleAdvancePayment(selectedUser.applicationid)}
+                    >
+                      💳 Issue Initial Payment
                     </button>
                   </div>
-                )}
 
-                {/* ✅ Buttons for navigation */}
-                <button
-                  className="issue-contract-btn"
-                  onClick={() =>
-                    handleIssueContract(selectedUser.applicationid)
-                  }
-                >
-                  ISSUE CONTRACT
-                </button>
-
-                <button
-                  className="advance-payment-btn"
-                  onClick={() =>
-                    handleAdvancePayment(selectedUser.applicationid)
-                  }
-                >
-                  ISSUE INITIAL PAYMENT
-                </button>
-
-                <div className="approve-section">
-                  <button
-                    className="approve-btn"
-                    onClick={() => handleApprove(selectedUser.applicationid)}
-                    disabled={
-                      selectedUser.bill_status !== "Paid" || !selectedUser.contract_signed
-                    }
-                    title={
-                      selectedUser.bill_status !== "Paid"
-                        ? "Cannot approve: Initial payment not completed"
-                        : !selectedUser.contract_signed
-                          ? "Cannot approve: Contract not signed"
-                          : ""
-                    }
-                  >
-                    APPROVE APPLICATION
-                  </button>
-                  <button
-                    className="reject-btn"
-                    onClick={() => handleReject(selectedUser.applicationid)}
-                  >
-                    REJECT APPLICATION
-                  </button>
-                </div>
-
-              </>
-            )}
+                  <div className="Owner-Tenant-approval-section">
+                    <div className="Owner-Tenant-approval-status">
+                      <div className={`Owner-Tenant-status-item ${selectedUser.contract_signed ? 'Owner-Tenant-status-complete' : 'Owner-Tenant-status-pending'}`}>
+                        Contract: {selectedUser.contract_signed ? "Signed" : "Pending"}
+                      </div>
+                      <div className={`Owner-Tenant-status-item ${selectedUser.bill_status === 'Paid' ? 'Owner-Tenant-status-complete' : 'Owner-Tenant-status-pending'}`}>
+                        Payment: {selectedUser.bill_status === 'Paid' ? "Completed" : "Pending"}
+                      </div>
+                    </div>
+                    
+                    <div className="Owner-Tenant-approval-buttons">
+                      <button
+                        className="Owner-Tenant-approve-btn"
+                        onClick={() => handleApprove(selectedUser.applicationid)}
+                        disabled={
+                          selectedUser.bill_status !== "Paid" || !selectedUser.contract_signed
+                        }
+                        title={
+                          selectedUser.bill_status !== "Paid"
+                            ? "Cannot approve: Initial payment not completed"
+                            : !selectedUser.contract_signed
+                              ? "Cannot approve: Contract not signed"
+                              : ""
+                        }
+                      >
+                        ✅ Approve Application
+                      </button>
+                      <button
+                        className="Owner-Tenant-reject-btn"
+                        onClick={() => handleReject(selectedUser.applicationid)}
+                      >
+                        ❌ Reject Application
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

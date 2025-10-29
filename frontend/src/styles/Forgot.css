@@ -2,7 +2,7 @@
     font-family: "Poppins", sans-serif !important;
 }
 
-.forgot-container {
+.forgot-container-Forgot {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,7 +12,7 @@
     padding: 1rem;
 }
 
-.forgot-wrapper {
+.forgot-wrapper-Forgot {
     display: flex;
     width: 80%;
     max-width: 1000px;
@@ -22,7 +22,7 @@
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
-.forgot-left {
+.forgot-left-Forgot {
     flex: 1;
     background: linear-gradient(135deg, #061a53, #0b3c91);
     display: flex;
@@ -32,25 +32,25 @@
     padding: 2rem;
 }
 
-.forgot-text {
+.forgot-text-Forgot {
     text-align: center;
     max-width: 400px;
 }
 
-.forgot-text h1 {
+.forgot-heading-Forgot {
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 1rem;
     color: #fff;
 }
 
-.forgot-text p {
+.forgot-description-Forgot {
     font-size: 0.95rem;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.9);
 }
 
-.forgot-right {
+.forgot-right-Forgot {
     flex: 1;
     display: flex;
     align-items: center;
@@ -58,12 +58,12 @@
     padding: 3rem;
 }
 
-.forgot-card {
+.forgot-card-Forgot {
     width: 100%;
     max-width: 400px;
 }
 
-.forgot-title {
+.forgot-title-Forgot {
     color: #061a53;
     font-size: 2rem;
     font-weight: 700;
@@ -71,25 +71,29 @@
     margin-bottom: 1rem;
 }
 
-.forgot-card p {
+.forgot-instruction-Forgot {
     text-align: center;
     color: #555;
     font-size: 0.95rem;
     margin-bottom: 1.5rem;
 }
 
-.forgot-form-group {
+.forgot-form-Forgot {
+    width: 100%;
+}
+
+.forgot-form-group-Forgot {
     margin-bottom: 1.5rem;
 }
 
-.forgot-form-group label {
+.forgot-label-Forgot {
     display: block;
     margin-bottom: 0.5rem;
     color: #333;
     font-weight: 500;
 }
 
-.forgot-form-group input {
+.forgot-input-Forgot {
     width: 100%;
     padding: 0.75rem 1rem;
     border: 1px solid #ccc;
@@ -99,12 +103,12 @@
     transition: 0.3s;
 }
 
-.forgot-form-group input:focus {
+.forgot-input-Forgot:focus {
     border-color: #0b3c91;
     box-shadow: 0 0 6px rgba(11, 60, 145, 0.2);
 }
 
-.forgot-btn {
+.forgot-btn-Forgot {
     width: 100%;
     padding: 0.8rem;
     background: #061a53;
@@ -118,35 +122,40 @@
     margin-top: 10px;
 }
 
-.forgot-btn:hover {
+.forgot-btn-Forgot:hover {
     background: #0b3c91;
 }
 
-.forgot-bottom-text {
+.forgot-btn-Forgot:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.forgot-bottom-text-Forgot {
     text-align: center;
     margin-top: 1.5rem;
     font-size: 0.9rem;
     color: #333;
 }
 
-.forgot-bottom-text a {
+.forgot-link-Forgot {
     color: #0b3c91;
     font-weight: 600;
     text-decoration: none;
 }
 
-.forgot-bottom-text a:hover {
+.forgot-link-Forgot:hover {
     text-decoration: underline;
 }
 
-.code-input-group {
+.code-input-group-Forgot {
     display: flex;
     justify-content: center;
     gap: 10px;
     margin-bottom: 1.5rem;
 }
 
-.code-input {
+.code-input-Forgot {
     width: 55px;
     height: 55px;
     text-align: center;
@@ -159,33 +168,33 @@
     background: #fff;
 }
 
-.code-input:focus {
+.code-input-Forgot:focus {
     border-color: #0b3c91;
     box-shadow: 0 0 6px rgba(11, 60, 145, 0.4);
 }
 
-.resend-link {
+.resend-link-Forgot {
     color: #0b3c91;
     font-weight: 600;
     cursor: pointer;
 }
 
-.resend-link:hover {
+.resend-link-Forgot:hover {
     text-decoration: underline;
 }
 
-.forgot-input-wrapper {
+.forgot-input-wrapper-Forgot {
     position: relative;
     width: 100%;
 }
 
-.forgot-input-wrapper input {
+.forgot-input-wrapper-Forgot .forgot-input-Forgot {
     width: 100%;
     padding-right: 70px !important;
     box-sizing: border-box;
 }
 
-.toggle-password {
+.toggle-password-Forgot {
     position: absolute;
     right: 12px;
     top: 50%;
@@ -200,21 +209,31 @@
     border-radius: 4px;
 }
 
-.error-text {
+.error-text-Forgot {
     color: #e63946;
     font-size: 0.85rem;
     margin-top: 5px;
     text-align: center;
 }
 
+.forgot-success-Forgot {
+    text-align: center;
+}
+
+.forgot-success-message-Forgot {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #555;
+}
+
 /* ===== MOBILE STYLES ===== */
 @media (max-width: 768px) {
-    .forgot-container {
+    .forgot-container-Forgot {
         background: linear-gradient(135deg, #061a53, #0b3c91) !important;
         padding: 1rem;
     }
 
-    .forgot-wrapper {
+    .forgot-wrapper-Forgot {
         flex-direction: column;
         background: transparent !important;
         box-shadow: none !important;
@@ -222,60 +241,108 @@
         max-width: 400px;
     }
 
-    .forgot-left {
+    .forgot-left-Forgot {
         display: none !important;
     }
 
-    .forgot-right {
+    .forgot-right-Forgot {
         background: transparent !important;
         padding: 0 !important;
     }
 
-    .forgot-card {
+    .forgot-card-Forgot {
         background: transparent !important;
         padding: 2rem 1.5rem;
     }
 
     /* Force white text for all text elements */
-    .forgot-title,
-    .forgot-card p,
-    .forgot-form-group label,
-    .forgot-bottom-text,
-    .forgot-bottom-text a {
+    .forgot-title-Forgot,
+    .forgot-instruction-Forgot,
+    .forgot-success-message-Forgot,
+    .forgot-label-Forgot,
+    .forgot-bottom-text-Forgot,
+    .forgot-link-Forgot {
         color: white !important;
     }
 
     /* Input styling */
-    .forgot-form-group input {
+    .forgot-input-Forgot {
         background: rgba(255, 255, 255, 0.15) !important;
         border: 1px solid rgba(255, 255, 255, 0.4) !important;
         color: white !important;
     }
 
     /* Placeholder styling */
-    .forgot-form-group input::placeholder {
+    .forgot-input-Forgot::placeholder {
         color: rgba(255, 255, 255, 0.7) !important;
     }
 
-    /* Toggle password button - FORCE VISIBLE */
-    .toggle-password {
+    /* Toggle password button */
+    .toggle-password-Forgot {
         color: white !important;
         background: rgba(255, 255, 255, 0.3) !important;
         font-weight: 700 !important;
         border: 1px solid rgba(255, 255, 255, 0.5) !important;
     }
 
-    .forgot-btn {
+    .forgot-btn-Forgot {
         background: white !important;
         color: #061a53 !important;
         font-weight: 600 !important;
     }
 
-    .resend-link {
+    .resend-link-Forgot {
         color: white !important;
     }
 
-    .error-text {
+    .error-text-Forgot {
         color: #ff9999 !important;
+    }
+
+    /* Code input styling for mobile */
+    .code-input-Forgot {
+        background: rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.4) !important;
+        color: white !important;
+    }
+
+    .code-input-Forgot:focus {
+        border-color: white !important;
+        box-shadow: 0 0 6px rgba(255, 255, 255, 0.4) !important;
+    }
+}
+
+/* Additional mobile breakpoint to match Login component */
+@media (max-width: 850px) {
+    .forgot-container-Forgot {
+        background: linear-gradient(135deg, #061a53, #0b3c91) !important;
+    }
+
+    /* Input fields: Apply the dark, high-contrast style from Login */
+    .forgot-input-Forgot {
+        background-color: rgba(0, 0, 0, 0.2) !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        box-shadow: none !important;
+    }
+
+    /* Placeholder text styling */
+    .forgot-input-Forgot::placeholder {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    .forgot-input-Forgot:focus {
+        border-color: white !important;
+    }
+
+    /* Code input styling */
+    .code-input-Forgot {
+        background-color: rgba(0, 0, 0, 0.2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        color: white !important;
+    }
+
+    .code-input-Forgot:focus {
+        border-color: white !important;
     }
 }

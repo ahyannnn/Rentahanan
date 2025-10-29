@@ -1,581 +1,738 @@
-/* Base container para mag-match sa overall layout */
-.billing-page-container {
-    padding: 20px;
-    background-color: #f7f9fc; /* Light background for the whole area */
+/* Owner-Billing.css */
+.Owner-Billing-container {
     min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e8ecf1 100%);
+    padding: 24px;
+    font-family: "Inter", sans-serif;
+    color: #1e1e2f;
 }
 
-/* Common Card Style (White box na ginagamit sa Tenants/Units) */
-.content-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    padding: 30px;
-    margin-bottom: 20px;
+/* === Header Section === */
+.Owner-Billing-header {
+    margin-bottom: 30px;
 }
 
-.header-card h2 {
-    color: #1a202c;
-    font-size: 1.8rem;
-    margin-bottom: 5px;
+.Owner-Billing-header-content {
+    margin-bottom: 24px;
 }
 
-.header-card p {
-    color: #6a6a6a;
-    font-size: 1rem;
+.Owner-Billing-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #061a53;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #061a53 0%, #0a2d8d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-/* --- Control Bar (Search and Create Invoice) --- */
-.invoice-area {
-    padding-top: 20px;
-}
-
-.invoice-control-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-}
-
-/* Search Box Styling */
-.search-box {
-    display: flex;
-    align-items: center;
-    position: relative;
-    flex-grow: 1;
-    max-width: 400px; /* Limit search bar width */
-}
-
-.search-box input {
-    border: 1px solid #e0eeef;
-    border-radius: 8px;
-    padding: 10px 15px 10px 40px; /* Space for icon */
-    font-size: 0.9rem;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.3s;
-}
-
-.search-box input:focus {
-    border-color: #3182ce;
-}
-
-.search-icon {
-    position: absolute;
-    left: 15px;
-    color: #999;
-}
-
-/* Create Invoice Button */
-.create-invoice-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background-color: #3182ce; /* Primary blue color */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s, box-shadow 0.3s;
-}
-
-.create-invoice-btn:hover {
-    background-color: #2c6fbb;
-    box-shadow: 0 4px 8px rgba(49, 130, 206, 0.4);
-}
-
-/* --- Table Styles --- */
-.invoice-table-wrapper {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-    text-align: left;
-}
-
-thead th {
-    color: #6a6a6a;
-    font-weight: 600;
-    padding: 15px;
-    border-bottom: 2px solid #e0e0e0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-tbody td {
-    padding: 15px;
-    border-bottom: 1px solid #f0f0f0;
-    color: #333;
-}
-
-/* Status Badges */
-.status-badge {
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: capitalize;
-}
-
-.status-unpaid {
-    background-color: #fff3e0; /* Light Orange */
-    color: #ff9800; /* Dark Orange */
-}
-
-.status-paid {
-    background-color: #e8f5e9; /* Light Green */
-    color: #4caf50; /* Dark Green */
-}
-
-/* Action Buttons (Mark Paid / View) */
-.action-btn {
-    border: 1px solid;
-    padding: 6px 15px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.mark-paid-btn {
-    border-color: #3182ce;
-    color: #3182ce;
-    background-color: white;
-}
-
-.mark-paid-btn:hover {
-    background-color: #3182ce;
-    color: white;
-}
-
-.view-btn {
-    border-color: #999;
+.Owner-Billing-subtitle {
+    font-size: 1.1rem;
     color: #666;
-    background-color: white;
-}
-
-.view-btn:hover {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-/* Table hover effect */
-tbody tr:hover {
-  background-color: #f9fafb;
-  transition: background-color 0.2s;
-}
-
-/* Slight shadow sa table rows */
-tbody tr {
-  transition: all 0.2s;
-}
-
-/* Center the action buttons vertically */
-td:last-child {
-  text-align: center;
-}
-
-/* ===== MODAL STYLES ===== */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(15, 23, 42, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-  backdrop-filter: blur(3px);
-}
-
-.add-invoice-modal {
-  background: white;
-  width: 450px;
-  max-width: 95%;
-  border-radius: 16px;
-  padding: 25px 30px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  animation: popIn 0.25s ease;
-}
-
-@keyframes popIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.modal-header h3 {
-  margin: 0;
-  font-size: 1.3rem;
-  color: #1a202c;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #666;
-  transition: color 0.2s;
-}
-
-.close-btn:hover {
-  color: #e53e3e;
-}
-
-.modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.modal-body label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #333;
-}
-
-.modal-body input,
-.modal-body select,
-.modal-body textarea {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 8px 10px;
-  font-size: 0.9rem;
-  outline: none;
-}
-
-.modal-body textarea {
-  resize: none;
-  height: 70px;
-}
-
-.modal-body input:focus,
-.modal-body select:focus,
-.modal-body textarea:focus {
-  border-color: #3182ce;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.save-btn {
-  background-color: #3182ce;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.save-btn:hover {
-  background-color: #2563eb;
-}
-
-.cancel-btn {
-  background-color: #f0f0f0;
-  color: #333;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.cancel-btn:hover {
-  background-color: #e0e0e0;
-}
-
-.view-invoice-modal {
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Mas prominent na shadow */
-    width: 90%; /* Responsive width */
-    max-width: 500px; /* Maximum width para hindi masyadong malaki */
-    padding: 30px;
-    position: relative;
-    animation: fadeInScale 0.3s ease-out forwards; /* Smooth entry animation */
-}
-
-/* Animation para sa paglabas ng modal */
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* Modal Header: Invoice Details at Close Button */
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e0e0e0;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
-}
-
-.modal-header h3 {
-    color: #1a202c;
-    font-size: 1.6rem;
-    font-weight: 700;
     margin: 0;
 }
 
-.modal-header .close-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #6a6a6a;
-    padding: 5px;
-    border-radius: 50%;
-    transition: background-color 0.2s, color 0.2s;
+.Owner-Billing-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
 }
 
-.modal-header .close-btn:hover {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-/* Modal Body: Para sa Invoice details */
-.modal-body p {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #4a5568;
-    margin-bottom: 10px;
-}
-
-.modal-body p strong {
-    color: #1a202c;
-    font-weight: 600;
-    width: 120px; /* Consistent width para sa labels */
-    display: inline-block;
-}
-
-/* Para sa Status Badge sa loob ng modal, gagamitin ang existing styles */
-.modal-body .status-badge {
-    /* Ang styles nito ay galing sa .status-unpaid at .status-paid */
-    display: inline-block;
-    vertical-align: middle; /* Para mag align sa text */
-    margin-left: 5px; /* Konting spacing */
-}
-
-/* Modal Footer: Para sa Close button sa ibaba */
-.modal-footer {
-    display: flex;
-    justify-content: flex-end; /* I-align ang button sa kanan */
-    padding-top: 20px;
-    border-top: 1px solid #e0e0e0;
-    margin-top: 20px;
-}
-
-.modal-footer .close-btn-2 {
-    background-color: #e2e8f0; /* Light gray background */
-    color: #4a5568;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.modal-footer .close-btn-2:hover {
-    background-color: #cbd5e0; /* Darker gray on hover */
-    color: #2d3748;
-}
-
-/* ----- Existing CSS (Baka sakaling nalimutan niyo, isama ko na) ----- */
-/* Base container para mag-match sa overall layout */
-.billing-page-container {
+.Owner-Billing-stat-card {
+    background: white;
     padding: 20px;
-    background-color: #f7f9fc; /* Light background for the whole area */
-    min-height: 100vh;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Common Card Style */
-.content-card {
-    background-color: #ffffff;
+.Owner-Billing-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.Owner-Billing-stat-icon {
+    width: 50px;
+    height: 50px;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    padding: 30px;
-    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
 }
 
-.header-card h2 {
-    color: #1a202c;
+.Owner-Billing-stat-icon.total {
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+}
+
+.Owner-Billing-stat-icon.paid {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+}
+
+.Owner-Billing-stat-icon.unpaid {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+}
+
+.Owner-Billing-stat-icon.revenue {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+}
+
+.Owner-Billing-stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.Owner-Billing-stat-number {
     font-size: 1.8rem;
-    margin-bottom: 5px;
+    font-weight: 800;
+    color: #061a53;
+    line-height: 1;
 }
 
-.header-card p {
-    color: #6a6a6a;
-    font-size: 1rem;
+.Owner-Billing-stat-label {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
 }
 
-.invoice-area {
-    padding-top: 20px;
-}
-
-.invoice-control-bar {
+/* === Control Bar === */
+.Owner-Billing-control-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
-.search-box {
+.Owner-Billing-tab-group {
     display: flex;
-    align-items: center;
-    position: relative;
-    flex-grow: 1;
-    max-width: 400px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
-.search-box input {
-    border: 1px solid #e0eeef;
-    border-radius: 8px;
-    padding: 10px 15px 10px 40px;
-    font-size: 0.9rem;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.3s;
-}
-
-.search-box input:focus {
-    border-color: #3182ce;
-}
-
-.search-icon {
-    position: absolute;
-    left: 15px;
-    color: #999;
-}
-
-.create-invoice-btn {
+.Owner-Billing-tab-btn {
     display: flex;
     align-items: center;
     gap: 8px;
-    background-color: #3182ce;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-size: 1rem;
+    padding: 12px 20px;
+    font-size: 0.9rem;
     font-weight: 600;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    color: #666;
     cursor: pointer;
-    transition: background-color 0.3s, box-shadow 0.3s;
+    transition: all 0.3s ease;
 }
 
-.create-invoice-btn:hover {
-    background-color: #2c6fbb;
-    box-shadow: 0 4px 8px rgba(49, 130, 206, 0.4);
+.Owner-Billing-tab-btn:hover {
+    border-color: #0a2d8d;
+    color: #0a2d8d;
+    transform: translateY(-1px);
 }
 
-.invoice-table-wrapper {
+.Owner-Billing-tab-active {
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    border-color: #0a2d8d;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(10, 45, 141, 0.3);
+}
+
+.Owner-Billing-tab-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: inherit;
+}
+
+.Owner-Billing-search-box {
+    display: flex;
+    align-items: center;
+    position: relative;
+    min-width: 300px;
+}
+
+.Owner-Billing-search-input {
+    padding: 12px 20px 12px 45px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    width: 100%;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.Owner-Billing-search-input:focus {
+    outline: none;
+    border-color: #0a2d8d;
+    box-shadow: 0 0 0 3px rgba(10, 45, 141, 0.1);
+}
+
+.Owner-Billing-search-icon {
+    position: absolute;
+    left: 15px;
+    color: #666;
+}
+
+/* === Content Cards === */
+.Owner-Billing-content-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+    margin-bottom: 24px;
+}
+
+.Owner-Billing-table-header {
+    margin-bottom: 24px;
+}
+
+.Owner-Billing-table-header h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #061a53;
+    margin-bottom: 8px;
+}
+
+.Owner-Billing-table-header p {
+    color: #666;
+    margin: 0;
+}
+
+/* === Table Styles === */
+.Owner-Billing-table-wrapper {
     overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #e8ecf1;
 }
 
-table {
+.Owner-Billing-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.95rem;
-    text-align: left;
+    font-size: 0.9rem;
 }
 
-thead th {
-    color: #6a6a6a;
+.Owner-Billing-table th {
+    background: #f8f9fa;
+    color: #061a53;
     font-weight: 600;
-    padding: 15px;
-    border-bottom: 2px solid #e0e0e0;
+    padding: 16px;
+    text-align: left;
+    border-bottom: 2px solid #e8ecf1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.8rem;
+}
+
+.Owner-Billing-table-row {
+    transition: background-color 0.2s ease;
+}
+
+.Owner-Billing-table-row:hover {
+    background-color: #f8f9fa;
+}
+
+.Owner-Billing-table td {
+    padding: 16px;
+    border-bottom: 1px solid #e8ecf1;
+    color: #333;
+}
+
+/* === Table Cell Styles === */
+.Owner-Billing-invoice-no {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #0a2d8d;
+}
+
+.Owner-Billing-tenant-info,
+.Owner-Billing-applicant-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.Owner-Billing-tenant-name,
+.Owner-Billing-applicant-name {
+    font-weight: 600;
+    color: #061a53;
+}
+
+.Owner-Billing-tenant-email {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.Owner-Billing-contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.Owner-Billing-contact-email,
+.Owner-Billing-contact-phone {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.Owner-Billing-unit-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #666;
+}
+
+.Owner-Billing-amount {
+    font-weight: 700;
+    color: #28a745;
+}
+
+.Owner-Billing-initial-payment {
+    font-weight: 700;
+    color: #fd7e14;
+}
+
+/* === Status Badges === */
+.Owner-Billing-status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-tbody td {
-    padding: 15px;
-    border-bottom: 1px solid #f0f0f0;
-    color: #333;
+.Owner-Billing-status-badge.paid {
+    background: #d4edda;
+    color: #155724;
 }
 
-.status-badge {
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: capitalize;
-}
-
-.status-unpaid {
-    background-color: #fff3e0;
+.Owner-Billing-status-badge.unpaid {
+    background: #fff3e0;
     color: #ff9800;
 }
 
-.status-paid {
-    background-color: #e8f5e9;
-    color: #4caf50;
+/* === Action Buttons === */
+.Owner-Billing-action-buttons {
+    display: flex;
+    gap: 8px;
 }
 
-.action-btn {
-    border: 1px solid;
-    padding: 6px 15px;
+.Owner-Billing-view-btn,
+.Owner-Billing-mark-paid-btn,
+.Owner-Billing-issue-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: none;
     border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 0.8rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+    transition: all 0.3s ease;
 }
 
-.mark-paid-btn {
-    border-color: #3182ce;
-    color: #3182ce;
-    background-color: white;
-}
-
-.mark-paid-btn:hover {
-    background-color: #3182ce;
+.Owner-Billing-view-btn {
+    background: #6c757d;
     color: white;
 }
 
-.view-btn {
-    border-color: #999;
+.Owner-Billing-view-btn:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+.Owner-Billing-mark-paid-btn {
+    background: #28a745;
+    color: white;
+}
+
+.Owner-Billing-mark-paid-btn:hover {
+    background: #1e7e34;
+    transform: translateY(-1px);
+}
+
+.Owner-Billing-issue-btn {
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    color: white;
+}
+
+.Owner-Billing-issue-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(10, 45, 141, 0.3);
+}
+
+/* === Empty State === */
+.Owner-Billing-empty-state {
+    text-align: center;
+    padding: 60px 20px;
     color: #666;
-    background-color: white;
 }
 
-.view-btn:hover {
-    background-color: #f0f0f0;
+.Owner-Billing-empty-state svg {
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.Owner-Billing-empty-state p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* === Modal Overlay === */
+.Owner-Billing-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.Owner-Billing-modal {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalFadeIn 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* === Add Invoice Modal === */
+.Owner-Billing-add-modal {
+    width: 500px;
+    max-width: 90vw;
+}
+
+.Owner-Billing-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid #e8ecf1;
+}
+
+.Owner-Billing-modal-header h3 {
+    margin: 0;
+    color: #061a53;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.Owner-Billing-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.Owner-Billing-close-btn:hover {
+    background: #f0f0f0;
+    color: #061a53;
+}
+
+.Owner-Billing-modal-body {
+    padding: 24px;
+}
+
+.Owner-Billing-applicant-summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.Owner-Billing-applicant-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.Owner-Billing-applicant-details h4 {
+    margin: 0;
+    color: #061a53;
+    font-size: 1.1rem;
+}
+
+.Owner-Billing-applicant-details p {
+    margin: 4px 0 0 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.Owner-Billing-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.Owner-Billing-form-group {
+    margin-bottom: 16px;
+}
+
+.Owner-Billing-form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #061a53;
+    font-size: 0.9rem;
+}
+
+.Owner-Billing-form-input,
+.Owner-Billing-form-select,
+.Owner-Billing-form-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    transition: border-color 0.3s ease;
+    background: white;
+}
+
+.Owner-Billing-form-input:focus,
+.Owner-Billing-form-select:focus,
+.Owner-Billing-form-textarea:focus {
+    outline: none;
+    border-color: #0a2d8d;
+    box-shadow: 0 0 0 3px rgba(10, 45, 141, 0.1);
+}
+
+.Owner-Billing-form-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.Owner-Billing-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 24px;
+    border-top: 1px solid #e8ecf1;
+}
+
+.Owner-Billing-cancel-btn {
+    padding: 12px 24px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.Owner-Billing-cancel-btn:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+.Owner-Billing-save-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(10, 45, 141, 0.3);
+}
+
+.Owner-Billing-save-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(10, 45, 141, 0.4);
+}
+
+/* === View Invoice Modal === */
+.Owner-Billing-view-modal {
+    width: 500px;
+    max-width: 90vw;
+}
+
+.Owner-Billing-invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.Owner-Billing-invoice-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.Owner-Billing-invoice-number {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #061a53;
+}
+
+.Owner-Billing-invoice-amount {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #28a745;
+}
+
+.Owner-Billing-invoice-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.Owner-Billing-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.Owner-Billing-detail-label {
+    font-weight: 600;
+    color: #061a53;
+    min-width: 120px;
+}
+
+.Owner-Billing-detail-value {
     color: #333;
+    text-align: right;
+    flex: 1;
 }
 
+.Owner-Billing-close-detail-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(10, 45, 141, 0.3);
+}
+
+.Owner-Billing-close-detail-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(10, 45, 141, 0.4);
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+    .Owner-Billing-container {
+        padding: 16px;
+    }
+    
+    .Owner-Billing-title {
+        font-size: 2rem;
+    }
+    
+    .Owner-Billing-control-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .Owner-Billing-tab-group {
+        justify-content: center;
+    }
+    
+    .Owner-Billing-search-box {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .Owner-Billing-form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .Owner-Billing-action-buttons {
+        flex-direction: column;
+    }
+    
+    .Owner-Billing-modal-footer {
+        flex-direction: column;
+    }
+    
+    .Owner-Billing-cancel-btn,
+    .Owner-Billing-save-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .Owner-Billing-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .Owner-Billing-stat-card {
+        padding: 16px;
+    }
+    
+    .Owner-Billing-add-modal,
+    .Owner-Billing-view-modal {
+        width: 95vw;
+        margin: 10px;
+    }
+    
+    .Owner-Billing-table {
+        font-size: 0.8rem;
+    }
+    
+    .Owner-Billing-table th,
+    .Owner-Billing-table td {
+        padding: 12px 8px;
+    }
+}

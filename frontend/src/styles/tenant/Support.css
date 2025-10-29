@@ -1,19 +1,31 @@
-.page-header {
+/* ===== Main Container ===== */
+.support-container-Tenant-Support {
+    padding: 30px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    color: #1e1e2f;
+}
+
+/* ===== Page Header ===== */
+.page-header-Tenant-Support {
     margin-bottom: 25px;
 }
 
-.page-header h2 {
+.page-title-Tenant-Support {
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 5px;
+    color: #061a53;
 }
 
-.page-header p {
+.page-description-Tenant-Support {
     color: #666;
     font-size: 0.95rem;
 }
 
-.support-top-controls {
+/* ===== Support Controls ===== */
+.support-top-controls-Tenant-Support {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -21,17 +33,23 @@
     margin-bottom: 25px;
 }
 
-.search-input {
+.search-input-Tenant-Support {
     flex: 1;
     min-width: 200px;
     padding: 10px 14px;
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 0.95rem;
+    background: #fff;
+    color: #1e1e2f;
 }
 
-.new-concern-btn {
-    background: #007bff; /* Blue color */
+.search-input-Tenant-Support::placeholder {
+    color: #666;
+}
+
+.new-concern-btn-Tenant-Support {
+    background: #007bff;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -41,17 +59,17 @@
     transition: 0.3s ease;
 }
 
-.new-concern-btn:hover {
+.new-concern-btn-Tenant-Support:hover {
     background: #0056b3;
 }
 
-/* Filter Tabs */
-.filter-tabs {
+/* ===== Filter Tabs ===== */
+.filter-tabs-Tenant-Support {
     display: flex;
     gap: 10px;
 }
 
-.filter-btn {
+.filter-btn-Tenant-Support {
     background: transparent;
     border: none;
     color: #555;
@@ -63,67 +81,68 @@
     border: 1px solid #ddd;
 }
 
-.filter-btn:hover {
+.filter-btn-Tenant-Support:hover {
     color: #0a2d8d;
     border-color: #0a2d8d;
 }
 
-.filter-btn.active {
+.filter-btn-active-Tenant-Support {
     color: #0a2d8d;
     border-color: #0a2d8d;
     background: #f0f7ff;
 }
 
-/* Status colors (Pending is now Gray) */
-.status-pending { 
-    color: #6c757d !important; /* Changed from orange to gray */
-    font-weight: 600 !important; 
-    background: none !important;
-}
-.status-resolved { 
-    color: #28a745 !important; 
-    font-weight: 600 !important;
-    background: none !important;
+/* ===== Status Colors ===== */
+.status-pending-Tenant-Support { 
+    color: #6c757d;
+    font-weight: 600;
 }
 
+.status-resolved-Tenant-Support { 
+    color: #28a745;
+    font-weight: 600;
+}
 
-/* ======================================= */
-/* CONCERN CARD STYLES */
-/* ======================================= */
-
-.concerns-list {
+/* ===== Concerns List ===== */
+.concerns-list-Tenant-Support {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.concern-card {
+.concern-card-Tenant-Support {
     background: #fff;
     border: 1px solid #eee;
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.card-top {
+.concern-card-Tenant-Support:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-top-Tenant-Support {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
 }
 
-.concern-category {
+.concern-category-Tenant-Support {
     font-weight: 700;
     font-size: 1rem;
     color: #1e1e2f;
 }
 
-.concern-status {
+.concern-status-Tenant-Support {
     font-size: 0.9rem;
     text-transform: uppercase;
 }
 
-.concern-title {
+.concern-title-Tenant-Support {
     font-size: 1.1rem;
     font-weight: 500;
     color: #333;
@@ -132,40 +151,37 @@
     padding-bottom: 15px;
 }
 
-.card-bottom {
+.card-bottom-Tenant-Support {
     display: flex;
     justify-content: flex-start;
-    gap: 40px; 
+    gap: 40px;
 }
 
-.concern-info {
+.concern-info-Tenant-Support {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-.info-label {
+.info-label-Tenant-Support {
     font-size: 0.8rem;
     color: #666;
     font-weight: 500;
 }
 
-.info-value {
+.info-value-Tenant-Support {
     font-weight: 600;
     color: #1e1e2f;
 }
 
-.date-value {
+.date-value-Tenant-Support {
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
-/* ======================================= */
-/* NEW CONCERN MODAL STYLES */
-/* ======================================= */
-
-.modal-overlay {
+/* ===== Modal Styles ===== */
+.modal-overlay-Tenant-Support {
     position: fixed;
     top: 0;
     left: 0;
@@ -178,33 +194,31 @@
     z-index: 1000;
 }
 
-.concern-modal {
+.concern-modal-Tenant-Support {
     background: #fff;
     padding: 20px 30px;
     border-radius: 10px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 500px;
-    color: #1e1e2f !important;
-    position: relative;
-    max-height: 90vh; /* Set max height for better mobile fit */
+    max-height: 90vh;
     display: flex;
     flex-direction: column;
 }
 
-.modal-header {
+.modal-header-Tenant-Support {
     display: flex;
     align-items: center;
     border-bottom: 1px solid #eee;
     padding-bottom: 15px;
     margin-bottom: 20px;
     justify-content: center;
-    flex-shrink: 0; /* Prevents header from shrinking on small screens */
+    flex-shrink: 0;
     position: relative;
     min-height: 60px;
 }
 
-.modal-header h3 {
+.modal-title-Tenant-Support {
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0;
@@ -213,440 +227,527 @@
     left: 50%;
     transform: translateX(-50%);
     white-space: nowrap;
+    color: #061a53;
 }
 
-.back-btn {
-    background: none !important;
-    border: none !important;
-    font-size: 1.5rem !important;
-    font-weight: 700 !important;
-    color: #333 !important;
-    cursor: pointer !important;
-    padding: 0 !important;
-    line-height: 1 !important;
-    position: relative !important;
-    z-index: 2 !important;
-    flex-shrink: 0 !important;
+.back-btn-Tenant-Support {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
 }
 
-.modal-content {
-    overflow-y: auto; /* Allows content to scroll */
+.modal-content-Tenant-Support {
+    overflow-y: auto;
     padding-right: 5px;
 }
 
-/* Form Styles */
-.concern-form {
+/* ===== Form Styles ===== */
+.concern-form-Tenant-Support {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Increased gap */
+    gap: 20px;
 }
 
-.form-group {
+.form-group-Tenant-Support {
     display: flex;
     flex-direction: column;
 }
 
-.form-group label {
-    font-weight: 700 !important; /* Bolder label */
-    margin-bottom: 8px !important; /* Increased space */
-    font-size: 1rem !important;
-    color: #1e293b !important; 
+.form-label-Tenant-Support {
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #1e293b;
 }
 
-.form-input {
-    /* KEY FIX: Added light border for visibility on white background */
-    padding: 12px !important;
-    border: 1px solid #d1d5db !important; 
-    border-radius: 8px !important;
-    font-size: 1rem !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    background-color: #ffffff !important; 
-    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
-    color: #1e1e2f !important;
+.form-input-Tenant-Support {
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    color: #1e1e2f;
 }
 
-.form-input:focus {
-    border-color: #007bff !important; 
-    outline: none !important;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25) !important;
+.form-input-Tenant-Support:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
-.form-input.textarea {
-    resize: vertical !important;
+.textarea-Tenant-Support {
+    resize: vertical;
+    min-height: 120px;
 }
 
-/* File Upload Styles */
-.upload-proof {
+/* ===== File Upload Styles ===== */
+.upload-proof-Tenant-Support {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 8px 0;
 }
 
-.file-info {
-    color: #888 !important;
-    font-size: 0.9rem !important;
+.file-info-Tenant-Support {
+    color: #888;
+    font-size: 0.9rem;
 }
 
-.choose-file-btn {
-    /* Enhanced Button Contrast */
-    background: #e9ecef !important;
-    border: 1px solid #ced4da !important;
-    padding: 8px 12px !important;
-    border-radius: 6px !important;
-    cursor: pointer !important;
-    font-weight: 600 !important;
-    font-size: 0.9rem !important;
-    color: #343a40 !important;
-    transition: background-color 0.2s !important;
-}
-.choose-file-btn:hover {
-    background: #dee2e6 !important;
+.choose-file-btn-Tenant-Support {
+    background: #e9ecef;
+    border: 1px solid #ced4da;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #343a40;
+    transition: background-color 0.2s;
 }
 
-/* Modal Footer (Sticky behavior for better UX) */
-.modal-footer {
+.choose-file-btn-Tenant-Support:hover {
+    background: #dee2e6;
+}
+
+.file-input-Tenant-Support {
+    display: none;
+}
+
+/* ===== Modal Footer ===== */
+.modal-footer-Tenant-Support {
     padding-top: 20px;
     text-align: center;
-    flex-shrink: 0; /* Prevents footer from shrinking */
-    
-    /* Sticky styles */
-    position: sticky; 
-    bottom: -20px; 
-    background: #fff !important;
+    flex-shrink: 0;
+    position: sticky;
+    bottom: -20px;
+    background: #fff;
     z-index: 10;
-    margin: 0 -30px; 
+    margin: 0 -30px;
     padding: 20px 30px 0 30px;
     border-top: 1px solid #f0f0f0;
 }
 
-.submit-btn {
-    background: #007bff !important;
-    color: white !important;
-    border: none !important;
-    padding: 12px 30px !important;
-    border-radius: 8px !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    transition: background-color 0.2s !important;
-    width: 100% !important;
-    font-size: 1rem !important;
+.submit-btn-Tenant-Support {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+    font-size: 1rem;
 }
 
-.submit-btn:hover {
-    background: #0056b3 !important;
+.submit-btn-Tenant-Support:hover {
+    background: #0056b3;
 }
 
-/* ======================================= */
-/* RESPONSIVE STYLES */
-/* ======================================= */
-
-/* ======================================= */
-/* RESPONSIVE FIX for Modals on Mobile */
-/* ======================================= */
-/* ======================================= */
-/* MOBILE FIXES FOR SUPPORT PAGE */
-/* ======================================= */
+/* ===== Mobile Responsive ===== */
+/* ===== Mobile Responsive - IMPROVED ===== */
 @media (max-width: 768px) {
+    .support-container-Tenant-Support {
+        padding: 15px;
+        margin: 0;
+        border-radius: 0;
+        min-height: 100vh;
+    }
+
+    /* Page Header */
+    .page-header-Tenant-Support {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .page-title-Tenant-Support {
+        font-size: 1.3rem;
+        margin-bottom: 8px;
+    }
+
+    .page-description-Tenant-Support {
+        font-size: 0.9rem;
+    }
+
     /* Support Controls */
-    .support-top-controls {
+    .support-top-controls-Tenant-Support {
         flex-direction: column;
         align-items: stretch;
-        gap: 10px;
+        gap: 12px;
+        margin-bottom: 20px;
     }
     
-    .search-input {
+    .search-input-Tenant-Support {
         width: 100%;
-        min-width: auto;
-        color: #000000 !important;
-        background-color: #ffffff !important;
-        border: 1px solid #cccccc !important;
-        padding: 12px !important;
-        border-radius: 8px !important;
-        font-size: 16px !important;
-        box-sizing: border-box !important;
+        padding: 14px 16px;
+        font-size: 16px; /* Prevents zoom on iOS */
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #000000;
     }
     
-    /* FIX SEARCH PLACEHOLDER TEXT */
-    .search-input::placeholder {
-        color: #666666 !important;
-        opacity: 1 !important;
+    .search-input-Tenant-Support::placeholder {
+        color: #666666;
     }
     
-    .search-input::-webkit-input-placeholder {
-        color: #666666 !important;
-        opacity: 1 !important;
-    }
-    
-    .search-input::-moz-placeholder {
-        color: #666666 !important;
-        opacity: 1 !important;
-    }
-    
-    .search-input:-ms-input-placeholder {
-        color: #666666 !important;
-        opacity: 1 !important;
-    }
-    
-    .search-input:-moz-placeholder {
-        color: #666666 !important;
-        opacity: 1 !important;
-    }
-    
-    .filter-tabs {
-        justify-content: center;
+    .filter-tabs-Tenant-Support {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
         width: 100%;
     }
     
-    .filter-btn {
-        flex: 1;
+    .filter-btn-Tenant-Support {
+        padding: 12px 8px;
+        font-size: 0.85rem;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
         text-align: center;
-        padding: 10px 12px !important;
     }
     
-    .new-concern-btn {
+    .new-concern-btn-Tenant-Support {
         width: 100%;
-        padding: 12px !important;
+        padding: 14px;
+        font-size: 1rem;
+        border-radius: 10px;
+        margin-top: 10px;
     }
 
-    /* Modal Fixes */
-    .concern-modal {
-        width: 95% !important;
-        margin: 1rem !important;
-        padding: 15px 20px !important;
-        max-height: 85vh !important;
+    /* Concerns List - Mobile Optimized */
+    .concerns-list-Tenant-Support {
+        gap: 12px;
     }
 
-    /* Modal Header Fix - No Overlap */
-    .modal-header {
-        position: relative !important;
-        min-height: 60px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        padding: 1rem 0 !important;
-        margin-bottom: 15px !important;
+    .concern-card-Tenant-Support {
+        padding: 16px;
+        border-radius: 12px;
+        margin: 0;
     }
 
-    .modal-header h3 {
-        position: absolute !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        margin: 0 !important;
-        font-size: 1.2rem !important;
-        text-align: center !important;
-        width: auto !important;
-        white-space: nowrap !important;
-        color: #1e1e2f !important;
+    .card-top-Tenant-Support {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 12px;
     }
 
-    .back-btn {
-        position: relative !important;
-        z-index: 10 !important;
-        margin: 0 !important;
-        padding: 8px !important;
-        font-size: 1.4rem !important;
-        color: #1e1e2f !important;
-        background: none !important;
-        border: none !important;
-        flex-shrink: 0 !important;
+    .concern-category-Tenant-Support {
+        font-size: 0.95rem;
     }
 
-    /* Form Input Fixes - Ensure Visible Textboxes */
-    .concern-modal .form-input {
-        color: #000000 !important;
-        background-color: #ffffff !important;
-        border: 1px solid #cccccc !important;
-        padding: 12px !important;
-        border-radius: 8px !important;
-        font-size: 16px !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
+    .concern-status-Tenant-Support {
+        align-self: flex-end;
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 12px;
+        background: #f8f9fa;
     }
 
-    .concern-modal .form-input::placeholder {
-        color: #666666 !important;
-        opacity: 1 !important;
+    .concern-title-Tenant-Support {
+        font-size: 1rem;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
     }
 
-    .concern-modal .form-input:focus {
-        border-color: #007bff !important;
-        outline: none !important;
-        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25) !important;
+    .card-bottom-Tenant-Support {
+        flex-direction: column;
+        gap: 12px;
     }
 
-    /* Textarea Specific Fix */
-    .concern-modal .form-input.textarea {
-        min-height: 120px !important;
-        resize: vertical !important;
+    .concern-info-Tenant-Support {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f5f5f5;
     }
 
-    /* File Upload Fix */
-    .upload-proof {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 10px !important;
-        padding: 10px 0 !important;
+    .concern-info-Tenant-Support:last-child {
+        border-bottom: none;
     }
 
-    .file-info {
-        color: #666666 !important;
-        font-size: 0.9rem !important;
+    .info-label-Tenant-Support {
+        font-size: 0.8rem;
+        color: #666;
     }
 
-    .choose-file-btn {
-        background: #e9ecef !important;
-        color: #000000 !important;
-        border: 1px solid #cccccc !important;
-        padding: 10px 16px !important;
-        border-radius: 6px !important;
-        cursor: pointer !important;
-        font-weight: 600 !important;
-        font-size: 0.9rem !important;
-        width: 100% !important;
-        text-align: center !important;
-        display: block !important;
+    .info-value-Tenant-Support {
+        font-size: 0.85rem;
     }
 
-    /* Submit Button Fix - Make it Sticky and Visible */
-    .modal-footer {
-        position: sticky !important;
-        bottom: 0 !important;
-        background: #ffffff !important;
-        padding: 20px 0 0 0 !important;
-        margin: 20px -20px 0 -20px !important;
-        border-top: 1px solid #eeeeee !important;
+    /* ===== MODAL IMPROVEMENTS ===== */
+    .modal-overlay-Tenant-Support {
+        padding: 0;
+        align-items: flex-start;
+        background: rgba(0, 0, 0, 0.8);
     }
 
-    .submit-btn {
-        background: #007bff !important;
-        color: #ffffff !important;
-        border: none !important;
-        padding: 14px 20px !important;
-        border-radius: 8px !important;
-        font-weight: 600 !important;
-        font-size: 1.1rem !important;
-        cursor: pointer !important;
-        width: 100% !important;
-        margin: 0 !important;
-        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3) !important;
+    .concern-modal-Tenant-Support {
+        width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        margin: 0;
+        border-radius: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
     }
 
-    .submit-btn:hover {
-        background: #0056b3 !important;
+    /* Modal Header - Fixed */
+    .modal-header-Tenant-Support {
+        display: flex;
+        align-items: center;
+        padding: 0 0 20px 0;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+        position: relative;
+        min-height: auto;
     }
 
-    /* Form Group Spacing */
-    .form-group {
-        margin-bottom: 15px !important;
+    .back-btn-Tenant-Support {
+        position: static;
+        font-size: 1.8rem;
+        padding: 8px;
+        margin: 0;
+        color: #061a53;
+        background: none;
+        border: none;
+        z-index: 2;
+        flex-shrink: 0;
     }
 
-    .form-group label {
-        color: #000000 !important;
-        font-weight: 600 !important;
-        margin-bottom: 8px !important;
-        font-size: 1rem !important;
-        display: block !important;
+    .modal-title-Tenant-Support {
+        position: static;
+        transform: none;
+        font-size: 1.3rem;
+        margin: 0 auto;
+        text-align: center;
+        color: #061a53;
+        padding: 0 40px;
     }
 
-    /* Ensure all text in modal is visible */
-    .concern-modal,
-    .concern-modal * {
-        color: #000000 !important;
-        background: transparent !important;
+    /* Modal Content - Scrollable */
+    .modal-content-Tenant-Support {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0;
+        margin: 0;
     }
 
-    .concern-modal {
-        background: #ffffff !important;
+    /* Form Improvements */
+    .concern-form-Tenant-Support {
+        gap: 20px;
+        padding-bottom: 20px;
+    }
+
+    .form-group-Tenant-Support {
+        gap: 8px;
+    }
+
+    .form-label-Tenant-Support {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #061a53;
+        margin-bottom: 4px;
+    }
+
+    .form-input-Tenant-Support {
+        padding: 16px;
+        font-size: 16px; /* Prevents zoom on iOS */
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #000000;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .form-input-Tenant-Support:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .textarea-Tenant-Support {
+        min-height: 140px;
+        line-height: 1.5;
+    }
+
+    /* File Upload - Mobile Friendly */
+    .upload-proof-Tenant-Support {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 16px;
+        border: 2px dashed #e1e5e9;
+        border-radius: 10px;
+        background: #fafbfc;
+    }
+
+    .file-info-Tenant-Support {
+        text-align: center;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .choose-file-btn-Tenant-Support {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        text-align: center;
+        transition: background-color 0.2s;
+    }
+
+    .choose-file-btn-Tenant-Support:hover {
+        background: #0056b3;
+    }
+
+    /* Modal Footer - Fixed at Bottom */
+    .modal-footer-Tenant-Support {
+        position: sticky;
+        bottom: 0;
+        background: #ffffff;
+        padding: 20px 0 0 0;
+        margin: 0;
+        border-top: 2px solid #f0f0f0;
+        flex-shrink: 0;
+    }
+
+    .submit-btn-Tenant-Support {
+        background: #007bff;
+        color: #ffffff;
+        border: none;
+        padding: 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.2s;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    }
+
+    .submit-btn-Tenant-Support:hover {
+        background: #0056b3;
+        transform: translateY(-1px);
+    }
+
+    .submit-btn-Tenant-Support:active {
+        transform: translateY(0);
     }
 }
 
 @media (max-width: 480px) {
-    .concern-modal {
-        width: 100% !important;
-        margin: 0 !important;
-        border-radius: 0 !important;
-        height: 100vh !important;
-        max-height: 100vh !important;
+    .support-container-Tenant-Support {
+        padding: 12px;
     }
 
-    .modal-overlay {
-        align-items: flex-end !important;
+    .page-title-Tenant-Support {
+        font-size: 1.2rem;
     }
 
-    .modal-header h3 {
-        font-size: 1.1rem !important;
-        max-width: 200px !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+    .modal-title-Tenant-Support {
+        font-size: 1.1rem;
+        padding: 0 30px;
     }
 
-    /* Card layout fixes for concerns list */
-    .card-bottom {
-        flex-direction: column !important;
-        gap: 15px !important;
+    .back-btn-Tenant-Support {
+        font-size: 1.6rem;
     }
 
-    .concern-info {
-        flex-direction: row !important;
-        justify-content: space-between !important;
-        align-items: center !important;
+    .form-input-Tenant-Support {
+        padding: 14px;
     }
 
-    /* Submit button more prominent on very small screens */
-    .submit-btn {
-        padding: 16px 20px !important;
-        font-size: 1.2rem !important;
+    .textarea-Tenant-Support {
+        min-height: 120px;
     }
-    
-    /* Extra aggressive search input fix */
-    .search-input::placeholder {
-        color: #666666 !important;
+
+    .submit-btn-Tenant-Support {
+        padding: 16px;
+        font-size: 1rem;
+    }
+
+    /* Filter tabs for very small screens */
+    .filter-tabs-Tenant-Support {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .filter-btn-Tenant-Support {
+        padding: 14px 8px;
+        font-size: 0.9rem;
     }
 }
 
-/* Additional aggressive fixes for white text issues */
-@media (max-width: 768px) {
-    .concern-modal * {
-        color: #000000 !important;
+/* Additional improvements for very small devices */
+@media (max-width: 360px) {
+    .support-container-Tenant-Support {
+        padding: 10px;
     }
-    
-    .form-input,
-    .form-input::placeholder {
-        color: #000000 !important;
-        background: #ffffff !important;
+
+    .concern-modal-Tenant-Support {
+        padding: 15px;
     }
-    
-    .search-input,
-    .search-input::placeholder {
-        color: #000000 !important;
-        background: #ffffff !important;
+
+    .modal-title-Tenant-Support {
+        font-size: 1rem;
+        padding: 0 20px;
     }
-    
-    .choose-file-btn {
-        color: #000000 !important;
-        background: #f8f9fa !important;
+
+    .form-input-Tenant-Support {
+        padding: 12px;
+        font-size: 14px;
     }
-    
-    .submit-btn {
-        color: #ffffff !important;
-        background: #007bff !important;
+
+    .submit-btn-Tenant-Support {
+        padding: 14px;
+        font-size: 0.95rem;
     }
 }
 
-/* EXTRA AGGRESSIVE FIX FOR SEARCH PLACEHOLDER */
+/* Fix for iOS Safari */
+@supports (-webkit-touch-callout: none) {
+    .concern-modal-Tenant-Support {
+        height: -webkit-fill-available;
+    }
+    
+    .modal-content-Tenant-Support {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Improve touch targets for mobile */
 @media (max-width: 768px) {
-    .support-top-controls .search-input::placeholder {
-        color: #666666 !important;
-        opacity: 1 !important;
+    .filter-btn-Tenant-Support,
+    .new-concern-btn-Tenant-Support,
+    .choose-file-btn-Tenant-Support,
+    .submit-btn-Tenant-Support {
+        min-height: 44px; /* Apple's recommended minimum touch target */
     }
     
-    .support-container .search-input::placeholder {
-        color: #666666 !important;
-    }
-    
-    input[type="text"].search-input::placeholder {
-        color: #666666 !important;
+    .back-btn-Tenant-Support {
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }

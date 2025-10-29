@@ -1,345 +1,482 @@
 /* ===== Dashboard Container ===== */
-.dashboard-container {
+.dashboard-content-Tenant-Dashboard {
     padding: 30px;
     min-height: 100vh;
     background: #f9fafb;
     font-family: "Poppins", sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
 /* ===== Welcome Header ===== */
-.welcome-header {
-    margin-bottom: 30px;
+.welcome-header-Tenant-Dashboard {
+    margin-bottom: 10px;
 }
 
-.welcome-header p {
-    font-size: 1.4rem;
+.welcome-text-Tenant-Dashboard {
+    font-size: 1.8rem;
     font-weight: 600;
+    margin: 0 0 10px 0;
+    color: #1e293b;
 }
 
-.welcome-header span {
+.welcome-name-Tenant-Dashboard {
     color: #0b3c91;
     font-weight: 700;
 }
 
-.unit-lease-info {
+.unit-lease-info-Tenant-Dashboard {
     display: flex;
-    gap: 20px;
+    gap: 25px;
     margin-top: 5px;
     font-size: 14px;
-    color: #555;
+    color: #64748b;
+}
+
+.unit-info-Tenant-Dashboard,
+.lease-info-Tenant-Dashboard {
+    background: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    font-weight: 500;
 }
 
 /* ===== Overview Cards ===== */
-.bills-overview-cards {
+.bills-overview-cards-Tenant-Dashboard {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
-.blue-card { background-color: #2a3d66; color: #fff; }
-.yellow-card { background-color: #d19a00; color: #fff; }
-.red-card { background-color: #b71c1c; color: #fff; }
-
-.card h2 {
-    margin-top: 8px;
-    font-size: 28px;
-    font-weight: 700;
-}
-
-.bills-overview-cards .card .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 25px;
     margin-bottom: 10px;
 }
 
-.bills-overview-cards .card .card-header p {
-    font-size: 1rem;
-    font-weight: 500;
-    margin: 0;
-}
-
-/* ===== Current Bills Table ===== */
-.current-bills-section {
-    margin-bottom: 30px;
-}
-
-.bills-table {
-    width: 100%;
-    table-layout: fixed; /* ✅ Makes columns even width */
-    border-collapse: collapse;
+.card-Tenant-Dashboard {
     background: #fff;
-    border-radius: 14px;
+    border-radius: 16px;
+    padding: 25px;
+    text-align: left;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
-.bills-table th,
-.bills-table td {
-    padding: 12px 15px;
-    text-align: center; /* ✅ Align center for neat layout */
-    vertical-align: middle;
-    font-size: 14px;
-    color: #333;
-    word-wrap: break-word;
+.card-Tenant-Dashboard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.15);
 }
 
-.bills-table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-    color: #333;
+.blue-card-Tenant-Dashboard { 
+    background: linear-gradient(135deg, #2a3d66 0%, #1e2a4a 100%); 
+    color: #fff; 
 }
 
-.bills-table tr:hover {
-    background-color: #eef4ff;
+.yellow-card-Tenant-Dashboard { 
+    background: linear-gradient(135deg, #d19a00 0%, #b8860b 100%); 
+    color: #fff; 
 }
 
-/* Status colors */
-.status-paid { color: #16a34a; font-weight: 600; }
-.status-unpaid { color: #dc2626; font-weight: 600; }
-.status-pending { color: #f59e0b; font-weight: 600; }
-
-/* ===== ACTION BUTTONS (Equal Size + Color-Coded) ===== */
-.bills-table td a.action-link {
-    display: inline-block;
-    width: 110px;              /* ✅ Equal width for all buttons */
-    padding: 8px 0;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 6px;
-    color: #fff;
-    text-decoration: none;
-    text-align: center;
-    transition: 0.2s ease-in-out;
+.red-card-Tenant-Dashboard { 
+    background: linear-gradient(135deg, #b71c1c 0%, #8b0000 100%); 
+    color: #fff; 
 }
 
-/* Individual button colors */
-.action-link.action-pay-now {
-    background-color: #0b3c91; /* Blue */
-}
-.action-link.action-pay-now:hover {
-    background-color: #072d6d;
-}
-
-.action-link.action-receipt {
-    background-color: #16a34a; /* Green */
-}
-.action-link.action-receipt:hover {
-    background-color: #0d7b33;
-}
-
-.action-link.action-view {
-    background-color: #f59e0b; /* Amber */
-}
-.action-link.action-view:hover {
-    background-color: #b45309;
-}
-
-/* Center Action column */
-.bills-table th[data-label="Action"],
-.bills-table td.action-cell {
-    text-align: center;
-}
-
-/* ===== Transaction Overview ===== */
-.transaction-overview-section {
-    margin-bottom: 30px;
-}
-
-.transaction-overview-section h3 {
+.card-header-Tenant-Dashboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     margin-bottom: 15px;
 }
 
-.transaction-overview-section .chart-container {
+.card-title-Tenant-Dashboard {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    opacity: 0.95;
+}
+
+.card-icon-Tenant-Dashboard {
+    opacity: 0.9;
+    transition: transform 0.3s;
+}
+
+.card-Tenant-Dashboard:hover .card-icon-Tenant-Dashboard {
+    transform: scale(1.1);
+}
+
+.card-value-Tenant-Dashboard {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* ===== Main Content Grid ===== */
+.dashboard-main-grid-Tenant-Dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+/* ===== Current Bills Section ===== */
+.current-bills-section-Tenant-Dashboard {
+    background: #fff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    grid-column: 1;
+}
+
+.section-header-Tenant-Dashboard {
+    margin-bottom: 20px;
+}
+
+.section-title-Tenant-Dashboard {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.table-container-Tenant-Dashboard {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.bills-table-Tenant-Dashboard {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.table-header-Tenant-Dashboard {
+    background: #f8fafc;
+}
+
+.table-header-row-Tenant-Dashboard {
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.table-heading-Tenant-Dashboard {
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 600;
+    color: #475569;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-body-Tenant-Dashboard {
+    background: #fff;
+}
+
+.table-row-Tenant-Dashboard {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background-color 0.2s;
+}
+
+.table-row-Tenant-Dashboard:hover {
+    background-color: #f8fafc;
+}
+
+.table-row-Tenant-Dashboard:last-child {
+    border-bottom: none;
+}
+
+.table-data-Tenant-Dashboard {
+    padding: 16px 20px;
+    text-align: left;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #475569;
+}
+
+.bill-type-text-Tenant-Dashboard {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.amount-text-Tenant-Dashboard {
+    font-weight: 700;
+    color: #0b3c91;
+}
+
+.due-date-text-Tenant-Dashboard {
+    color: #64748b;
+}
+
+/* Status Styles */
+.status-text-Tenant-Dashboard {
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.status-unpaid-Tenant-Dashboard {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.status-paid-Tenant-Dashboard {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.status-pending-Tenant-Dashboard {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+/* Action Styles */
+.action-heading-Tenant-Dashboard {
+    text-align: center;
+}
+
+.action-cell-Tenant-Dashboard {
+    text-align: center;
+}
+
+.action-link-Tenant-Dashboard {
+    display: inline-block;
+    width: 110px;
+    padding: 10px 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    color: #fff;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    cursor: pointer;
+}
+
+.action-pay-now-Tenant-Dashboard {
+    background: linear-gradient(135deg, #0b3c91 0%, #072d6d 100%);
+}
+
+.action-pay-now-Tenant-Dashboard:hover {
+    background: linear-gradient(135deg, #072d6d 0%, #051f4d 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(11, 60, 145, 0.3);
+}
+
+.action-receipt-Tenant-Dashboard {
+    background: linear-gradient(135deg, #16a34a 0%, #0d7b33 100%);
+}
+
+.action-receipt-Tenant-Dashboard:hover {
+    background: linear-gradient(135deg, #0d7b33 0%, #0a5c27 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.action-view-Tenant-Dashboard {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.action-view-Tenant-Dashboard:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* ===== Transaction Overview ===== */
+.transaction-overview-section-Tenant-Dashboard {
+    background: #fff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    grid-column: 2;
+}
+
+.chart-container-Tenant-Dashboard {
     display: flex;
     gap: 40px;
     align-items: flex-end;
-    padding: 20px 10px;
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    min-height: 150px;
+    justify-content: center;
+    padding: 30px 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    min-height: 200px;
 }
 
-.chart-bar-wrapper {
+.chart-bar-wrapper-Tenant-Dashboard {
     display: flex;
     flex-direction: column;
     align-items: center;
     flex-shrink: 0;
 }
 
-.chart-bar {
-    width: 40px;
-    background: #0b3c91;
-    border-radius: 6px 6px 0 0;
-    transition: 0.3s;
+.chart-bar-Tenant-Dashboard {
+    width: 50px;
+    background: linear-gradient(180deg, #0b3c91 0%, #1e6af5 100%);
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-.chart-bar-wrapper p {
-    margin-top: 5px;
+.chart-bar-Tenant-Dashboard:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(11, 60, 145, 0.3);
+}
+
+.chart-label-Tenant-Dashboard {
+    margin-top: 12px;
     font-size: 14px;
-    color: #555;
+    color: #475569;
     text-align: center;
+    font-weight: 500;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
-    .dashboard-container { padding: 15px; }
-
-    .bills-overview-cards { grid-template-columns: 1fr; }
-
-    .unit-lease-info { flex-direction: column; gap: 5px; }
-
-    .bills-table th, .bills-table td {
-        font-size: 12px;
-        padding: 8px 6px;
-    }
-
-    .bills-table td a.action-link {
-        width: 90px;
-        font-size: 12px;
-        padding: 6px 0;
-    }
-
-    .chart-container { gap: 10px; }
+.chart-amount-Tenant-Dashboard {
+    display: block;
+    font-weight: 700;
+    color: #0b3c91;
+    margin-top: 4px;
 }
 
-/* ===== Ensure text stays dark on mobile ===== */
-/* ===== Mobile Responsive Table ===== */
+/* ===== Responsive Design ===== */
+@media (max-width: 1200px) {
+    .dashboard-main-grid-Tenant-Dashboard {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .transaction-overview-section-Tenant-Dashboard {
+        grid-column: 1;
+    }
+}
+
 @media (max-width: 768px) {
-    .dashboard-container { 
-        padding: 15px !important; 
+    .dashboard-content-Tenant-Dashboard {
+        padding: 20px 15px;
+        gap: 20px;
     }
 
-    /* Fix white text for headings ONLY */
-    .current-bills-section h3,
-    .transaction-overview-section h3 {
-        color: #1e293b !important;
-        font-weight: 600 !important;
+    .welcome-text-Tenant-Dashboard {
+        font-size: 1.5rem;
     }
 
-    .bills-overview-cards { 
-        grid-template-columns: 1fr !important; 
+    .unit-lease-info-Tenant-Dashboard {
+        flex-direction: column;
+        gap: 10px;
     }
 
-    /* KEEP CARD TEXT WHITE */
-    .blue-card,
-    .yellow-card,
-    .red-card {
-        color: #fff !important;
+    .bills-overview-cards-Tenant-Dashboard {
+        grid-template-columns: 1fr;
+        gap: 15px;
     }
 
-    .blue-card h2,
-    .yellow-card h2,
-    .red-card h2,
-    .blue-card p,
-    .yellow-card p,
-    .red-card p {
-        color: #fff !important;
+    .card-Tenant-Dashboard {
+        padding: 20px;
     }
 
-    .unit-lease-info { 
-        flex-direction: column !important; 
-        gap: 5px !important; 
+    .current-bills-section-Tenant-Dashboard,
+    .transaction-overview-section-Tenant-Dashboard {
+        padding: 20px;
     }
 
-    /* Convert table to card layout on mobile */
-    .bills-table, 
-    .bills-table thead, 
-    .bills-table tbody, 
-    .bills-table th, 
-    .bills-table td, 
-    .bills-table tr {
-        display: block !important;
+    /* Mobile Table Styles */
+    .table-container-Tenant-Dashboard {
+        border: none;
+        background: transparent;
     }
 
-    .bills-table thead tr {
-        position: absolute !important;
-        top: -9999px !important;
-        left: -9999px !important;
+    .bills-table-Tenant-Dashboard,
+    .bills-table-Tenant-Dashboard thead,
+    .bills-table-Tenant-Dashboard tbody,
+    .bills-table-Tenant-Dashboard th,
+    .bills-table-Tenant-Dashboard td,
+    .bills-table-Tenant-Dashboard tr {
+        display: block;
     }
 
-    .bills-table tr {
-        margin-bottom: 15px !important;
-        border: 1px solid #e5e7eb !important;
-        border-radius: 10px !important;
-        padding: 15px !important;
-        background: white !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    .bills-table-Tenant-Dashboard thead {
+        display: none;
     }
 
-    .bills-table td {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        padding: 10px 0 !important;
-        border: none !important;
-        text-align: right !important;
-        font-size: 14px !important;
-        color: #333 !important;
+    .table-row-Tenant-Dashboard {
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        margin-bottom: 15px;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border: 1px solid #e2e8f0;
     }
 
-    .bills-table td::before {
-        content: attr(data-label) !important;
-        font-weight: 600 !important;
-        color: #333 !important;
-        text-align: left !important;
+    .table-data-Tenant-Dashboard {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f1f5f9;
+        text-align: left;
     }
 
-    /* Add data labels for each cell */
-    .bills-table td:nth-of-type(1):before { content: "Bill Type:" !important; }
-    .bills-table td:nth-of-type(2):before { content: "Amount:" !important; }
-    .bills-table td:nth-of-type(3):before { content: "Due Date:" !important; }
-    .bills-table td:nth-of-type(4):before { content: "Status:" !important; }
-    .bills-table td:nth-of-type(5):before { content: "Action:" !important; }
-
-    /* Make action button full width and centered below */
-    .action-cell {
-        display: flex !important;
-        justify-content: center !important;
-        padding-top: 15px !important;
-        border-top: 1px solid #e5e7eb !important;
+    .table-data-Tenant-Dashboard:last-child {
+        border-bottom: none;
+        padding-top: 15px;
+        justify-content: center;
     }
 
-    .action-cell::before {
-        display: none !important;
+    .table-data-Tenant-Dashboard::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #475569;
+        font-size: 0.9rem;
     }
 
-    .bills-table td a.action-link {
-        width: 100% !important;
-        max-width: 200px !important;
-        margin: 0 auto !important;
+    .action-cell-Tenant-Dashboard::before {
+        display: none;
     }
 
-    .chart-container { 
-        gap: 10px !important; 
+    .action-link-Tenant-Dashboard {
+        width: 100%;
+        max-width: 200px;
+        margin: 0 auto;
     }
 
-    /* Force only specific text to be dark in mobile view */
-    body, 
-    .dashboard-container,
-    .welcome-header p,
-    .welcome-header span,
-    .current-bills-section,
-    .transaction-overview-section,
-    table,
-    th,
-    td {
-        color: #1e293b !important;
+    .chart-container-Tenant-Dashboard {
+        gap: 20px;
+        padding: 20px 15px;
+        min-height: 150px;
+    }
+
+    .chart-bar-Tenant-Dashboard {
+        width: 35px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-content-Tenant-Dashboard {
+        padding: 15px 10px;
+    }
+
+    .welcome-text-Tenant-Dashboard {
+        font-size: 1.3rem;
+    }
+
+    .card-value-Tenant-Dashboard {
+        font-size: 1.8rem;
+    }
+
+    .section-title-Tenant-Dashboard {
+        font-size: 1.2rem;
+    }
+
+    .chart-container-Tenant-Dashboard {
+        gap: 15px;
+    }
+
+    .chart-bar-Tenant-Dashboard {
+        width: 30px;
     }
 }

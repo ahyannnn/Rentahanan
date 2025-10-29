@@ -16,7 +16,7 @@ body {
 }
 
 /* --- Layout --- */
-.auth-page {
+.auth-page-Login {
   display: flex;
   width: 100%;
   max-width: 1100px;
@@ -26,7 +26,7 @@ body {
   background-color: #fff;
 }
 
-.auth-wrapper {
+.auth-wrapper-Login {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -36,7 +36,7 @@ body {
 }
 
 /* --- Left Side --- */
-.auth-left {
+.auth-left-Login {
   flex: 1;
   background-image: url("/images/house-bg.jpg");
   background-size: cover;
@@ -47,7 +47,7 @@ body {
   justify-content: center;
 }
 
-.overlay {
+.overlay-Login {
   position: absolute;
   top: 0;
   left: 0;
@@ -56,7 +56,7 @@ body {
   background: rgba(6, 26, 83, 0.85);
 }
 
-.auth-left-content {
+.auth-left-content-Login {
   position: relative;
   text-align: center;
   color: #fff;
@@ -64,25 +64,25 @@ body {
   max-width: 320px;
 }
 
-.auth-left-content h1 {
+.auth-left-content-Login h1 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
   color: #F5C542;
 }
 
-.auth-left-content span {
+.auth-left-content-Login span {
   color: #fff;
   font-weight: 700;
 }
 
-.auth-left-content p {
+.auth-left-content-Login p {
   font-size: 1.1rem;
   line-height: 1.6;
   color: #f0f0f0;
 }
 
 /* --- Right Side --- */
-.auth-right {
+.auth-right-Login {
   flex: 1.2;
   background-color: #ffffff;
   display: flex;
@@ -92,7 +92,7 @@ body {
 }
 
 /* --- Card (Modified for Desktop Look) --- */
-.auth-card {
+.auth-card-Login {
   background-color: transparent;
   box-shadow: none;
   border-radius: 0;
@@ -103,29 +103,28 @@ body {
   transition: all 0.3s ease;
 }
 
-.auth-card:hover {
+.auth-card-Login:hover {
   transform: none;
 }
 
 /* --- Logo Box (Modified for Desktop Look) --- */
-.logo-box {
-  display: none;
-}
+/* .logo-box-Login (Not used in this component) */
 
-/* --- Inputs --- */
-.form-group {
+/* --- Inputs and Forms --- */
+.form-group-Login {
   margin-bottom: 1.5rem;
   text-align: left;
 }
 
-label {
+.form-group-Login label {
   display: block;
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: #444;
 }
 
-input {
+.input-field-Login {
+  /* New specific class for inputs */
   width: 100%;
   padding: 1rem;
   border: 1px solid #ddd;
@@ -136,13 +135,51 @@ input {
   transition: 0.3s;
 }
 
-input:focus {
+.input-field-Login:focus {
   border-color: #061A53;
   box-shadow: 0 0 0 1px rgba(6, 26, 83, 0.4);
 }
 
-/* --- Main Button --- */
-.btn {
+/* --- Password Specifics --- */
+.password-group-Login {
+  position: relative;
+  /* Ensure the error message is positioned correctly in mobile view */
+}
+
+.password-wrapper-Login {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper-Login .input-field-Login {
+  padding-right: 4rem;
+  /* Make space for the Show/Hide button */
+}
+
+.show-password-btn-Login {
+  /* Specific button class for show/hide */
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #061A53;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.show-password-btn-Login:hover {
+  color: #0b287d;
+}
+
+/* --- Main Login Button --- */
+.main-login-btn-Login {
+  /* New specific button class */
   background-color: #061A53 !important;
   color: white;
   border: none;
@@ -160,12 +197,12 @@ input:focus {
   appearance: none;
 }
 
-.btn:hover {
-  background-color: #0b287d;
+.main-login-btn-Login:hover {
+  background-color: #0b287d !important;
 }
 
 /* --- OR Text --- */
-.or-text {
+.or-text-Login {
   display: block;
   margin: 1.5rem 0;
   font-weight: 600;
@@ -175,8 +212,8 @@ input:focus {
   line-height: 0;
 }
 
-.or-text::before,
-.or-text::after {
+.or-text-Login::before,
+.or-text-Login::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -185,21 +222,23 @@ input:focus {
   background: #ddd;
 }
 
-.or-text::before {
+.or-text-Login::before {
   left: 0;
 }
 
-.or-text::after {
+.or-text-Login::after {
   right: 0;
 }
 
-/* --- Social Buttons (Re-enabled and styled for Desktop) --- */
-.social-login {
+/* --- Social Buttons --- */
+.social-login-Login {
+  /* Container class for social buttons */
   display: block;
   margin-top: 1.5rem;
 }
 
-.social-login button {
+.social-login-btn-Login {
+  /* Specific button class for social login */
   width: 100%;
   padding: 1rem;
   border: 1px solid #ddd;
@@ -213,55 +252,61 @@ input:focus {
   font-size: 1rem;
 }
 
-.social-login button:hover {
+.social-login-btn-Login:hover {
   background-color: #f0f0f0;
   border-color: #ccc;
 }
 
-/* --- Bottom Text (Modified for Desktop Look) --- */
-.bottom-text {
+/* --- Bottom Text --- */
+.bottom-text-Login {
   margin-top: 2rem;
   font-size: 0.95rem;
   color: #555;
   text-align: center;
 }
 
-.bottom-text a {
+.bottom-text-Login a {
   color: #061A53;
   font-weight: 600;
   text-decoration: none;
 }
 
-.bottom-text a:hover {
+.bottom-text-Login a:hover {
   text-decoration: underline;
 }
 
-.forgot-link {
+.forgot-link-Login {
   text-align: right;
   margin-top: 0.3rem;
 }
 
-.forgot-link a {
+.forgot-link-Login a {
   color: #0b3c91;
   font-size: 0.9rem;
   text-decoration: none;
   font-weight: 500;
 }
 
-.forgot-link a:hover {
+.forgot-link-Login a:hover {
   text-decoration: underline;
 }
 
 /* --- Responsive (Mobile View - Final Override) --- */
 @media (max-width: 850px) {
-  /* Login Button (top button) override to white */
-  .btn {
+
+  /* Main Login Button override to white */
+  .main-login-btn-Login {
     background-color: white !important;
     color: #061A53 !important;
     border: 2px solid white !important;
+    margin-top: 1rem;
+    /* Adjusting for mobile */
+    font-size: 1rem;
+    padding: 0.9rem;
+    margin-bottom: 1rem;
   }
 
-  .btn:hover {
+  .main-login-btn-Login:hover {
     background-color: #f5f5f5 !important;
     color: #061A53 !important;
   }
@@ -272,17 +317,17 @@ input:focus {
     color: white !important;
   }
 
-  .auth-wrapper {
+  .auth-wrapper-Login {
     background-color: #061A53 !important;
   }
 
-  .auth-page {
+  .auth-page-Login {
     background-color: #061A53 !important;
     flex-direction: column;
     box-shadow: none;
   }
-  
-  .auth-right {
+
+  .auth-right-Login {
     background-color: #061A53 !important;
     flex: 1;
     padding: 2rem 1rem;
@@ -290,7 +335,7 @@ input:focus {
   }
 
   /* Form/Card Text and Inputs (for high contrast) */
-  .auth-card {
+  .auth-card-Login {
     background-color: transparent !important;
     box-shadow: none;
     border-radius: 0;
@@ -299,19 +344,19 @@ input:focus {
     text-align: center;
   }
 
-  .auth-card h2 {
+  .auth-card-Login h2 {
     color: white !important;
   }
-  
+
   /* FIX: Ensure labels are white in mobile view */
-  .auth-card label,
-  .form-group label {
+  .form-group-Login label {
     color: white !important;
   }
 
   /* Input fields: Keep background white for readability, but make text dark blue */
-  input {
-    background-color: white !important; 
+  .input-field-Login {
+    /* Targeting the new input class */
+    background-color: white !important;
     color: #061A53 !important;
     border-color: white !important;
   }
@@ -319,66 +364,121 @@ input:focus {
   /* Links and Buttons (use your accent color: white) */
 
   /* Show/Hide Password Button */
-  .show-btn {
-    color: white !important; 
+  .show-password-btn-Login {
+    /* Targeting the new button class */
+    color: white !important;
   }
-  
+
   /* Forgot Password Link */
-  .forgot-link a {
-    color: white !important; 
+  .forgot-link-Login a {
+    color: white !important;
   }
 
   /* OR Text */
-  .or-text {
+  .or-text-Login {
     color: #aaa !important;
+    line-height: initial;
+    /* Reset line-height for mobile if needed */
   }
 
   /* Social Login Button (Google) override to white */
-  .social-login button {
+  .social-login-btn-Login {
+    /* Targeting the new button class */
     background: white !important;
     color: #061A53 !important;
     border-color: white !important;
   }
 
   /* Social Login Button HOVER FIX */
-  .social-login button:hover {
+  .social-login-btn-Login:hover {
     background-color: #f0f0f0 !important;
     border-color: #f0f0f0 !important;
     color: #061A53 !important;
   }
 
   /* Bottom text: "Don't have an account?" */
-  .bottom-text {
+  .bottom-text-Login {
     color: white !important;
+    margin-top: 2rem;
   }
 
-  .bottom-text a {
+  .bottom-text-Login a {
     color: white !important;
   }
 
   /* Structural resets (kept for functionality) */
-  .auth-left {
+  .auth-left-Login {
     display: none;
   }
-  .or-text::before,
-  .or-text::after {
+
+  .or-text-Login::before,
+  .or-text-Login::after {
     content: none;
   }
-  .password-group { position: relative; }
-  .password-wrapper { position: relative; display: flex; align-items: center; }
-  .password-wrapper input { padding-right: 4rem; }
-  .auth-card::before { content: none; }
-  .logo-box { display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem; }
-  .logo-box h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0; }
-  .btn { margin-top: 1rem; font-size: 1rem; padding: 0.9rem; margin-bottom: 1rem; }
-  .form-group { margin-bottom: 1.2rem; }
-  .or-text { line-height: initial; }
+
+  .password-group-Login {
+    position: relative;
+  }
+
+  .password-wrapper-Login {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .password-wrapper-Login .input-field-Login {
+    padding-right: 4rem;
+  }
+
+  .form-group-Login {
+    margin-bottom: 1.2rem;
+  }
 }
 
 
 /* NUCLEAR OPTION - Add this at the very end of your CSS file */
 @media (max-width: 850px) {
-  .auth-wrapper .auth-page .auth-right .auth-card .form-group label {
+  .auth-wrapper-Login .auth-page-Login .auth-right-Login .auth-card-Login .form-group-Login label {
     color: white !important;
   }
+}
+
+@media (max-width: 850px) {
+    /* ... existing mobile styles ... */
+
+    /* FIX: Ensure labels are white in mobile view (Kept from previous) */
+    .form-group-Login label {
+      color: white !important;
+    }
+
+    /* Input fields: Apply the dark, high-contrast style from the image */
+    .input-field-Login { 
+        /* The dark, semi-transparent look from the image */
+        background-color: rgba(0, 0, 0, 0.2) !important; 
+        color: white !important; 
+        border: 1px solid rgba(255, 255, 255, 0.5) !important; /* Light border */
+        box-shadow: none !important; /* Remove any previous shadow */
+    }
+
+    /* Placeholder text styling (to make it visible on the dark background) */
+    .input-field-Login::placeholder {
+        color: rgba(255, 255, 255, 0.7) !important; /* Lighter placeholder text */
+    }
+    
+    .input-field-Login:focus {
+        /* Focus state: Make the border fully white */
+        border-color: white !important; 
+    }
+
+    /* Update for the password input specifically (within wrapper) */
+    .password-wrapper-Login .input-field-Login { 
+        padding-right: 4rem; 
+    }
+    
+    /* Show/Hide Password Button (Ensure it's visible on the dark background) */
+    .show-password-btn-Login { 
+        color: white !important; 
+    }
+
+    /* ... rest of existing mobile styles ... */
 }
