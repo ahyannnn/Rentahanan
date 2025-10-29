@@ -84,12 +84,30 @@ function Transactions() {
         alert("Bill rejected.");
         setBills((prev) =>
           prev.map((b) =>
-            b.billid === billid ? { ...b, status: "pending" } : b
+            b.billid === billid ? { ...b, status: "Unpaid" } : b
           )
         );
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleViewReceipt = async (billId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/transactions/receipt/${billId}`);
+      const receiptData = await response.json();
+
+      if (response.ok && receiptData.receiptUrl) {
+        // Construct the URL using your existing uploads route
+        const receiptFullUrl = `http://localhost:5000/uploads/receipts/${receiptData.receiptUrl}`;
+        window.open(receiptFullUrl, '_blank');
+      } else {
+        alert(receiptData.error || `No receipt available for bill ${billId}`);
+      }
+    } catch (error) {
+      console.error('Error fetching receipt:', error);
+      alert('Error loading receipt. Please try again.');
     }
   };
 
@@ -121,6 +139,49 @@ function Transactions() {
     });
   };
 
+  // Function to determine which actions to show based on bill status
+  const getActionsForBill = (bill) => {
+    const actions = [];
+    
+    if (bill.status === "For Validation") {
+      actions.push(
+        <button
+          key="approve"
+          className="action-button action-button-primary"
+          onClick={() => handleIssueReceipt(bill.billid)}
+        >
+          <CheckCircle size={16} />
+          Approve
+        </button>
+      );
+      actions.push(
+        <button
+          key="reject"
+          className="action-button action-button-reject"
+          onClick={() => handleReject(bill.billid)}
+        >
+          <XCircle size={16} />
+          Reject
+        </button>
+      );
+    }
+    
+    if (bill.status === "Paid") {
+      actions.push(
+        <button
+          key="view-receipt"
+          className="action-button action-button-download"
+          onClick={() => handleViewReceipt(bill.billid)}
+        >
+          <Eye size={16} />
+          View Receipt
+        </button>
+      );
+    }
+    
+    return actions;
+  };
+
   return (
     <div className="owner-transactions-page-container">
       <div className="owner-transactions-header">
@@ -143,7 +204,7 @@ function Transactions() {
             <span className="stat-number">
               {bills.filter(b => b.status === "For Validation").length}
             </span>
-            <span className="stat-label">Pending</span>
+            <span className="stat-label">For Validation</span>
           </div>
         </div>
       </div>
@@ -257,37 +318,7 @@ function Transactions() {
                           </span>
                         </td>
                         <td className="owner-transactions-actions">
-                          {activeTab === "for_validation" && (
-                            <button
-                              className="action-button action-button-primary"
-                              onClick={() => handleIssueReceipt(b.billid)}
-                            >
-                              <CheckCircle size={16} />
-                              Approve
-                            </button>
-                          )}
-
-                          {activeTab === "paid" && b.GCash_receipt && (
-                            <a
-                              href={`http://localhost:5000/uploads/receipts/${b.GCash_receipt}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="action-button action-button-download"
-                            >
-                              <Download size={16} />
-                              Receipt
-                            </a>
-                          )}
-
-                          {activeTab === "for_validation" && (
-                            <button
-                              className="action-button action-button-reject"
-                              onClick={() => handleReject(b.billid)}
-                            >
-                              <XCircle size={16} />
-                              Reject
-                            </button>
-                          )}
+                          {getActionsForBill(b)}
                         </td>
                       </tr>
                     );

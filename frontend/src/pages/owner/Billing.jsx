@@ -13,9 +13,12 @@ function Billing() {
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
+    const [showTenantInvoiceModal, setShowTenantInvoiceModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
+    const [selectedTenant, setSelectedTenant] = useState(null);
     const [tenants, setTenants] = useState([]);
     const [applicants, setApplicants] = useState([]);
+    const [tenantContracts, setTenantContracts] = useState([]);
     const [selectedApplicant, setSelectedApplicant] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [formData, setFormData] = useState({
@@ -28,19 +31,32 @@ function Billing() {
         dueDate: ""
     });
 
+    const [tenantFormData, setTenantFormData] = useState({
+        tenantId: "",
+        invoiceNo: "",
+        billType: "Rent",
+        amount: "",
+        description: "",
+        issuedDate: "",
+        dueDate: "",
+        unitName: ""
+    });
+
     // ✅ Helper function
     const getTodayDate = () => new Date().toISOString().split("T")[0];
 
-    // Fetch tenants and applicants
+    // Fetch tenants, applicants, and tenant contracts
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [tenantsRes, applicantsRes] = await Promise.all([
+                const [tenantsRes, applicantsRes, contractsRes] = await Promise.all([
                     fetch("http://localhost:5000/api/billing/bills"),
                     fetch("http://localhost:5000/api/applicants/for-billing"),
+                    fetch("http://localhost:5000/api/contracts/tenants")
                 ]);
                 setTenants(await tenantsRes.json());
                 setApplicants(await applicantsRes.json());
+                setTenantContracts(await contractsRes.json());
             } catch (error) {
                 console.error("Error fetching billing data:", error);
             }
@@ -51,6 +67,42 @@ function Billing() {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
+    };
+
+    const handleTenantInputChange = (e) => {
+        const { name, value } = e.target;
+
+        if (name === "tenantId") {
+            // Find the selected tenant contract
+            const selectedContract = tenantContracts.find(contract => contract.tenantid === parseInt(value));
+            if (selectedContract) {
+                setTenantFormData(prev => ({
+                    ...prev,
+                    tenantId: value,
+                    unitName: selectedContract.unit_name,
+                    // Auto-fill amount if bill type is Rent
+                    amount: prev.billType === "Rent" ? selectedContract.unit_price : prev.amount
+                }));
+            }
+        } else if (name === "billType") {
+            // When bill type changes, auto-fill amount if it's Rent
+            const selectedContract = tenantContracts.find(contract => contract.tenantid === parseInt(tenantFormData.tenantId));
+            if (value === "Rent" && selectedContract) {
+                setTenantFormData(prev => ({
+                    ...prev,
+                    billType: value,
+                    amount: selectedContract.unit_price
+                }));
+            } else {
+                setTenantFormData(prev => ({
+                    ...prev,
+                    billType: value,
+                    amount: "" // Clear amount for non-rent bills
+                }));
+            }
+        } else {
+            setTenantFormData(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     const openInvoiceModal = (applicant) => {
@@ -66,6 +118,21 @@ function Billing() {
             dueDate: "",
         });
         setShowAddModal(true);
+    };
+
+    const openTenantInvoiceModal = () => {
+        const today = getTodayDate();
+        setTenantFormData({
+            tenantId: "",
+            invoiceNo: `INV-${Date.now()}`,
+            billType: "Rent",
+            amount: "",
+            description: "",
+            issuedDate: today,
+            dueDate: "",
+            unitName: ""
+        });
+        setShowTenantInvoiceModal(true);
     };
 
     const handleSaveInvoice = async () => {
@@ -93,7 +160,7 @@ function Billing() {
                     issuedDate: "",
                     dueDate: "",
                 });
-                
+
                 // Refresh data
                 const [tenantsRes, applicantsRes] = await Promise.all([
                     fetch("http://localhost:5000/api/billing/bills"),
@@ -101,6 +168,45 @@ function Billing() {
                 ]);
                 setTenants(await tenantsRes.json());
                 setApplicants(await applicantsRes.json());
+            } else {
+                alert("Failed to create invoice.");
+            }
+        } catch (error) {
+            console.error("Error creating invoice:", error);
+            alert("An error occurred while creating the invoice.");
+        }
+    };
+
+    const handleSaveTenantInvoice = async () => {
+        if (!tenantFormData.tenantId || !tenantFormData.amount || !tenantFormData.billType) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:5000/api/billing/create-tenant-invoice", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(tenantFormData),
+            });
+
+            if (response.ok) {
+                alert("Invoice created successfully!");
+                setShowTenantInvoiceModal(false);
+                setTenantFormData({
+                    tenantId: "",
+                    invoiceNo: "",
+                    billType: "Rent",
+                    amount: "",
+                    description: "",
+                    issuedDate: "",
+                    dueDate: "",
+                    unitName: ""
+                });
+
+                // Refresh data
+                const tenantsRes = await fetch("http://localhost:5000/api/billing/bills");
+                setTenants(await tenantsRes.json());
             } else {
                 alert("Failed to create invoice.");
             }
@@ -159,7 +265,7 @@ function Billing() {
                     <h1 className="Owner-Billing-title">Billing & Invoicing</h1>
                     <p className="Owner-Billing-subtitle">Manage tenant invoices and applicant initial payments</p>
                 </div>
-                
+
                 {/* Statistics Cards */}
                 <div className="Owner-Billing-stats">
                     <div className="Owner-Billing-stat-card">
@@ -232,6 +338,13 @@ function Billing() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="Owner-Billing-search-input"
                         />
+                        <button
+                            className="Owner-Billing-add-btn"
+                            onClick={openTenantInvoiceModal}
+                        >
+                            <Plus size={16} />
+                            New Invoice
+                        </button>
                     </div>
                 )}
             </div>
@@ -243,7 +356,7 @@ function Billing() {
                         <h3>Invoice Management</h3>
                         <p>Manage and track all tenant invoices</p>
                     </div>
-                    
+
                     <div className="Owner-Billing-table-wrapper">
                         <table className="Owner-Billing-table">
                             <thead>
@@ -268,7 +381,8 @@ function Billing() {
                                             </td>
                                             <td>
                                                 <div className="Owner-Billing-tenant-info">
-                                                    <span className="Owner-Billing-tenant-name">{tenant.fullname}</span>
+                                                    {/* If field name is different, adjust here */}
+                                                    <span className="Owner-Billing-tenant-name">{tenant.tenant_name}</span>
                                                     <span className="Owner-Billing-tenant-email">{tenant.email}</span>
                                                 </div>
                                             </td>
@@ -279,28 +393,20 @@ function Billing() {
                                             <td>{new Date(tenant.issueddate).toLocaleDateString()}</td>
                                             <td>{tenant.duedate ? new Date(tenant.duedate).toLocaleDateString() : 'N/A'}</td>
                                             <td>
-                                                <span className={`Owner-Billing-status-badge ${tenant.bill_status?.toLowerCase()}`}>
-                                                    {tenant.bill_status}
+                                                {/* If status field name is different, adjust here */}
+                                                <span className={`Owner-Billing-status-badge ${(tenant.bill_status || tenant.status)?.toLowerCase()}`}>
+                                                    {tenant.bill_status || tenant.status}
                                                 </span>
                                             </td>
                                             <td>
                                                 <div className="Owner-Billing-action-buttons">
-                                                    <button 
+                                                    <button
                                                         className="Owner-Billing-view-btn"
                                                         onClick={() => openViewModal(tenant)}
                                                     >
                                                         <Eye size={14} />
                                                         View
                                                     </button>
-                                                    {tenant.bill_status === 'Unpaid' && (
-                                                        <button 
-                                                            className="Owner-Billing-mark-paid-btn"
-                                                            onClick={() => handleMarkAsPaid(tenant.billid)}
-                                                        >
-                                                            <DollarSign size={14} />
-                                                            Mark Paid
-                                                        </button>
-                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -326,7 +432,7 @@ function Billing() {
                         <h3>Applicant Initial Payments</h3>
                         <p>Issue security deposit and advance payment invoices for new applicants</p>
                     </div>
-                    
+
                     <div className="Owner-Billing-table-wrapper">
                         <table className="Owner-Billing-table">
                             <thead>
@@ -397,7 +503,7 @@ function Billing() {
                 </div>
             )}
 
-            {/* Add Invoice Modal */}
+            {/* Add Invoice Modal for Applicants */}
             {showAddModal && (
                 <div className="Owner-Billing-modal-overlay">
                     <div className="Owner-Billing-modal Owner-Billing-add-modal">
@@ -465,6 +571,7 @@ function Billing() {
                                         value={formData.dueDate}
                                         onChange={handleInputChange}
                                         className="Owner-Billing-form-input"
+                                        required
                                     />
                                 </div>
                             </div>
@@ -487,6 +594,129 @@ function Billing() {
                                 Cancel
                             </button>
                             <button className="Owner-Billing-save-btn" onClick={handleSaveInvoice}>
+                                <FileText size={16} />
+                                Create Invoice
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Add Invoice Modal for Tenants */}
+            {showTenantInvoiceModal && (
+                <div className="Owner-Billing-modal-overlay">
+                    <div className="Owner-Billing-modal Owner-Billing-add-modal">
+                        <div className="Owner-Billing-modal-header">
+                            <h3>Create New Invoice</h3>
+                            <button className="Owner-Billing-close-btn" onClick={() => setShowTenantInvoiceModal(false)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="Owner-Billing-modal-body">
+                            <div className="Owner-Billing-form-grid">
+                                <div className="Owner-Billing-form-group">
+                                    <label className="Owner-Billing-form-label">Tenant Name *</label>
+                                    <select
+                                        name="tenantId"
+                                        value={tenantFormData.tenantId}
+                                        onChange={handleTenantInputChange}
+                                        className="Owner-Billing-form-select"
+                                        required
+                                    >
+                                        <option value="">Select a tenant</option>
+                                        {tenantContracts.map((contract) => (
+                                            <option key={contract.tenantid} value={contract.tenantid}>
+                                                {contract.fullname} - {contract.unit_name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="Owner-Billing-form-group">
+                                    <label className="Owner-Billing-form-label">Unit Name</label>
+                                    <input
+                                        type="text"
+                                        name="unitName"
+                                        value={tenantFormData.unitName}
+                                        className="Owner-Billing-form-input"
+                                        readOnly
+                                        placeholder="Will auto-fill when tenant is selected"
+                                    />
+                                </div>
+
+                                <div className="Owner-Billing-form-group">
+                                    <label className="Owner-Billing-form-label">Bill Type *</label>
+                                    <select
+                                        name="billType"
+                                        value={tenantFormData.billType}
+                                        onChange={handleTenantInputChange}
+                                        className="Owner-Billing-form-select"
+                                    >
+                                        <option value="Rent">Rent</option>
+                                        <option value="Water">Water</option>
+                                        <option value="Electricity">Electricity</option>
+                                        <option value="Maintenance">Maintenance</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div className="Owner-Billing-form-group">
+                                    <label className="Owner-Billing-form-label">Amount (₱) *</label>
+                                    <input
+                                        type="number"
+                                        name="amount"
+                                        value={tenantFormData.amount}
+                                        onChange={handleTenantInputChange}
+                                        className="Owner-Billing-form-input"
+                                        placeholder="Enter amount"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="Owner-Billing-form-group">
+                                    <label className="Owner-Billing-form-label">Issued Date *</label>
+                                    <input
+                                        type="date"
+                                        name="issuedDate"
+                                        value={tenantFormData.issuedDate}
+                                        onChange={handleTenantInputChange}
+                                        className="Owner-Billing-form-input"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="Owner-Billing-form-group">
+                                    <label className="Owner-Billing-form-label">Due Date *</label>
+                                    <input
+                                        type="date"
+                                        name="dueDate"
+                                        value={tenantFormData.dueDate}
+                                        onChange={handleTenantInputChange}
+                                        className="Owner-Billing-form-input"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="Owner-Billing-form-group">
+                                <label className="Owner-Billing-form-label">Description</label>
+                                <textarea
+                                    name="description"
+                                    value={tenantFormData.description}
+                                    onChange={handleTenantInputChange}
+                                    className="Owner-Billing-form-textarea"
+                                    placeholder="Enter invoice description..."
+                                    rows="3"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="Owner-Billing-modal-footer">
+                            <button className="Owner-Billing-cancel-btn" onClick={() => setShowTenantInvoiceModal(false)}>
+                                Cancel
+                            </button>
+                            <button className="Owner-Billing-save-btn" onClick={handleSaveTenantInvoice}>
                                 <FileText size={16} />
                                 Create Invoice
                             </button>
@@ -522,7 +752,7 @@ function Billing() {
                             <div className="Owner-Billing-invoice-details">
                                 <div className="Owner-Billing-detail-row">
                                     <span className="Owner-Billing-detail-label">Tenant Name</span>
-                                    <span className="Owner-Billing-detail-value">{selectedInvoice.fullname}</span>
+                                    <span className="Owner-Billing-detail-value">{selectedInvoice.tenant_name}</span>
                                 </div>
                                 <div className="Owner-Billing-detail-row">
                                     <span className="Owner-Billing-detail-label">Unit</span>
@@ -530,7 +760,7 @@ function Billing() {
                                 </div>
                                 <div className="Owner-Billing-detail-row">
                                     <span className="Owner-Billing-detail-label">Bill Type</span>
-                                    <span className="Owner-Billing-detail-value">{selectedInvoice.bill_type}</span>
+                                    <span className="Owner-Billing-detail-value">{selectedInvoice.billtype}</span>
                                 </div>
                                 <div className="Owner-Billing-detail-row">
                                     <span className="Owner-Billing-detail-label">Issued Date</span>
@@ -555,15 +785,6 @@ function Billing() {
                             <button className="Owner-Billing-close-detail-btn" onClick={() => setShowViewModal(false)}>
                                 Close
                             </button>
-                            {selectedInvoice.bill_status === 'Unpaid' && (
-                                <button 
-                                    className="Owner-Billing-mark-paid-btn"
-                                    onClick={() => handleMarkAsPaid(selectedInvoice.billid)}
-                                >
-                                    <DollarSign size={16} />
-                                    Mark as Paid
-                                </button>
-                            )}
                         </div>
                     </div>
                 </div>

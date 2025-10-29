@@ -72,7 +72,7 @@ def get_bills():
 
 
 # -------------------------------
-# 🧾 Create a new bill
+# 🧾 Create a new tenant bill
 # -------------------------------
 @bill_bp.route("/billing/create", methods=["POST"])
 def create_bill():
@@ -112,8 +112,56 @@ def create_bill():
         db.session.rollback()
         print("Error creating bill:", e)
         return jsonify({"error": "Failed to create bill"}), 500
+    
+    
 
+@bill_bp.route("/billing/create-tenant-invoice", methods=["POST"])
+def create_tenant_bill():
+    data = request.get_json()
+    tenantid = data.get("tenantId")
+    issuedate = data.get("issuedDate", datetime.now().date())
+    duedate = data.get("dueDate")
+    amount = data.get("amount")
+    billtype = data.get("billType")
+    status = data.get("status", "Unpaid")
+    description = data.get("description")
 
+    if not tenantid or not amount or not billtype:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        # First, get the contract for this tenant
+        contract = Contract.query.filter_by(tenantid=tenantid).first()
+        if not contract:
+            return jsonify({"error": "No contract found for this tenant"}), 400
+
+        # Create the bill with contractid
+        new_bill = Bill(
+            tenantid=tenantid,
+            contractid=contract.contractid,  # Add contractid here
+            issuedate=issuedate,
+            duedate=duedate,
+            amount=amount,
+            billtype=billtype,
+            status=status,
+            description=description
+        )
+        db.session.add(new_bill)
+        db.session.commit()
+
+        return jsonify({
+            "message": "Bill created successfully!",
+            "billid": new_bill.billid,
+            "contractid": contract.contractid
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        print("Error creating bill:", e)
+        return jsonify({"error": "Failed to create bill"}), 500
+    
+    
+    
 # -------------------------------
 # 📄 Get bills by tenant
 # -------------------------------

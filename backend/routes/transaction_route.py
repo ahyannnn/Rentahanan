@@ -87,3 +87,24 @@ def issue_receipt(billid):
         if os.path.exists(receipt_path):
             os.remove(receipt_path)
         return jsonify({"error": f"Failed to issue receipt: {str(e)}"}), 500
+
+
+@transaction_bp.route("/transactions/receipt/<int:billid>", methods=["GET"])
+def get_receipt(billid):
+    try:
+        # Find the transaction for this bill
+        transaction = db.session.query(Transaction).filter(Transaction.billid == billid).first()
+        
+        if not transaction:
+            return jsonify({"error": "Transaction not found"}), 404
+        
+        if not transaction.receipt:
+            return jsonify({"error": "No receipt available for this transaction"}), 404
+        
+        # Just return the receipt filename
+        return jsonify({
+            "receiptUrl": transaction.receipt
+        })
+        
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch receipt: {str(e)}"}), 500
