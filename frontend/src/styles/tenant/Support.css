@@ -1,323 +1,615 @@
 /* ===== Main Container ===== */
 .support-container-Tenant-Support {
     padding: 30px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-    color: #1e1e2f;
+    background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+    min-height: 100vh;
+    font-family: "Poppins", sans-serif;
 }
 
 /* ===== Page Header ===== */
 .page-header-Tenant-Support {
-    margin-bottom: 25px;
+    margin-bottom: 30px;
+    text-align: center;
 }
 
 .page-title-Tenant-Support {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-    color: #061a53;
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .page-description-Tenant-Support {
     color: #666;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* ===== Stats Overview ===== */
+.stats-overview-Tenant-Support {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card-Tenant-Support {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 20px rgba(10, 45, 141, 0.1);
+    border: 1px solid #e8edff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card-Tenant-Support:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(10, 45, 141, 0.15);
+}
+
+.stat-icon-Tenant-Support {
+    font-size: 2rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
+    border-radius: 12px;
+    color: white;
+}
+
+.stat-content-Tenant-Support {
+    flex: 1;
+}
+
+.stat-number-Tenant-Support {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0a2d8d;
+    line-height: 1;
+}
+
+.stat-label-Tenant-Support {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* ===== Support Controls ===== */
 .support-top-controls-Tenant-Support {
     display: flex;
-    flex-wrap: wrap;
+    justify-content: space-between;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.search-container-Tenant-Support {
+    flex: 1;
+    min-width: 300px;
+}
+
+.search-box-Tenant-Support {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon-Tenant-Support {
+    position: absolute;
+    left: 16px;
+    font-size: 1.1rem;
+    z-index: 2;
 }
 
 .search-input-Tenant-Support {
-    flex: 1;
-    min-width: 200px;
-    padding: 10px 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    background: #fff;
-    color: #1e1e2f;
+    width: 100%;
+    padding: 14px 20px 14px 48px;
+    border: 2px solid #e8edff;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    font-family: "Poppins", sans-serif;
+    background: #f8faff;
 }
 
-.search-input-Tenant-Support::placeholder {
-    color: #666;
+.search-input-Tenant-Support:focus {
+    outline: none;
+    border-color: #0a2d8d;
+    box-shadow: 0 0 0 4px rgba(10, 45, 141, 0.1);
+    background: white;
 }
 
-.new-concern-btn-Tenant-Support {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: 0.3s ease;
-}
-
-.new-concern-btn-Tenant-Support:hover {
-    background: #0056b3;
+.controls-right-Tenant-Support {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
 }
 
 /* ===== Filter Tabs ===== */
 .filter-tabs-Tenant-Support {
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    background: #f8faff;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid #e8edff;
 }
 
 .filter-btn-Tenant-Support {
-    background: transparent;
+    padding: 10px 20px;
     border: none;
-    color: #555;
-    padding: 8px 16px;
-    border-radius: 6px;
+    background: transparent;
+    color: #666;
+    border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    font-weight: 500;
-    transition: 0.3s ease;
-    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    white-space: nowrap;
 }
 
 .filter-btn-Tenant-Support:hover {
+    background: rgba(10, 45, 141, 0.1);
     color: #0a2d8d;
-    border-color: #0a2d8d;
 }
 
 .filter-btn-active-Tenant-Support {
-    color: #0a2d8d;
-    border-color: #0a2d8d;
-    background: #f0f7ff;
+    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(10, 45, 141, 0.3);
 }
 
-/* ===== Status Colors ===== */
-.status-pending-Tenant-Support { 
-    color: #6c757d;
+/* ===== New Concern Button ===== */
+.new-concern-btn-Tenant-Support {
+    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
     font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
 }
 
-.status-resolved-Tenant-Support { 
-    color: #28a745;
-    font-weight: 600;
+.new-concern-btn-Tenant-Support:hover {
+    background: linear-gradient(135deg, #072d6d 0%, #0a2d8d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(10, 45, 141, 0.3);
+}
+
+.btn-icon-Tenant-Support {
+    font-size: 1.1rem;
+    font-weight: bold;
 }
 
 /* ===== Concerns List ===== */
 .concerns-list-Tenant-Support {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    display: grid;
+    gap: 20px;
 }
 
+/* ===== Concern Card ===== */
 .concern-card-Tenant-Support {
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f4ff;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.concern-card-Tenant-Support::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.concern-card-Tenant-Support:hover::before {
+    transform: scaleX(1);
 }
 
 .concern-card-Tenant-Support:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
 }
 
-.card-top-Tenant-Support {
+.card-header-Tenant-Support {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
-.concern-category-Tenant-Support {
-    font-weight: 700;
+.category-badge-Tenant-Support {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #f0f4ff;
+    color: #0a2d8d;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.category-icon-Tenant-Support {
     font-size: 1rem;
-    color: #1e1e2f;
 }
 
 .concern-status-Tenant-Support {
-    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-pending-Tenant-Support {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
+}
+
+.status-resolved-Tenant-Support {
+    background: linear-gradient(135deg, #d4ffd4 0%, #a8f5a8 100%);
+    color: #155724;
+}
+
+.status-icon-Tenant-Support {
+    font-size: 0.9rem;
+}
+
+.concern-content-Tenant-Support {
+    margin-bottom: 20px;
 }
 
 .concern-title-Tenant-Support {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #333;
-    margin: 0 0 15px 0;
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 15px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1e1e2f;
+    margin-bottom: 10px;
+    line-height: 1.4;
 }
 
-.card-bottom-Tenant-Support {
+.concern-description-Tenant-Support {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.card-footer-Tenant-Support {
     display: flex;
-    justify-content: flex-start;
-    gap: 40px;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
 }
 
-.concern-info-Tenant-Support {
+.concern-meta-Tenant-Support {
+    display: flex;
+    gap: 30px;
+}
+
+.meta-item-Tenant-Support {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
 }
 
-.info-label-Tenant-Support {
+.meta-label-Tenant-Support {
     font-size: 0.8rem;
     color: #666;
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.info-value-Tenant-Support {
+.meta-value-Tenant-Support {
     font-weight: 600;
     color: #1e1e2f;
+    font-size: 0.9rem;
 }
 
 .date-value-Tenant-Support {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
 }
 
-/* ===== Modal Styles ===== */
+.date-icon-Tenant-Support {
+    font-size: 0.9rem;
+}
+
+.view-details-btn-Tenant-Support {
+    background: transparent;
+    border: 2px solid #0a2d8d;
+    color: #0a2d8d;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.view-details-btn-Tenant-Support:hover {
+    background: #0a2d8d;
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* ===== No Concerns State ===== */
+.no-concerns-Tenant-Support {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.no-concerns-icon-Tenant-Support {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.no-concerns-title-Tenant-Support {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e1e2f;
+    margin-bottom: 10px;
+}
+
+.no-concerns-description-Tenant-Support {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 25px;
+}
+
+.no-concerns-btn-Tenant-Support {
+    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.no-concerns-btn-Tenant-Support:hover {
+    background: linear-gradient(135deg, #072d6d 0%, #0a2d8d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(10, 45, 141, 0.3);
+}
+
+/* ===== Modal Overlay ===== */
 .modal-overlay-Tenant-Support {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    padding: 20px;
+    backdrop-filter: blur(8px);
 }
 
+/* ===== Modal Content ===== */
 .concern-modal-Tenant-Support {
-    background: #fff;
-    padding: 20px 30px;
-    border-radius: 10px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 500px;
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    animation: modalFadeIn-Tenant-Support 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     max-height: 90vh;
-    display: flex;
-    flex-direction: column;
+    overflow-y: auto;
+    border: 1px solid #e8edff;
 }
 
+@keyframes modalFadeIn-Tenant-Support {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ===== Modal Header ===== */
 .modal-header-Tenant-Support {
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
-    justify-content: center;
-    flex-shrink: 0;
-    position: relative;
-    min-height: 60px;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f4ff;
+}
+
+.back-btn-Tenant-Support {
+    background: #f8faff;
+    border: 2px solid #e8edff;
+    color: #0a2d8d;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.back-btn-Tenant-Support:hover {
+    background: #0a2d8d;
+    color: white;
+    transform: translateX(-2px);
+}
+
+.back-icon-Tenant-Support {
+    font-size: 1.1rem;
+    font-weight: bold;
 }
 
 .modal-title-Tenant-Support {
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 800;
+    color: #1e1e2f;
     margin: 0;
     text-align: center;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-    color: #061a53;
+    flex: 1;
 }
 
-.back-btn-Tenant-Support {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #333;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-    position: relative;
-    z-index: 2;
-    flex-shrink: 0;
+.modal-header-spacer-Tenant-Support {
+    width: 100px;
 }
 
+/* ===== Modal Content ===== */
 .modal-content-Tenant-Support {
-    overflow-y: auto;
-    padding-right: 5px;
+    margin-bottom: 30px;
 }
 
 /* ===== Form Styles ===== */
 .concern-form-Tenant-Support {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px;
 }
 
 .form-group-Tenant-Support {
     display: flex;
     flex-direction: column;
+    gap: 10px;
 }
 
 .form-label-Tenant-Support {
     font-weight: 700;
-    margin-bottom: 8px;
+    color: #1e1e2f;
     font-size: 1rem;
-    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.label-icon-Tenant-Support {
+    font-size: 1.1rem;
 }
 
 .form-input-Tenant-Support {
-    padding: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 1rem;
-    width: 100%;
-    box-sizing: border-box;
-    background-color: #ffffff;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    padding: 14px 18px;
+    border: 2px solid #e8edff;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    font-family: "Poppins", sans-serif;
+    background: #f8faff;
     color: #1e1e2f;
 }
 
 .form-input-Tenant-Support:focus {
-    border-color: #007bff;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    border-color: #0a2d8d;
+    box-shadow: 0 0 0 4px rgba(10, 45, 141, 0.1);
+    background: white;
 }
 
 .textarea-Tenant-Support {
     resize: vertical;
     min-height: 120px;
+    line-height: 1.5;
 }
 
 /* ===== File Upload Styles ===== */
-.upload-proof-Tenant-Support {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0;
+.upload-container-Tenant-Support {
+    margin-top: 5px;
 }
 
-.file-info-Tenant-Support {
-    color: #888;
-    font-size: 0.9rem;
+.upload-box-Tenant-Support {
+    border: 2px dashed #e8edff;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    background: #fafbfc;
+    transition: all 0.3s ease;
 }
 
-.choose-file-btn-Tenant-Support {
-    background: #e9ecef;
-    border: 1px solid #ced4da;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
+.upload-box-Tenant-Support:hover {
+    border-color: #0a2d8d;
+    background: #f8faff;
+}
+
+.upload-icon-Tenant-Support {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.upload-text-Tenant-Support {
+    margin-bottom: 20px;
+}
+
+.upload-title-Tenant-Support {
     font-weight: 600;
-    font-size: 0.9rem;
-    color: #343a40;
-    transition: background-color 0.2s;
+    color: #1e1e2f;
+    margin-bottom: 5px;
+    font-size: 1rem;
 }
 
-.choose-file-btn-Tenant-Support:hover {
-    background: #dee2e6;
+.upload-subtitle-Tenant-Support {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.upload-btn-Tenant-Support {
+    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.upload-btn-Tenant-Support:hover {
+    background: linear-gradient(135deg, #072d6d 0%, #0a2d8d 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(10, 45, 141, 0.3);
 }
 
 .file-input-Tenant-Support {
@@ -326,428 +618,191 @@
 
 /* ===== Modal Footer ===== */
 .modal-footer-Tenant-Support {
-    padding-top: 20px;
-    text-align: center;
-    flex-shrink: 0;
-    position: sticky;
-    bottom: -20px;
-    background: #fff;
-    z-index: 10;
-    margin: 0 -30px;
-    padding: 20px 30px 0 30px;
-    border-top: 1px solid #f0f0f0;
+    padding-top: 25px;
+    border-top: 2px solid #f0f4ff;
+}
+
+.footer-actions-Tenant-Support {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+}
+
+.cancel-btn-Tenant-Support {
+    background: transparent;
+    border: 2px solid #6c757d;
+    color: #6c757d;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.cancel-btn-Tenant-Support:hover {
+    background: #6c757d;
+    color: white;
+    transform: translateY(-1px);
 }
 
 .submit-btn-Tenant-Support {
-    background: #007bff;
+    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
     color: white;
     border: none;
-    padding: 12px 30px;
-    border-radius: 8px;
+    padding: 12px 24px;
+    border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s;
-    width: 100%;
-    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
 }
 
 .submit-btn-Tenant-Support:hover {
-    background: #0056b3;
+    background: linear-gradient(135deg, #072d6d 0%, #0a2d8d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(10, 45, 141, 0.3);
+}
+
+.submit-icon-Tenant-Support {
+    font-size: 1.1rem;
 }
 
 /* ===== Mobile Responsive ===== */
-/* ===== Mobile Responsive - IMPROVED ===== */
 @media (max-width: 768px) {
     .support-container-Tenant-Support {
-        padding: 15px;
-        margin: 0;
-        border-radius: 0;
-        min-height: 100vh;
+        padding: 20px 15px;
     }
-
-    /* Page Header */
-    .page-header-Tenant-Support {
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
+    
     .page-title-Tenant-Support {
-        font-size: 1.3rem;
-        margin-bottom: 8px;
+        font-size: 1.8rem;
     }
-
-    .page-description-Tenant-Support {
-        font-size: 0.9rem;
+    
+    .stats-overview-Tenant-Support {
+        grid-template-columns: 1fr;
+        gap: 15px;
     }
-
-    /* Support Controls */
+    
     .support-top-controls-Tenant-Support {
         flex-direction: column;
         align-items: stretch;
-        gap: 12px;
-        margin-bottom: 20px;
+        gap: 15px;
     }
     
-    .search-input-Tenant-Support {
-        width: 100%;
-        padding: 14px 16px;
-        font-size: 16px; /* Prevents zoom on iOS */
-        border: 2px solid #e1e5e9;
-        border-radius: 10px;
-        background: #ffffff;
-        color: #000000;
+    .search-container-Tenant-Support {
+        min-width: auto;
     }
     
-    .search-input-Tenant-Support::placeholder {
-        color: #666666;
+    .controls-right-Tenant-Support {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
     }
     
     .filter-tabs-Tenant-Support {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        width: 100%;
-    }
-    
-    .filter-btn-Tenant-Support {
-        padding: 12px 8px;
-        font-size: 0.85rem;
-        border: 2px solid #e1e5e9;
-        border-radius: 8px;
-        text-align: center;
+        justify-content: center;
     }
     
     .new-concern-btn-Tenant-Support {
-        width: 100%;
-        padding: 14px;
-        font-size: 1rem;
-        border-radius: 10px;
-        margin-top: 10px;
+        justify-content: center;
     }
-
-    /* Concerns List - Mobile Optimized */
-    .concerns-list-Tenant-Support {
-        gap: 12px;
-    }
-
-    .concern-card-Tenant-Support {
-        padding: 16px;
-        border-radius: 12px;
-        margin: 0;
-    }
-
-    .card-top-Tenant-Support {
+    
+    .card-footer-Tenant-Support {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-        margin-bottom: 12px;
-    }
-
-    .concern-category-Tenant-Support {
-        font-size: 0.95rem;
-    }
-
-    .concern-status-Tenant-Support {
-        align-self: flex-end;
-        font-size: 0.8rem;
-        padding: 4px 8px;
-        border-radius: 12px;
-        background: #f8f9fa;
-    }
-
-    .concern-title-Tenant-Support {
-        font-size: 1rem;
-        margin-bottom: 12px;
-        padding-bottom: 12px;
-    }
-
-    .card-bottom-Tenant-Support {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .concern-info-Tenant-Support {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 0;
-        border-bottom: 1px solid #f5f5f5;
-    }
-
-    .concern-info-Tenant-Support:last-child {
-        border-bottom: none;
-    }
-
-    .info-label-Tenant-Support {
-        font-size: 0.8rem;
-        color: #666;
-    }
-
-    .info-value-Tenant-Support {
-        font-size: 0.85rem;
-    }
-
-    /* ===== MODAL IMPROVEMENTS ===== */
-    .modal-overlay-Tenant-Support {
-        padding: 0;
-        align-items: flex-start;
-        background: rgba(0, 0, 0, 0.8);
-    }
-
-    .concern-modal-Tenant-Support {
-        width: 100%;
-        height: 100vh;
-        max-height: 100vh;
-        margin: 0;
-        border-radius: 0;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Modal Header - Fixed */
-    .modal-header-Tenant-Support {
-        display: flex;
-        align-items: center;
-        padding: 0 0 20px 0;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #f0f0f0;
-        position: relative;
-        min-height: auto;
-    }
-
-    .back-btn-Tenant-Support {
-        position: static;
-        font-size: 1.8rem;
-        padding: 8px;
-        margin: 0;
-        color: #061a53;
-        background: none;
-        border: none;
-        z-index: 2;
-        flex-shrink: 0;
-    }
-
-    .modal-title-Tenant-Support {
-        position: static;
-        transform: none;
-        font-size: 1.3rem;
-        margin: 0 auto;
-        text-align: center;
-        color: #061a53;
-        padding: 0 40px;
-    }
-
-    /* Modal Content - Scrollable */
-    .modal-content-Tenant-Support {
-        flex: 1;
-        overflow-y: auto;
-        padding: 0;
-        margin: 0;
-    }
-
-    /* Form Improvements */
-    .concern-form-Tenant-Support {
-        gap: 20px;
-        padding-bottom: 20px;
-    }
-
-    .form-group-Tenant-Support {
-        gap: 8px;
-    }
-
-    .form-label-Tenant-Support {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #061a53;
-        margin-bottom: 4px;
-    }
-
-    .form-input-Tenant-Support {
-        padding: 16px;
-        font-size: 16px; /* Prevents zoom on iOS */
-        border: 2px solid #e1e5e9;
-        border-radius: 10px;
-        background: #ffffff;
-        color: #000000;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .form-input-Tenant-Support:focus {
-        border-color: #007bff;
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-    }
-
-    .textarea-Tenant-Support {
-        min-height: 140px;
-        line-height: 1.5;
-    }
-
-    /* File Upload - Mobile Friendly */
-    .upload-proof-Tenant-Support {
-        flex-direction: column;
+        gap: 15px;
         align-items: stretch;
-        gap: 12px;
-        padding: 16px;
-        border: 2px dashed #e1e5e9;
-        border-radius: 10px;
-        background: #fafbfc;
     }
-
-    .file-info-Tenant-Support {
-        text-align: center;
-        color: #666;
-        font-size: 0.9rem;
+    
+    .concern-meta-Tenant-Support {
+        flex-direction: column;
+        gap: 15px;
     }
-
-    .choose-file-btn-Tenant-Support {
-        background: #007bff;
-        color: white;
-        border: none;
-        padding: 14px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        text-align: center;
-        transition: background-color 0.2s;
-    }
-
-    .choose-file-btn-Tenant-Support:hover {
-        background: #0056b3;
-    }
-
-    /* Modal Footer - Fixed at Bottom */
-    .modal-footer-Tenant-Support {
-        position: sticky;
-        bottom: 0;
-        background: #ffffff;
-        padding: 20px 0 0 0;
-        margin: 0;
-        border-top: 2px solid #f0f0f0;
-        flex-shrink: 0;
-    }
-
-    .submit-btn-Tenant-Support {
-        background: #007bff;
-        color: #ffffff;
-        border: none;
-        padding: 18px;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 1.1rem;
-        cursor: pointer;
+    
+    .view-details-btn-Tenant-Support {
         width: 100%;
-        transition: background-color 0.2s;
-        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        text-align: center;
     }
-
-    .submit-btn-Tenant-Support:hover {
-        background: #0056b3;
-        transform: translateY(-1px);
+    
+    .concern-modal-Tenant-Support {
+        padding: 20px;
+        margin: 10px;
     }
-
-    .submit-btn-Tenant-Support:active {
-        transform: translateY(0);
+    
+    .modal-header-Tenant-Support {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .back-btn-Tenant-Support {
+        align-self: flex-start;
+    }
+    
+    .modal-header-spacer-Tenant-Support {
+        display: none;
+    }
+    
+    .footer-actions-Tenant-Support {
+        flex-direction: column;
+    }
+    
+    .cancel-btn-Tenant-Support,
+    .submit-btn-Tenant-Support {
+        width: 100%;
+        justify-content: center;
     }
 }
 
 @media (max-width: 480px) {
     .support-container-Tenant-Support {
-        padding: 12px;
+        padding: 15px 10px;
     }
-
+    
     .page-title-Tenant-Support {
-        font-size: 1.2rem;
+        font-size: 1.5rem;
     }
-
-    .modal-title-Tenant-Support {
-        font-size: 1.1rem;
-        padding: 0 30px;
+    
+    .stat-card-Tenant-Support {
+        padding: 20px;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
     }
-
-    .back-btn-Tenant-Support {
-        font-size: 1.6rem;
+    
+    .stat-icon-Tenant-Support {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
     }
-
-    .form-input-Tenant-Support {
-        padding: 14px;
+    
+    .stat-number-Tenant-Support {
+        font-size: 1.8rem;
     }
-
-    .textarea-Tenant-Support {
-        min-height: 120px;
-    }
-
-    .submit-btn-Tenant-Support {
-        padding: 16px;
-        font-size: 1rem;
-    }
-
-    /* Filter tabs for very small screens */
+    
     .filter-tabs-Tenant-Support {
+        display: grid;
         grid-template-columns: 1fr;
-        gap: 6px;
+        gap: 5px;
     }
-
+    
     .filter-btn-Tenant-Support {
-        padding: 14px 8px;
-        font-size: 0.9rem;
-    }
-}
-
-/* Additional improvements for very small devices */
-@media (max-width: 360px) {
-    .support-container-Tenant-Support {
-        padding: 10px;
-    }
-
-    .concern-modal-Tenant-Support {
-        padding: 15px;
-    }
-
-    .modal-title-Tenant-Support {
-        font-size: 1rem;
-        padding: 0 20px;
-    }
-
-    .form-input-Tenant-Support {
         padding: 12px;
-        font-size: 14px;
-    }
-
-    .submit-btn-Tenant-Support {
-        padding: 14px;
-        font-size: 0.95rem;
-    }
-}
-
-/* Fix for iOS Safari */
-@supports (-webkit-touch-callout: none) {
-    .concern-modal-Tenant-Support {
-        height: -webkit-fill-available;
     }
     
-    .modal-content-Tenant-Support {
-        -webkit-overflow-scrolling: touch;
-    }
-}
-
-/* Improve touch targets for mobile */
-@media (max-width: 768px) {
-    .filter-btn-Tenant-Support,
-    .new-concern-btn-Tenant-Support,
-    .choose-file-btn-Tenant-Support,
-    .submit-btn-Tenant-Support {
-        min-height: 44px; /* Apple's recommended minimum touch target */
+    .concern-card-Tenant-Support {
+        padding: 20px;
     }
     
-    .back-btn-Tenant-Support {
-        min-width: 44px;
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .card-header-Tenant-Support {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    
+    .concern-status-Tenant-Support {
+        align-self: flex-start;
     }
 }
