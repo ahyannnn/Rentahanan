@@ -55,11 +55,11 @@ const Layout = () => {
         setUserData(data.profile);
         setApplicationStatus(data.profile.application_status || "Registered");
         setUserRole(data.profile.role?.toLowerCase() || "tenant");
-        
+
         // Reset error states when fetching new data
         setProfileImageError(false);
         setHeaderImageError(false);
-        
+
         // Set profile picture URL for both modal and header
         if (data.profile.image) {
           const imageUrl = `http://127.0.0.1:5000/uploads/profile_images/${data.profile.image}`;
@@ -69,7 +69,7 @@ const Layout = () => {
           setProfilePictureUrl("/default-profile.png");
           setHeaderProfilePictureUrl("/default-profile.png");
         }
-        
+
         localStorage.setItem("user", JSON.stringify(data.profile));
       } else {
         console.error("Failed to fetch profile:", data.message);
@@ -112,7 +112,7 @@ const Layout = () => {
   const handleNotificationsToggle = () => {
     const newShowState = !showNotifications;
     setShowNotifications(newShowState);
-    
+
     if (newShowState) {
       fetchNotifications();
     }
@@ -180,10 +180,10 @@ const Layout = () => {
   const handleSaveEdit = async () => {
     try {
       const formData = new FormData();
-      
+
       formData.append("email", userData.email);
       formData.append("phone", userData.phone);
-      
+
       if (selectedImageFile) {
         formData.append("image", selectedImageFile);
       }
@@ -198,7 +198,7 @@ const Layout = () => {
       if (data.success) {
         setUserData(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
-        
+
         if (data.user.image) {
           const imageUrl = `http://127.0.0.1:5000/api/profile/image/${data.user.image}`;
           setProfilePictureUrl(imageUrl);
@@ -206,7 +206,7 @@ const Layout = () => {
           setProfileImageError(false);
           setHeaderImageError(false);
         }
-        
+
         setIsEditing(false);
         setSelectedImageFile(null);
       } else {
@@ -239,7 +239,7 @@ const Layout = () => {
     }
     setSelectedImageFile(null);
     setProfileImageError(false);
-    
+
     if (userData?.userid) {
       fetchUserProfile(userData.userid);
     }
@@ -266,7 +266,7 @@ const Layout = () => {
   // Format time for notifications
   const formatNotificationTime = (dateString) => {
     if (!dateString) return "Recently";
-    
+
     const date = new Date(dateString);
     const now = new Date();
     const diffInMs = now - date;
@@ -278,7 +278,7 @@ const Layout = () => {
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
     if (diffInHours < 24) return `${diffInHours}h ago`;
     if (diffInDays < 7) return `${diffInDays}d ago`;
-    
+
     return date.toLocaleDateString();
   };
 
@@ -315,12 +315,20 @@ const Layout = () => {
 
   if (loading) {
     return (
-      <div style={{ textAlign: "center", marginTop: "20vh", color: "#555" }}>
-        <h2>Loading user data...</h2>
+      <div className="loading-logo-container">
+        <div className="loading-brand">
+          <img
+            src="/logo.png"
+            alt="RenTahanan Logo"
+            className="loading-logo"
+          />
+          <div className="loading-brand-text">RenTahanan</div>
+        </div>
+        {/* Optional: Add a loading spinner below the logo */}
+        <div className="loading-spinner"></div>
       </div>
     );
   }
-
   if (!userData) {
     return (
       <div style={{ textAlign: "center", marginTop: "20vh", color: "#555" }}>
@@ -340,7 +348,7 @@ const Layout = () => {
 
   const ProfileModal = () => {
     if (!isProfileModalOpen || !userData) return null;
-    
+
     const formatDate = (dateString) => {
       if (!dateString || dateString === "N/A") return "N/A";
       try {
@@ -472,7 +480,7 @@ const Layout = () => {
               alt="RenTahanan Logo"
               className="logo-Layout"
             />
-            <div className="nav-brand-Layout">RenTahanan</div>
+            <div className="nav-brand-text-Layout">RenTahanan</div>
           </div>
         </div>
 
@@ -482,9 +490,8 @@ const Layout = () => {
             return (
               <div
                 key={i}
-                className={`linkholder-Layout ${
-                  location.pathname === link.to ? "active-Layout" : ""
-                }`}
+                className={`linkholder-Layout ${location.pathname === link.to ? "active-Layout" : ""
+                  }`}
               >
                 <Link to={link.to} onClick={closeSidebar}>
                   <Icon size={18} style={{ marginRight: "8px" }} />
@@ -551,9 +558,9 @@ const Layout = () => {
                 <User size={20} />
               </div>
             ) : (
-              <img 
-                src={headerProfilePictureUrl} 
-                alt="Profile" 
+              <img
+                src={headerProfilePictureUrl}
+                alt="Profile"
                 className="header-profile-image-Layout"
                 onError={handleHeaderImageError}
               />

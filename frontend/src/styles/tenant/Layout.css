@@ -616,7 +616,50 @@ body {
   animation: fadeIn-Layout 0.2s ease-in-out;
   border: 1px solid #e0e0e0;
 }
+/* Add this to your ../styles/tenant/Layout.css file */
 
+.loading-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20vh;
+}
+
+.loading-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.loading-logo {
+  width: 200px; /* Increased from original size */
+  height: 200px; /* Increased from original size */
+  object-fit: contain;
+}
+
+.loading-brand-text {
+  font-size: 4rem; /* Larger text */
+  font-weight: bold;
+  color: #333;
+}
+
+/* Optional: Add a subtle loading animation */
+.loading-spinner {
+  width: 70px;
+  height: 70px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 .notif-dropdown-Layout h4 {
   margin: 0 0 15px;
   font-size: 16px;
