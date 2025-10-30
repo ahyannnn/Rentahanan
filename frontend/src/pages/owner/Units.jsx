@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Home, DollarSign, Plus, X, MapPin, Users, Calendar } from "lucide-react";
+import { Home, Plus, X, Users, Calendar, Edit } from "lucide-react";
 import "../../styles/owners/Units.css";
 
 function Units() {
   const [activeTab, setActiveTab] = useState("All");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [units, setUnits] = useState([]);
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -79,15 +80,7 @@ function Units() {
       if (response.ok) {
         alert("Unit added successfully!");
         setShowAddModal(false);
-        setPreviewImage(null);
-        setFormData({
-          name: "",
-          description: "",
-          price: "",
-          status: "Available",
-          image: null,
-        });
-
+        resetForm();
         // Refresh units
         const updatedUnits = await fetch(`${API_URL}/api/houses`).then((res) =>
           res.json()
@@ -102,11 +95,95 @@ function Units() {
     }
   };
 
+  // ✅ Edit unit
+  const handleEditUnit = async () => {
+    if (!formData.name || !formData.price) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    // Check if selectedUnit and unitid exist
+    if (!selectedUnit || !selectedUnit.id) {
+      alert("Error: Unit ID is missing. Please try again.");
+      return;
+    }
+
+    const editFormData = new FormData();
+    editFormData.append("name", formData.name);
+    editFormData.append("description", formData.description);
+    editFormData.append("price", formData.price);
+    editFormData.append("status", formData.status);
+    
+    // Only append image if a new one was selected
+    if (formData.image) {
+      editFormData.append("image", formData.image);
+    }
+    
+    try {
+      
+      
+      const response = await fetch(`${API_URL}/api/houses/${selectedUnit.id}`, {
+        method: "PUT",
+        body: editFormData,
+      });
+
+      if (response.ok) {
+        alert("Unit updated successfully!");
+        setShowEditModal(false);
+        resetForm();
+        // Refresh units
+        const updatedUnits = await fetch(`${API_URL}/api/houses`).then((res) =>
+          res.json()
+        );
+        setUnits(updatedUnits);
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to update unit: ${errorData.error || "Unknown error"}`);
+      }
+    } catch (err) {
+      console.error("Error updating unit:", err);
+      alert("Error updating unit.");
+    }
+  };
+
+  // ✅ Reset form data
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      description: "",
+      price: "",
+      status: "Available",
+      image: null,
+    });
+    setPreviewImage(null);
+  };
+
+  // ✅ Open edit modal with unit data
+  const handleOpenEditModal = (unit) => {
+    if (!unit.id) {
+      alert("Error: This unit cannot be edited because it's missing an ID.");
+      return;
+    }
+    
+    setSelectedUnit(unit);
+    setFormData({
+      name: unit.name,
+      description: unit.description || "",
+      price: unit.price,
+      status: unit.status,
+      image: null,
+    });
+    setPreviewImage(unit.imagepath ? `${API_URL}/uploads/houseimages/${unit.imagepath}` : null);
+    setShowEditModal(true);
+  };
+
   const handleCloseModal = () => {
     setShowAddModal(false);
     setShowViewModal(false);
+    setShowEditModal(false);
     setPreviewImage(null);
     setSelectedUnit(null);
+    resetForm();
   };
 
   // ✅ Filter units by status
@@ -228,22 +305,30 @@ function Units() {
                   </p>
                   
                   <div className="Owner-Units-price-section">
-                    <DollarSign size={18} className="Owner-Units-price-icon" />
                     <span className="Owner-Units-price">
                       ₱{Number(unit.price).toLocaleString()}
                     </span>
                     <span className="Owner-Units-price-period">/month</span>
                   </div>
 
-                  <button
-                    className="Owner-Units-view-btn"
-                    onClick={() => {
-                      setSelectedUnit(unit);
-                      setShowViewModal(true);
-                    }}
-                  >
-                    View Details
-                  </button>
+                  <div className="Owner-Units-card-actions">
+                    <button
+                      className="Owner-Units-view-btn"
+                      onClick={() => {
+                        setSelectedUnit(unit);
+                        setShowViewModal(true);
+                      }}
+                    >
+                      View
+                    </button>
+                    <button
+                      className="Owner-Units-edit-btn"
+                      onClick={() => handleOpenEditModal(unit)}
+                    >
+                      <Edit size={16} />
+                      Edit
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
@@ -314,8 +399,10 @@ function Units() {
                     onChange={handleInputChange}
                     className="Owner-Units-form-select"
                   >
-                    <option>Available</option>
-                    <option>Occupied</option>
+                    <option value="Available">Available</option>
+                    <option value="Occupied">Occupied</option>
+                    <option value="Maintenance">Under Maintenance</option>
+                    <option value="Renovation">Under Renovation</option>
                   </select>
                 </div>
               </div>
@@ -349,6 +436,118 @@ function Units() {
               </button>
               <button className="Owner-Units-save-btn" onClick={handleAddUnit}>
                 Save Unit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- Edit Unit Modal --- */}
+      {showEditModal && selectedUnit && (
+        <div className="Owner-Units-modal-overlay">
+          <div className="Owner-Units-modal Owner-Units-edit-modal">
+            <div className="Owner-Units-modal-header">
+              <h3>Edit Unit</h3>
+              <button className="Owner-Units-close-btn" onClick={handleCloseModal}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="Owner-Units-modal-body">
+              <div className="Owner-Units-form-group">
+                <label className="Owner-Units-form-label">Unit Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Unit 101 - Studio"
+                  className="Owner-Units-form-input"
+                />
+              </div>
+
+              <div className="Owner-Units-form-group">
+                <label className="Owner-Units-form-label">Description</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Spacious studio with balcony and city view..."
+                  className="Owner-Units-form-textarea"
+                  rows="3"
+                ></textarea>
+              </div>
+
+              <div className="Owner-Units-form-row">
+                <div className="Owner-Units-form-group">
+                  <label className="Owner-Units-form-label">Price (₱) *</label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    placeholder="15000"
+                    className="Owner-Units-form-input"
+                  />
+                </div>
+
+                <div className="Owner-Units-form-group">
+                  <label className="Owner-Units-form-label">Status</label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    className="Owner-Units-form-select"
+                  >
+                    <option value="Available">Available</option>
+                    <option value="Occupied">Occupied</option>
+                    <option value="Maintenance">Under Maintenance</option>
+                    <option value="Renovation">Under Renovation</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="Owner-Units-form-group">
+                <label className="Owner-Units-form-label">Unit Image</label>
+                <div className="Owner-Units-file-upload">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="Owner-Units-file-input"
+                  />
+                  <div className="Owner-Units-file-label">
+                    <Plus size={16} />
+                    {previewImage ? "Change Image" : "Choose Image"}
+                  </div>
+                </div>
+                
+                {previewImage && (
+                  <div className="Owner-Units-preview-container">
+                    <img src={previewImage} alt="Preview" className="Owner-Units-preview-image" />
+                    <p className="Owner-Units-preview-note">New image selected</p>
+                  </div>
+                )}
+                
+                {!previewImage && selectedUnit.imagepath && (
+                  <div className="Owner-Units-current-image">
+                    <p className="Owner-Units-current-image-label">Current Image:</p>
+                    <img 
+                      src={`${API_URL}/uploads/houseimages/${selectedUnit.imagepath}`} 
+                      alt={selectedUnit.name}
+                      className="Owner-Units-preview-image"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="Owner-Units-modal-footer">
+              <button className="Owner-Units-cancel-btn" onClick={handleCloseModal}>
+                Cancel
+              </button>
+              <button className="Owner-Units-save-btn" onClick={handleEditUnit}>
+                Update Unit
               </button>
             </div>
           </div>
