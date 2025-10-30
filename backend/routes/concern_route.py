@@ -13,10 +13,14 @@ concern_bp = Blueprint("concern_bp", __name__)
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
-
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# ✅ Memory storage for deleted concerns (NO DATABASE CHANGES)
+deleted_concerns_tracker = {
+    'tenant': set(),
+    'landlord': set()
+}
 
 # ✅ Add new concern (Tenant)
 @concern_bp.route("/add-concerns", methods=["POST"])
@@ -65,8 +69,7 @@ def add_concern():
         print("Error adding concern:", e)
         return jsonify({"error": "Failed to submit concern"}), 500
 
-
-# ✅ Get ALL concerns (for landlord view)
+# ✅ Get ALL concerns (for landlord view) - Filter deleted ones
 @concern_bp.route("/concerns", methods=["GET"])
 def get_all_concerns():
     try:
@@ -82,26 +85,23 @@ def get_all_concerns():
                 Concern.landlordimage,
                 User.firstname,
                 User.lastname,
-                House.name.label("unit_name")  # Label the unit name properly
+                House.name.label("unit_name")
             )
             .join(Tenant, Tenant.tenantid == Concern.tenantid)
             .join(User, User.userid == Tenant.userid)
-            .outerjoin(Application, Application.applicationid == Tenant.applicationid)  # ✅ Outer join
-            .outerjoin(House, House.unitid == Application.unitid)  # ✅ Outer join
+            .outerjoin(Application, Application.applicationid == Tenant.applicationid)
+            .outerjoin(House, House.unitid == Application.unitid)
             .order_by(Concern.creationdate.desc())
             .all()
         )
 
         concerns_list = []
         for c in results:
-            fullname = f"{c.firstname} {c.lastname}".strip()
+            # Check if landlord deleted this concern
+            if c.concernid in deleted_concerns_tracker['landlord']:
+                continue  # Skip if landlord deleted it
 
-            if c.status and c.status.lower() == "pending":
-                display_image = c.tenantimage
-            elif c.status and c.status.lower() in ["fixed", "resolved"]:
-                display_image = c.landlordimage
-            else:
-                display_image = None
+            fullname = f"{c.firstname} {c.lastname}".strip()
 
             concerns_list.append({
                 "id": c.concernid,
@@ -109,11 +109,11 @@ def get_all_concerns():
                 "subject": c.subject,
                 "description": c.description,
                 "image": c.tenantimage,
+                "landlordimage": c.landlordimage,
                 "status": c.status,
                 "creationdate": c.creationdate,
                 "tenant_name": fullname,
-                "unit": c.unit_name if c.unit_name else "",  # Return empty string if no unit
-                "display_image": display_image
+                "unit": c.unit_name if c.unit_name else "",
             })
 
         return jsonify(concerns_list), 200
@@ -122,12 +122,7 @@ def get_all_concerns():
         print("Error fetching concerns:", e)
         return jsonify({"error": str(e)}), 500
 
-
-
-
-
-
-# ✅ Get concerns per tenant
+# ✅ Get concerns per tenant - Filter deleted ones
 @concern_bp.route("/get-concerns/<int:tenantid>", methods=["GET"])
 def get_concerns(tenantid):
     try:
@@ -135,23 +130,17 @@ def get_concerns(tenantid):
 
         result = []
         for c in concerns:
+            # Check if tenant deleted this concern
+            if c.concernid in deleted_concerns_tracker['tenant']:
+                continue  # Skip if tenant deleted it
+
             concern_dict = c.to_dict()
-
-            # ✅ Choose which image to show based on status
-            if c.status.lower() == "pending":
-                concern_dict["display_image"] = c.tenantimage
-            elif c.status.lower() in ["fixed", "resolved"]:
-                concern_dict["display_image"] = c.landlordimage
-            else:
-                concern_dict["display_image"] = None
-
             result.append(concern_dict)
 
         return jsonify(result), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 # ✅ Update concern (Landlord marks resolved & uploads fix image)
 @concern_bp.route("/concerns/<int:concernid>", methods=["PUT"])
@@ -193,3 +182,96 @@ def update_concern(concernid):
         print("Error updating concern:", e)
         return jsonify({"error": "Failed to update concern"}), 500
 
+# ✅ Soft delete concern (Tenant side only) - NO DATABASE CHANGES
+@concern_bp.route("/delete-concern-tenant/<int:concernid>", methods=["DELETE"])
+def delete_concern_tenant(concernid):
+    try:
+        concern = Concern.query.get(concernid)
+        if not concern:
+            return jsonify({"error": "Concern not found"}), 404
+
+        # Add to tenant's deleted list (NO DATABASE CHANGE)
+        deleted_concerns_tracker['tenant'].add(concernid)
+        
+        # Check if both deleted for image deletion
+        if concernid in deleted_concerns_tracker['landlord']:
+            # Both deleted - delete images permanently
+            delete_concern_images(concern)
+            return jsonify({
+                "message": "Concern permanently deleted (both parties deleted)",
+                "permanent_delete": True
+            }), 200
+        else:
+            # Only tenant deleted
+            return jsonify({
+                "message": "Concern deleted successfully from your view",
+                "permanent_delete": False
+            }), 200
+
+    except Exception as e:
+        print("Error in soft delete:", e)
+        return jsonify({"error": "Failed to delete concern"}), 500
+
+# ✅ Soft delete concern (Landlord side only) - NO DATABASE CHANGES
+@concern_bp.route("/delete-concern-landlord/<int:concernid>", methods=["DELETE"])
+def delete_concern_landlord(concernid):
+    try:
+        concern = Concern.query.get(concernid)
+        if not concern:
+            return jsonify({"error": "Concern not found"}), 404
+
+        # Add to landlord's deleted list (NO DATABASE CHANGE)
+        deleted_concerns_tracker['landlord'].add(concernid)
+        
+        # Check if both deleted for image deletion
+        if concernid in deleted_concerns_tracker['tenant']:
+            # Both deleted - delete images permanently
+            delete_concern_images(concern)
+            return jsonify({
+                "message": "Concern permanently deleted (both parties deleted)",
+                "permanent_delete": True
+            }), 200
+        else:
+            # Only landlord deleted
+            return jsonify({
+                "message": "Concern deleted successfully from landlord view",
+                "permanent_delete": False
+            }), 200
+
+    except Exception as e:
+        print("Error in soft delete:", e)
+        return jsonify({"error": "Failed to delete concern"}), 500
+
+# ✅ Delete concern images when both parties delete
+def delete_concern_images(concern):
+    try:
+        # Delete associated images if they exist
+        if concern.tenantimage:
+            try:
+                image_path = os.path.join("backend", concern.tenantimage.lstrip('/'))
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+                    print(f"✅ Deleted tenant image: {image_path}")
+            except Exception as e:
+                print(f"Error deleting tenant image: {e}")
+
+        if concern.landlordimage:
+            try:
+                image_path = os.path.join("backend", concern.landlordimage.lstrip('/'))
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+                    print(f"✅ Deleted landlord image: {image_path}")
+            except Exception as e:
+                print(f"Error deleting landlord image: {e}")
+
+        print(f"✅ Both parties deleted concern #{concern.concernid} - Images removed")
+
+    except Exception as e:
+        print(f"Error deleting concern images: {e}")
+
+# ✅ Reset deleted concerns (for testing)
+@concern_bp.route("/reset-deleted-concerns", methods=["POST"])
+def reset_deleted_concerns():
+    deleted_concerns_tracker['tenant'].clear()
+    deleted_concerns_tracker['landlord'].clear()
+    return jsonify({"message": "Deleted concerns reset successfully"}), 200

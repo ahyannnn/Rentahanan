@@ -1124,3 +1124,197 @@
         justify-content: center;
     }
 }
+
+/* ===== Delete Concern Button ===== */
+.delete-concern-btn-Tenant-Support {
+    background: transparent;
+    border: 2px solid #dc2626;
+    color: #dc2626;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.delete-concern-btn-Tenant-Support:hover:not(:disabled) {
+    background: #dc2626;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.delete-concern-btn-Tenant-Support:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ===== Delete Confirmation Modal ===== */
+.delete-modal-overlay-Tenant-Support {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    backdrop-filter: blur(12px);
+}
+
+.delete-modal-Tenant-Support {
+    background: white;
+    border-radius: 28px;
+    padding: 40px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 35px 60px rgba(0, 0, 0, 0.4);
+    animation: modalFadeIn-Tenant-Support 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    border: 1px solid #e8edff;
+}
+
+.delete-modal-icon-Tenant-Support {
+    color: #dc2626;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.delete-modal-content-Tenant-Support {
+    margin-bottom: 30px;
+}
+
+.delete-modal-title-Tenant-Support {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1e1e2f;
+    margin-bottom: 15px;
+}
+
+.delete-modal-message-Tenant-Support {
+    color: #666;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.delete-modal-details-Tenant-Support {
+    background: #f8faff;
+    border: 1px solid #e8edff;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: left;
+}
+
+.delete-modal-details-Tenant-Support p {
+    margin: 8px 0;
+    color: #1e1e2f;
+    font-size: 0.95rem;
+}
+
+.delete-modal-details-Tenant-Support strong {
+    color: #0a2d8d;
+}
+
+.delete-modal-actions-Tenant-Support {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.delete-cancel-btn-Tenant-Support {
+    background: transparent;
+    border: 2px solid #6c757d;
+    color: #6c757d;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    font-size: 1rem;
+    min-width: 120px;
+}
+
+.delete-cancel-btn-Tenant-Support:hover:not(:disabled) {
+    background: #6c757d;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.delete-confirm-btn-Tenant-Support {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    font-size: 1rem;
+    min-width: 200px;
+    justify-content: center;
+}
+
+.delete-confirm-btn-Tenant-Support:hover:not(:disabled) {
+    background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+}
+
+.delete-confirm-btn-Tenant-Support:disabled,
+.delete-cancel-btn-Tenant-Support:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Mobile Responsive for Delete Modal */
+@media (max-width: 768px) {
+    .delete-modal-Tenant-Support {
+        padding: 30px 25px;
+        margin: 10px;
+    }
+    
+    .delete-modal-actions-Tenant-Support {
+        flex-direction: column;
+    }
+    
+    .delete-cancel-btn-Tenant-Support,
+    .delete-confirm-btn-Tenant-Support {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .delete-modal-title-Tenant-Support {
+        font-size: 1.5rem;
+    }
+    
+    .delete-modal-message-Tenant-Support {
+        font-size: 1rem;
+    }
+}
+
+/* Mobile responsive adjustments for delete button */
+@media (max-width: 480px) {
+    .delete-concern-btn-Tenant-Support {
+        width: 100%;
+        justify-content: center;
+    }
+}

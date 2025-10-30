@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, Plus, FileText, Clock, CheckCircle, AlertCircle, Home, DollarSign, Settings, HelpCircle, X, Upload, Image } from "lucide-react";
+import { Search, Plus, FileText, Clock, CheckCircle, AlertCircle, Home, DollarSign, Settings, HelpCircle, X, Upload, Image, Trash2 } from "lucide-react";
 import "../../styles/tenant/Support.css";
 
 const Support = () => {
@@ -16,6 +16,9 @@ const Support = () => {
     });
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [concernToDelete, setConcernToDelete] = useState(null);
 
     useEffect(() => {
         const userData = localStorage.getItem("user");
@@ -96,6 +99,52 @@ const Support = () => {
 
     const handleCloseSuccessModal = () => {
         setShowSuccessModal(false);
+    };
+
+    // ✅ Delete concern function
+    const handleDeleteClick = (concernId, e) => {
+        if (e) e.stopPropagation();
+        const concern = concerns.find(c => c.concernid === concernId);
+        setConcernToDelete(concern);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!concernToDelete) return;
+        
+        setIsDeleting(true);
+        try {
+            const res = await fetch(`http://localhost:5000/api/delete-concern-tenant/${concernToDelete.concernid}`, {
+                method: "DELETE",
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                // Remove from local state
+                setConcerns(concerns.filter(concern => concern.concernid !== concernToDelete.concernid));
+                setShowDeleteModal(false);
+                setConcernToDelete(null);
+                
+                if (data.permanent_delete) {
+                    alert("✅ Concern permanently deleted (both you and owner deleted it)");
+                } else {
+                    alert("✅ Concern removed from your view!");
+                }
+            } else {
+                alert(data.error || "❌ Failed to delete concern");
+            }
+        } catch (error) {
+            console.error("Error deleting concern:", error);
+            alert("❌ Something went wrong. Please try again.");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const cancelDelete = () => {
+        setShowDeleteModal(false);
+        setConcernToDelete(null);
     };
 
     const filteredConcerns = concerns.filter((concern) => {
@@ -289,6 +338,17 @@ const Support = () => {
                                         >
                                             <Image size={16} />
                                             Owner's Response
+                                        </button>
+                                    )}
+                                    {/* Delete Button - Only show for resolved concerns */}
+                                    {concern.status === "Resolved" && (
+                                        <button
+                                            className="delete-concern-btn-Tenant-Support"
+                                            onClick={(e) => handleDeleteClick(concern.concernid, e)}
+                                            disabled={isDeleting}
+                                        >
+                                            <Trash2 size={16} />
+                                            {isDeleting ? "Deleting..." : "Delete"}
                                         </button>
                                     )}
                                 </div>
@@ -493,6 +553,52 @@ const Support = () => {
                                 onClick={handleCloseSuccessModal}
                             >
                                 Continue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ✅ DELETE CONFIRMATION MODAL */}
+            {showDeleteModal && concernToDelete && (
+                <div className="modal-overlay-Tenant-Support delete-modal-overlay-Tenant-Support">
+                    <div className="delete-modal-Tenant-Support">
+                        <div className="delete-modal-icon-Tenant-Support">
+                            <Trash2 size={48} />
+                        </div>
+                        <div className="delete-modal-content-Tenant-Support">
+                            <h3 className="delete-modal-title-Tenant-Support">Delete From Your View?</h3>
+                            <p className="delete-modal-message-Tenant-Support">
+                                This concern will be removed from your view but the owner will still see it. 
+                                If both you and the owner delete this concern, it will be permanently deleted including all images.
+                            </p>
+                            <div className="delete-modal-details-Tenant-Support">
+                                <p><strong>Issue:</strong> {concernToDelete.subject}</p>
+                                <p><strong>Type:</strong> {concernToDelete.concerntype}</p>
+                                <p><strong>Date Reported:</strong> {concernToDelete.creationdate}</p>
+                            </div>
+                        </div>
+                        <div className="delete-modal-actions-Tenant-Support">
+                            <button 
+                                className="delete-cancel-btn-Tenant-Support" 
+                                onClick={cancelDelete}
+                                disabled={isDeleting}
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                className="delete-confirm-btn-Tenant-Support" 
+                                onClick={confirmDelete}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? (
+                                    <>
+                                        <div className="loading-spinner-Tenant-Support"></div>
+                                        Deleting...
+                                    </>
+                                ) : (
+                                    "Yes, Remove From My View"
+                                )}
                             </button>
                         </div>
                     </div>
