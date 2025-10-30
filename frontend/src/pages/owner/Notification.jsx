@@ -14,8 +14,9 @@ function Notification() {
   const [searchTerm, setSearchTerm] = useState("");
   const [problems, setProblems] = useState([]);
   const [uploadedLandlordImage, setUploadedLandlordImage] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // ✅ Fetch all concerns from backend
+  // ✅ Fetch all concerns from backend (only non-deleted ones)
   useEffect(() => {
     const fetchConcerns = async () => {
       try {
@@ -53,21 +54,44 @@ function Notification() {
     }
   };
 
+  // ✅ Updated Delete Function for Owner (Soft Delete)
   const handleDeleteClick = (problem, e) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     setProblemToDelete(problem);
     setShowDeleteModal(true);
   };
 
   const confirmDelete = async () => {
     if (!problemToDelete) return;
+    
+    setIsDeleting(true);
     try {
-      setProblems(prev => prev.filter(problem => problem.id !== problemToDelete.id));
-      setShowDeleteModal(false);
-      setProblemToDelete(null);
-      if (showProblemModal) setShowProblemModal(false);
+      const response = await fetch(`http://localhost:5000/api/delete-concern-landlord/${problemToDelete.id}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Remove from local state
+        setProblems(prev => prev.filter(problem => problem.id !== problemToDelete.id));
+        setShowDeleteModal(false);
+        setProblemToDelete(null);
+        if (showProblemModal) setShowProblemModal(false);
+        
+        if (data.permanent_delete) {
+          alert("✅ Concern permanently deleted (both you and tenant deleted it)");
+        } else {
+          alert("✅ Concern removed from your view!");
+        }
+      } else {
+        alert(data.error || "❌ Failed to delete concern");
+      }
     } catch (error) {
       console.error("Error deleting concern:", error);
+      alert("❌ Something went wrong. Please try again.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -82,21 +106,33 @@ function Notification() {
       const formData = new FormData();
       formData.append("status", newStatus);
 
+      // If marking as resolved, check if we need to upload an image
+      if (newStatus === "Resolved" && !selectedProblem.landlordimage) {
+        alert("Please upload a fix photo before marking as resolved.");
+        return;
+      }
+
       const response = await fetch(`http://localhost:5000/api/concerns/${selectedProblem.id}`, {
         method: "PUT",
         body: formData,
       });
 
       if (response.ok) {
+        const updatedData = await response.json();
         setProblems(prev =>
           prev.map(problem =>
-            problem.id === selectedProblem.id ? { ...problem, status: newStatus } : problem
+            problem.id === selectedProblem.id ? { ...problem, ...updatedData.concern } : problem
           )
         );
-        setSelectedProblem(prev => ({ ...prev, status: newStatus }));
+        setSelectedProblem(prev => ({ ...prev, ...updatedData.concern }));
+        alert("✅ Status updated successfully!");
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || "❌ Failed to update status");
       }
     } catch (error) {
       console.error("Error updating status:", error);
+      alert("❌ Something went wrong. Please try again.");
     }
   };
 
@@ -106,12 +142,14 @@ function Notification() {
     "In Progress": problems.filter(p => p.status === "In Progress").length,
     Resolved: problems.filter(p => p.status === "Resolved").length
   };
+
   const handleUploadLandlordImage = async (file) => {
     if (!file || !selectedProblem) return;
 
     try {
       const formData = new FormData();
       formData.append("landlordimage", file);
+      formData.append("status", "Resolved"); // Auto-mark as resolved when uploading fix photo
 
       const response = await fetch(`http://localhost:5000/api/concerns/${selectedProblem.id}`, {
         method: "PUT",
@@ -123,20 +161,23 @@ function Notification() {
         setSelectedProblem((prev) => ({
           ...prev,
           landlordimage: data.concern.landlordimage,
+          status: "Resolved"
         }));
         setProblems((prev) =>
           prev.map((p) =>
             p.id === selectedProblem.id
-              ? { ...p, landlordimage: data.concern.landlordimage }
+              ? { ...p, landlordimage: data.concern.landlordimage, status: "Resolved" }
               : p
           )
         );
-        alert("Fix photo uploaded successfully!");
+        alert("✅ Fix photo uploaded and issue marked as resolved!");
       } else {
-        alert("Failed to upload fix photo");
+        const errorData = await response.json();
+        alert(errorData.error || "❌ Failed to upload fix photo");
       }
     } catch (error) {
       console.error("Error uploading landlord image:", error);
+      alert("❌ Something went wrong. Please try again.");
     }
   };
 
@@ -242,7 +283,7 @@ function Notification() {
                         <button
                           className="owner-delete-btn"
                           onClick={(e) => handleDeleteClick(problem, e)}
-                          title="Delete resolved issue"
+                          title="Delete resolved issue from your view"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -292,21 +333,39 @@ function Notification() {
                     <button
                       className="owner-view-photo-btn"
                       onClick={() =>
-                        window.open(`http://localhost:5000/${selectedProblem.image}`, "_blank", "noopener,noreferrer")
+                        window.open(`http://localhost:5000${selectedProblem.image}`, "_blank", "noopener,noreferrer")
                       }
                     >
-                      View
+                      View Tenant Photo
                     </button>
                   </div>
                 </div>
               )}
 
+              {selectedProblem.landlordimage && (
+                <div className="owner-problem-photo">
+                  <label>Your Fix Photo</label>
+                  <div className="owner-photo-container">
+                    <button
+                      className="owner-view-photo-btn"
+                      onClick={() =>
+                        window.open(`http://localhost:5000${selectedProblem.landlordimage}`, "_blank", "noopener,noreferrer")
+                      }
+                    >
+                      View Your Photo
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {selectedProblem.status !== "Resolved" ? (
                 <div className="owner-update-section">
                   <h4>Update Problem Status</h4>
                   <div className="owner-status-actions">
-                    <button className="owner-status-btn progress" onClick={() => handleUpdateStatus("In Progress")}>
+                    <button 
+                      className="owner-status-btn progress" 
+                      onClick={() => handleUpdateStatus("In Progress")}
+                    >
                       <AlertCircle size={16} /> Mark In Progress
                     </button>
 
@@ -322,41 +381,36 @@ function Notification() {
                       onChange={(e) => handleUploadLandlordImage(e.target.files[0])}
                     />
 
-                    <button className="owner-status-btn resolved" onClick={() => handleUpdateStatus("Resolved")}>
+                    <button 
+                      className="owner-status-btn resolved" 
+                      onClick={() => handleUpdateStatus("Resolved")}
+                      disabled={!selectedProblem.landlordimage}
+                    >
                       <CheckCircle size={16} /> Mark Resolved
                     </button>
                   </div>
+                  {!selectedProblem.landlordimage && (
+                    <p className="owner-upload-warning">
+                      * Please upload a fix photo before marking as resolved
+                    </p>
+                  )}
                 </div>
               ) : (
                 <div className="owner-resolved-message">
                   <CheckCircle size={24} className="resolved-check-icon" />
                   <h4>Issue Resolved</h4>
                   <p>This maintenance issue has been successfully resolved.</p>
-
-                  {/* ✅ Show landlord’s uploaded fix photo */}
-                  {selectedProblem.landlordimage && (
-                    <button
-                      className="owner-view-photo-btn"
-                      onClick={() =>
-                        window.open(
-                          `http://localhost:5000/${selectedProblem.landlordimage}`,
-                          "_blank",
-                          "noopener,noreferrer"
-                        )
-                      }
-                    >
-                      View Proof Photo
-                    </button>
-                  )}
                 </div>
               )}
-
             </div>
 
             <div className="owner-problem-modal-footer">
               {selectedProblem.status === "Resolved" && (
-                <button className="owner-delete-modal-btn" onClick={() => handleDeleteClick(selectedProblem)}>
-                  <Trash2 size={16} /> Delete Resolved Issue
+                <button 
+                  className="owner-delete-modal-btn" 
+                  onClick={() => handleDeleteClick(selectedProblem)}
+                >
+                  <Trash2 size={16} /> Delete From My View
                 </button>
               )}
               <button className="owner-close-modal-btn" onClick={() => setShowProblemModal(false)}>Close</button>
@@ -373,8 +427,8 @@ function Notification() {
               <Trash2 size={48} />
             </div>
             <div className="owner-delete-modal-content">
-              <h3>Delete Resolved Issue?</h3>
-              <p>Are you sure you want to delete this resolved issue? This action cannot be undone.</p>
+              <h3>Delete From Your View?</h3>
+              <p>This concern will be removed from your view but the tenant will still see it. The concern will be permanently deleted including all images only when both you and the tenant have deleted it.</p>
               <div className="owner-delete-modal-details">
                 <p><strong>Issue:</strong> {problemToDelete.subject}</p>
                 <p><strong>Tenant:</strong> {problemToDelete.tenant_name}</p>
@@ -382,8 +436,20 @@ function Notification() {
               </div>
             </div>
             <div className="owner-delete-modal-actions">
-              <button className="owner-delete-cancel-btn" onClick={cancelDelete}>Cancel</button>
-              <button className="owner-delete-confirm-btn" onClick={confirmDelete}>Yes, Delete Issue</button>
+              <button 
+                className="owner-delete-cancel-btn" 
+                onClick={cancelDelete}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button 
+                className="owner-delete-confirm-btn" 
+                onClick={confirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Yes, Remove From My View"}
+              </button>
             </div>
           </div>
         </div>
