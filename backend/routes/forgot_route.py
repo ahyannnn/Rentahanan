@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from extensions import db
 from models.users_model import User
-from utils.email_utils import send_verification_email, verify_code
+from utils.email_utils import send_password_reset_email, verify_code
 from werkzeug.security import generate_password_hash
 
 forgot_bp = Blueprint("forgot_bp", __name__)
@@ -20,12 +20,11 @@ def send_code():
     if not user:
         return jsonify({"message": "Email not found"}), 404
 
-    if send_verification_email(email):
+    # FIX: Use the correct function name that you imported
+    if send_password_reset_email(email):
         return jsonify({"message": "Verification code sent successfully"}), 200
     else:
         return jsonify({"message": "Failed to send verification code"}), 500
-
-
 
 # ==============================
 # VERIFY CODE
@@ -45,7 +44,9 @@ def verify_user_code():
     else:
         return jsonify({"message": message}), 400
 
-
+# ==============================
+# RESET PASSWORD
+# ==============================
 @forgot_bp.route("/forgot/reset", methods=["POST"])
 def reset_password():
     data = request.get_json()
@@ -75,7 +76,3 @@ def reset_password():
         db.session.rollback()
         print("Password reset error:", str(e))
         return jsonify({"message": f"Error resetting password: {str(e)}"}), 500
-
-
-
-

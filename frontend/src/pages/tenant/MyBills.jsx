@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { CreditCard, DollarSign, Upload, CheckCircle, Clock, AlertCircle, ChevronLeft, Search, X, FileText, Receipt } from "lucide-react";
+import { CreditCard, DollarSign, Upload, CheckCircle, Clock, AlertCircle, ChevronLeft, Search, X, FileText, Receipt, Loader} from "lucide-react";
 import "../../styles/tenant/MyBills.css";
 
 const MyBills = () => {
@@ -13,13 +13,15 @@ const MyBills = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [loading, setLoading] = useState(true); // ✅ DAGDAG MO ITO
 
   const storedUser = JSON.parse(localStorage.getItem("user")) || {};
   const tenantId = storedUser.tenantid || storedUser.userid || null;
-  
+
   useEffect(() => {
     if (!tenantId) {
       console.warn("Tenant ID is missing!");
+      setLoading(false); // ✅ DAGDAG MO ITO
       return;
     }
 
@@ -30,11 +32,25 @@ const MyBills = () => {
         setBills(data);
       } catch (error) {
         console.error("Error fetching bills:", error);
+      } finally {
+        setLoading(false); // ✅ DAGDAG MO ITO
       }
     };
 
     fetchBills();
   }, [tenantId]);
+
+  // ✅ DITO MO ILAGAY YUNG LOADING CHECK
+  if (loading) {
+    return (
+      <div className="loading-container-Tenant-Bills">
+        <div className="loading-spinner-Tenant-Bills">
+          <Loader className="spinner-icon-Tenant-Bills" size={40} />
+        </div>
+        <p className="loading-text-Tenant-Bills">Loading your bills...</p>
+      </div>
+    );
+  }
 
   const filteredBills = bills.filter(bill => {
     const matchesSearch =
@@ -99,7 +115,7 @@ const MyBills = () => {
       setShowSuccessModal(true);
       handleCloseModal();
       setSelectedBills([]);
-      
+
       // Refresh bills data
       const res = await fetch(`http://localhost:5000/api/bills/${tenantId}`);
       const data = await res.json();
@@ -157,41 +173,16 @@ const MyBills = () => {
   };
 
   return (
+
+
+
+
     <div className="bills-invoice-container-Tenant-Bills">
       {/* Header Section */}
       <div className="bills-header-Tenant-Bills">
         <div className="header-content-Tenant-Bills">
           <h1 className="page-title-Tenant-Bills">My Bills & Invoices</h1>
           <p className="page-description-Tenant-Bills">View, manage, and pay your bills in one place</p>
-        </div>
-        <div className="header-stats-Tenant-Bills">
-          <div className="stat-card-Tenant-Bills">
-            <div className="stat-icon-Tenant-Bills unpaid">
-              <AlertCircle size={24} />
-            </div>
-            <div className="stat-info-Tenant-Bills">
-              <span className="stat-number-Tenant-Bills">{statsData.unpaid}</span>
-              <span className="stat-label-Tenant-Bills">Unpaid</span>
-            </div>
-          </div>
-          <div className="stat-card-Tenant-Bills">
-            <div className="stat-icon-Tenant-Bills pending">
-              <Clock size={24} />
-            </div>
-            <div className="stat-info-Tenant-Bills">
-              <span className="stat-number-Tenant-Bills">{statsData.pending}</span>
-              <span className="stat-label-Tenant-Bills">For Validation</span>
-            </div>
-          </div>
-          <div className="stat-card-Tenant-Bills">
-            <div className="stat-icon-Tenant-Bills paid">
-              <CheckCircle size={24} />
-            </div>
-            <div className="stat-info-Tenant-Bills">
-              <span className="stat-number-Tenant-Bills">{statsData.paid}</span>
-              <span className="stat-label-Tenant-Bills">Paid</span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -335,7 +326,7 @@ const MyBills = () => {
                     <FileText size={48} className="no-bills-icon-Tenant-Bills" />
                     <h3 className="no-bills-title-Tenant-Bills">No Bills Found</h3>
                     <p className="no-bills-description-Tenant-Bills">
-                      {searchTerm || statusFilter !== "all" 
+                      {searchTerm || statusFilter !== "all"
                         ? "No bills match your current search criteria. Try adjusting your filters."
                         : "You don't have any bills at the moment."}
                     </p>
@@ -424,7 +415,7 @@ const MyBills = () => {
             <FileText size={48} className="no-bills-mobile-icon-Tenant-Bills" />
             <h3 className="no-bills-mobile-title-Tenant-Bills">No Bills Found</h3>
             <p className="no-bills-mobile-description-Tenant-Bills">
-              {searchTerm || statusFilter !== "all" 
+              {searchTerm || statusFilter !== "all"
                 ? "No bills match your current search criteria."
                 : "You don't have any bills at the moment."}
             </p>
@@ -626,13 +617,13 @@ const MyBills = () => {
                   ))}
                 </div>
               </div>
-              
+
               <h2 className="success-title-Tenant-Bills">Payment Submitted Successfully!</h2>
-              
+
               <p className="success-message-Tenant-Bills">
                 Your payment of <strong>{formatCurrency(selectedTotalAmount)}</strong> has been submitted for validation.
-                {paymentMethod === "gcash" 
-                  ? " Your GCash payment is being processed and will be verified shortly." 
+                {paymentMethod === "gcash"
+                  ? " Your GCash payment is being processed and will be verified shortly."
                   : " Please prepare the cash amount for your next meeting with the owner."
                 }
               </p>
@@ -660,7 +651,7 @@ const MyBills = () => {
                 </div>
               </div>
 
-              <button 
+              <button
                 className="success-close-btn-Tenant-Bills"
                 onClick={handleCloseSuccessModal}
               >

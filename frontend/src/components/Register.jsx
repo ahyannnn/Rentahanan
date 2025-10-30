@@ -2,17 +2,12 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./../styles/Register.css";
 
-// Global variables for Firebase (not used in this simplified example, but kept for context)
-const __initial_auth_token = "";
-const __app_id = "phome-registration-app";
-const __firebase_config = "{}";
-
 const Register = () => {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstname: "",
-    middlename: "", // Initialized as empty
+    middlename: "",
     lastname: "",
     dob: "",
     email: "",
@@ -26,39 +21,34 @@ const Register = () => {
     confirm: "",
   });
 
-  // State to manage all validation errors
   const [errors, setErrors] = useState({});
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    // Clear error for the current field when user starts typing
     if (errors[e.target.name]) {
       setErrors({ ...errors, [e.target.name]: "" });
     }
-    // Clear general error when user makes any change
     if (errors.general) {
       setErrors({ ...errors, general: "" });
     }
   };
 
-  // --- VALIDATION FUNCTIONS ---
-
+  // --- VALIDATION FUNCTIONS (keep your existing ones) ---
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
   const validatePhone = (phone) => {
-    const phoneRegex = /^09\d{9}$/; // Philippine mobile format
+    const phoneRegex = /^09\d{9}$/;
     return phoneRegex.test(phone);
   };
 
   const validateZipCode = (zipcode) => {
-    const zipRegex = /^\d{4}$/; // Philippine zip code format
+    const zipRegex = /^\d{4}$/;
     return zipRegex.test(zipcode);
   };
 
@@ -141,7 +131,6 @@ const Register = () => {
   };
 
   // --- NAVIGATION HANDLERS ---
-
   const handleNext = () => {
     let isValid = false;
     if (step === 1) {
@@ -156,6 +145,31 @@ const Register = () => {
   };
 
   const handlePrev = () => setStep(step - 1);
+
+  // NEW: Send welcome email after successful registration (no verification needed)
+  const sendWelcomeEmail = async (email, firstName) => {
+    try {
+      const res = await fetch("http://127.0.0.1:5000/api/welcome/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          email: email,
+          user_name: firstName 
+        }),
+      });
+      
+      if (res.ok) {
+        console.log("Welcome email sent successfully");
+        return true;
+      } else {
+        console.error("Failed to send welcome email");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error sending welcome email:", error);
+      return false;
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -173,7 +187,11 @@ const Register = () => {
       });
       
       if (res.ok) {
-        setStep(4); // Show success step
+        // Registration successful - send welcome email
+        await sendWelcomeEmail(formData.email, formData.firstname);
+        
+        // Directly show success message without verification
+        setStep(4);
       } else {
         const errorData = await res.json();
         setErrors({ general: errorData.message || "Registration failed. Please try again." });
@@ -187,7 +205,6 @@ const Register = () => {
   };
 
   // --- RENDER ---
-
   return (
     <div className="auth-wrapper-Register">
       <div className="auth-page-Register">
@@ -216,15 +233,24 @@ const Register = () => {
 
             {step === 4 ? (
               <div className="success-step-Register">
-                <h2>Account Created Successfully</h2>
-                <p>Your RenTahanan account has been created successfully.</p>
-                <button
-                  className="btn-Register" 
-                  style={{ marginTop: "25px" }}
-                  onClick={() => navigate("/login")}
-                >
-                  Back to Login
-                </button>
+                <h2>Account Created Successfully!</h2>
+                <p>
+                  Welcome to RenTahanan, <strong>{formData.firstname}</strong>!
+                  <br />
+                  Your account has been created successfully.
+                  <br />
+                  We've sent a welcome email to <strong>{formData.email}</strong>.
+                  <br />
+                  You can now login and start using RenTahanan.
+                </p>
+                <div style={{ marginTop: "25px" }}>
+                  <button
+                    className="btn-Register"
+                    onClick={() => navigate("/login")}
+                  >
+                    Go to Login
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="form-Register">
@@ -278,7 +304,7 @@ const Register = () => {
                         name="dob"
                         value={formData.dob}
                         onChange={handleChange}
-                        max={new Date().toISOString().split('T')[0]} // Prevent future dates
+                        max={new Date().toISOString().split('T')[0]}
                       />
                       {errors.dob && <p className="error-text-Register">{errors.dob}</p>}
                     </div>
@@ -287,7 +313,6 @@ const Register = () => {
 
                 {step === 2 && (
                   <div className="three-column-grid-Register">
-                    
                     <div className="form-group-Register span-2-Register">
                       <label className="label-Register">Email</label>
                       <input
@@ -376,7 +401,6 @@ const Register = () => {
                       />
                       {errors.zipcode && <p className="error-text-Register">{errors.zipcode}</p>}
                     </div>
-
                   </div>
                 )}
 

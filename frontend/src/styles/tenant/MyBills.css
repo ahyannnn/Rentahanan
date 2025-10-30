@@ -10,15 +10,11 @@
 
 /* ===== Header Section ===== */
 .bills-header-Tenant-Bills {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
     margin-bottom: 30px;
-    gap: 30px;
 }
 
 .header-content-Tenant-Bills {
-    flex: 1;
+    text-align: center;
 }
 
 .page-title-Tenant-Bills {
@@ -37,69 +33,6 @@
     font-size: 1.1rem;
     font-weight: 500;
     margin: 0;
-}
-
-.header-stats-Tenant-Bills {
-    display: flex;
-    gap: 20px;
-}
-
-.stat-card-Tenant-Bills {
-    background: #f8fafc;
-    padding: 25px;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    min-width: 140px;
-    text-align: center;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-}
-
-.stat-card-Tenant-Bills:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-.stat-icon-Tenant-Bills {
-    padding: 16px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.stat-icon-Tenant-Bills.unpaid {
-    background: #fef2f2;
-    color: #dc2626;
-}
-
-.stat-icon-Tenant-Bills.pending {
-    background: #fffbeb;
-    color: #d97706;
-}
-
-.stat-icon-Tenant-Bills.paid {
-    background: #f0fdf4;
-    color: #16a34a;
-}
-
-.stat-number-Tenant-Bills {
-    display: block;
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #1e293b;
-    line-height: 1;
-}
-
-.stat-label-Tenant-Bills {
-    font-size: 0.9rem;
-    color: #64748b;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 /* ===== Controls Section ===== */
@@ -145,20 +78,27 @@
     box-shadow: 0 0 0 4px rgba(11, 60, 145, 0.1);
 }
 
+.filter-controls-Tenant-Bills {
+    display: flex;
+    align-items: center;
+}
+
+/* ===== Filter Tabs - Updated to match first image style ===== */
 .filter-tabs-Tenant-Bills {
     display: flex;
     gap: 8px;
-    background: #f1f5f9;
-    padding: 6px;
-    border-radius: 12px;
+    background: #f8faff;
+    padding: 8px;
+    border-radius: 16px;
+    border: 1px solid #e8edff;
 }
 
 .filter-btn-Tenant-Bills {
     background: transparent;
     border: none;
-    color: #64748b;
+    color: #666;
     padding: 12px 20px;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.9rem;
@@ -170,19 +110,18 @@
 }
 
 .filter-btn-Tenant-Bills:hover {
-    color: #0b3c91;
-    background: rgba(11, 60, 145, 0.1);
+    background: rgba(10, 45, 141, 0.1);
+    color: #0a2d8d;
 }
 
 .filter-btn-active-Tenant-Bills {
-    color: #0b3c91;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(11, 60, 145, 0.15);
+    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
+    color: white;
+    box-shadow: 0 6px 20px rgba(10, 45, 141, 0.3);
 }
 
 .filter-count-Tenant-Bills {
-    background: rgba(11, 60, 145, 0.1);
-    color: #0b3c91;
+    background: rgba(255, 255, 255, 0.2);
     padding: 2px 8px;
     border-radius: 12px;
     font-size: 0.8rem;
@@ -1450,4 +1389,33 @@
         align-items: flex-start;
         gap: 4px;
     }
+}
+
+.loading-container-Tenant-Bills {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 25px; /* Palaki gap */
+  animation: fadeIn 0.5s ease;
+}
+
+.loading-spinner-Tenant-Bills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: spin 1s linear infinite;
+}
+
+.spinner-icon-Tenant-Bills {
+  color: #0b3c91;
+  width: 50px; /* Dagdag to */
+  height: 50px; /* Dagdag to */
+}
+
+.loading-text-Tenant-Bills {
+  font-size: 1.4rem; /* Palaki */
+  color: #666;
+  font-weight: 600; /* Gawing bold */
 }

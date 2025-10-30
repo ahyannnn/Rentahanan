@@ -18,6 +18,7 @@ const Support = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false); // NEW: Success modal for deletion
     const [concernToDelete, setConcernToDelete] = useState(null);
 
     useEffect(() => {
@@ -126,11 +127,9 @@ const Support = () => {
                 setShowDeleteModal(false);
                 setConcernToDelete(null);
                 
-                if (data.permanent_delete) {
-                    alert("✅ Concern permanently deleted (both you and owner deleted it)");
-                } else {
-                    alert("✅ Concern removed from your view!");
-                }
+                // Show success modal instead of alert
+                setShowDeleteSuccessModal(true);
+                
             } else {
                 alert(data.error || "❌ Failed to delete concern");
             }
@@ -145,6 +144,10 @@ const Support = () => {
     const cancelDelete = () => {
         setShowDeleteModal(false);
         setConcernToDelete(null);
+    };
+
+    const handleCloseDeleteSuccessModal = () => {
+        setShowDeleteSuccessModal(false);
     };
 
     const filteredConcerns = concerns.filter((concern) => {
@@ -173,12 +176,6 @@ const Support = () => {
         return icons[category] || <HelpCircle size={18} />;
     };
 
-    const statsData = {
-        total: concerns.length,
-        pending: concerns.filter((c) => c.status === "Pending").length,
-        resolved: concerns.filter((c) => c.status === "Resolved").length
-    };
-
     return (
         <div className="support-container-Tenant-Support">
             {/* Header */}
@@ -191,38 +188,7 @@ const Support = () => {
                 </div>
             </div>
 
-            {/* Stats Overview */}
-            <div className="stats-overview-Tenant-Support">
-                <div className="stat-card-Tenant-Support">
-                    <div className="stat-icon-Tenant-Support total">
-                        <FileText size={24} />
-                    </div>
-                    <div className="stat-content-Tenant-Support">
-                        <div className="stat-number-Tenant-Support">{statsData.total}</div>
-                        <div className="stat-label-Tenant-Support">Total Concerns</div>
-                    </div>
-                </div>
-                <div className="stat-card-Tenant-Support">
-                    <div className="stat-icon-Tenant-Support pending">
-                        <Clock size={24} />
-                    </div>
-                    <div className="stat-content-Tenant-Support">
-                        <div className="stat-number-Tenant-Support">{statsData.pending}</div>
-                        <div className="stat-label-Tenant-Support">Pending</div>
-                    </div>
-                </div>
-                <div className="stat-card-Tenant-Support">
-                    <div className="stat-icon-Tenant-Support resolved">
-                        <CheckCircle size={24} />
-                    </div>
-                    <div className="stat-content-Tenant-Support">
-                        <div className="stat-number-Tenant-Support">{statsData.resolved}</div>
-                        <div className="stat-label-Tenant-Support">Resolved</div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Controls */}
+            {/* Controls - Removed the 3 stats cards */}
             <div className="support-top-controls-Tenant-Support">
                 <div className="search-container-Tenant-Support">
                     <div className="search-box-Tenant-Support">
@@ -255,7 +221,9 @@ const Support = () => {
                             onClick={() => setActiveFilter("pending")}
                         >
                             Pending
-                            <span className="filter-count-Tenant-Support">{statsData.pending}</span>
+                            <span className="filter-count-Tenant-Support">
+                                {concerns.filter(c => c.status === "Pending").length}
+                            </span>
                         </button>
                         <button
                             className={`filter-btn-Tenant-Support ${
@@ -264,7 +232,9 @@ const Support = () => {
                             onClick={() => setActiveFilter("completed")}
                         >
                             Resolved
-                            <span className="filter-count-Tenant-Support">{statsData.resolved}</span>
+                            <span className="filter-count-Tenant-Support">
+                                {concerns.filter(c => c.status === "Resolved").length}
+                            </span>
                         </button>
                     </div>
 
@@ -599,6 +569,55 @@ const Support = () => {
                                 ) : (
                                     "Yes, Remove From My View"
                                 )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ✅ DELETE SUCCESS MODAL */}
+            {showDeleteSuccessModal && (
+                <div className="modal-overlay-Tenant-Support success-modal-overlay">
+                    <div className="success-modal-Tenant-Support">
+                        <div className="success-modal-content-Tenant-Support">
+                            <div className="success-animation-container-Tenant-Support">
+                                <div className="success-checkmark-Tenant-Support">
+                                    <CheckCircle size={80} className="check-icon-Tenant-Support" />
+                                </div>
+                                <div className="success-confetti-Tenant-Support">
+                                    {[...Array(12)].map((_, i) => (
+                                        <div key={i} className="confetti-piece-Tenant-Support"></div>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <h2 className="success-title-Tenant-Support">Concern Deleted Successfully!</h2>
+                            
+                            <p className="success-message-Tenant-Support">
+                                The concern has been removed from your view. The property owner can still see it in their records.
+                            </p>
+
+                            <div className="success-details-Tenant-Support">
+                                <div className="success-detail-item-Tenant-Support">
+                                    <span className="detail-label-Tenant-Support">Action:</span>
+                                    <span className="detail-value-Tenant-Support">
+                                        <span className="status-badge-pending-Tenant-Support" style={{background: '#d4edda', color: '#155724'}}>
+                                            <CheckCircle size={14} />
+                                            Removed From View
+                                        </span>
+                                    </span>
+                                </div>
+                                <div className="success-detail-item-Tenant-Support">
+                                    <span className="detail-label-Tenant-Support">Removed:</span>
+                                    <span className="detail-value-Tenant-Support">{new Date().toLocaleDateString()}</span>
+                                </div>
+                            </div>
+
+                            <button 
+                                className="success-close-btn-Tenant-Support"
+                                onClick={handleCloseDeleteSuccessModal}
+                            >
+                                Continue
                             </button>
                         </div>
                     </div>
