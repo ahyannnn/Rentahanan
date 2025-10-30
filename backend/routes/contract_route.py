@@ -11,6 +11,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 import os, traceback
 from flask import send_from_directory
+from PyPDF2 import PdfReader, PdfWriter
 
 contract_bp = Blueprint("contract_bp", __name__)
 
@@ -47,7 +48,7 @@ def get_tenant_contracts():
             "start_date": start_date.strftime("%Y-%m-%d"),
             "end_date": end_date.strftime("%Y-%m-%d") if end_date else None,
             "status": status,
-            "signed_contract":signed_contract
+            "signed_contract": signed_contract
         }
         for contractid, tenantid, firstname, middlename, lastname, unit_name, unit_price, start_date, end_date, status, signed_contract in contracts
     ]
@@ -111,10 +112,13 @@ def get_applicants_for_contract():
 def generate_contract_pdf():
     import base64
     import io
-    import traceback
     from reportlab.lib.utils import ImageReader
     from reportlab.pdfgen import canvas
-    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.pagesizes import A4, letter
+    from reportlab.lib import colors
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
     from PIL import Image
 
     try:
@@ -138,71 +142,245 @@ def generate_contract_pdf():
         filename = f"contract_{tenant_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
         file_path = os.path.join(contracts_folder, filename)
 
-        # ✅ Create the PDF
-        c = canvas.Canvas(file_path, pagesize=A4)
-        width, height = A4
+        # ✅ Create professional PDF document
+        doc = SimpleDocTemplate(
+            file_path,
+            pagesize=letter,
+            topMargin=0.5*inch,
+            bottomMargin=0.5*inch
+        )
+        
+        story = []
+        styles = getSampleStyleSheet()
+        
+        # Custom styles
+        title_style = ParagraphStyle(
+            'ContractTitle',
+            parent=styles['Heading1'],
+            fontSize=20,
+            textColor=colors.HexColor('#2C3E50'),
+            spaceAfter=20,
+            alignment=1
+        )
+        
+        section_style = ParagraphStyle(
+            'SectionHeader',
+            parent=styles['Heading2'],
+            fontSize=14,
+            textColor=colors.HexColor('#2C3E50'),
+            spaceAfter=12,
+            spaceBefore=20
+        )
+        
+        normal_style = ParagraphStyle(
+            'ContractNormal',
+            parent=styles['Normal'],
+            fontSize=10,
+            textColor=colors.HexColor('#333333'),
+            leading=14
+        )
+        
+        bold_style = ParagraphStyle(
+            'ContractBold',
+            parent=styles['Normal'],
+            fontSize=10,
+            textColor=colors.HexColor('#333333'),
+            fontWeight='bold'
+        )
 
-        c.setFont("Helvetica-Bold", 22)
-        c.drawCentredString(width / 2, height - 80, "RENTAL AGREEMENT")
-        c.setFont("Helvetica", 14)
-        c.drawCentredString(width / 2, height - 110, "RenTahanan Property Management")
+        # Header
+        header = Paragraph("<b>RENTAL AGREEMENT CONTRACT</b>", title_style)
+        story.append(header)
+        
+        company_subheader = Paragraph("<b>RenTahanan Property Management</b>", styles['Heading2'])
+        story.append(company_subheader)
+        story.append(Spacer(1, 20))
 
-        c.setFont("Helvetica", 12)
-        text = c.beginText(50, height - 160)
-        lines = [
-            f"This Rental Agreement is made between RenTahanan (the 'Owner')", 
-            f"and {tenant_name} (the 'Tenant').",
-            "",
-            f"Unit: {unit_name}",
-            f"Start Date: {start_date}",
-            f"Monthly Rent: {rent} Pesos",
-            f"Deposit: {deposit} Pesos",
-            f"Advance Payment: {advance} Pesos",
-            "",
-            f"Remarks: {remarks}",
-            "",
-            "The Tenant agrees to comply with all terms and conditions set by the property owner.",
-            "Failure to comply may result in the termination of the lease.",
-            "",
-            "Please sign below to confirm your acceptance of this agreement.",
+        # Contract Information Table
+        contract_info = [
+            ['CONTRACT DETAILS', ''],
+            ['Contract Date:', f'<b>{datetime.now().strftime("%B %d, %Y")}</b>'],
+            ['Contract ID:', f'<b>RT-{int(tenant_id):06d}</b>'],
+            ['', '']
         ]
-        for line in lines:
-            text.textLine(line)
-        c.drawText(text)
+        
+        contract_table = Table(contract_info, colWidths=[2*inch, 4*inch])
+        contract_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2C3E50')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#F8F9FA')),
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 1), (-1, -1), 10),
+        ]))
+        
+        story.append(contract_table)
+        story.append(Spacer(1, 20))
 
-        # ✅ Draw signature lines
-        c.line(100, 150, 250, 150)
-        c.drawString(115, 135, f"{tenant_name} (Tenant)")
-        c.line(350, 150, 500, 150)
-        c.drawString(370, 135, "Landlord Name (Owner)")
+        # Parties Section
+        parties_text = """
+        This Rental Agreement ("Agreement") is made and entered into on this date between:
+        """
+        story.append(Paragraph(parties_text, normal_style))
+        story.append(Spacer(1, 10))
 
-        # ✅ If owner signature is provided, decode and fix transparency
+        # Parties Table
+        parties_data = [
+            ['PARTY', 'INFORMATION'],
+            ['LANDLORD/Owner:', '<b>RenTahanan Property Management</b><br/>Duly represented by its authorized agent'],
+            ['TENANT/Lessee:', f'<b>{tenant_name}</b><br/>Tenant ID: {tenant_id}']
+        ]
+        
+        parties_table = Table(parties_data, colWidths=[2*inch, 4*inch])
+        parties_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#34495E')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 11),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#FFFFFF')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#DDDDDD')),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ]))
+        
+        story.append(parties_table)
+        story.append(Spacer(1, 20))
+
+        # Property Details Section
+        story.append(Paragraph("PROPERTY DETAILS", section_style))
+        
+        property_data = [
+            ['Unit/Room:', f'<b>{unit_name}</b>'],
+            ['Commencement Date:', f'<b>{start_date}</b>'],
+            ['Monthly Rental:', f'<b>₱{float(rent):,.2f}</b>'],
+            ['Security Deposit:', f'<b>₱{float(deposit):,.2f}</b>'],
+            ['Advance Payment:', f'<b>₱{float(advance):,.2f}</b>']
+        ]
+        
+        property_table = Table(property_data, colWidths=[2*inch, 4*inch])
+        property_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),  # Fixed: replaced 😎 with 8
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),  # Fixed: replaced 😎 with 8
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+        ]))
+        
+        story.append(property_table)
+        
+        if remarks and remarks.strip():
+            story.append(Spacer(1, 10))
+            remarks_para = Paragraph(f"<b>Special Remarks:</b> {remarks}", normal_style)
+            story.append(remarks_para)
+
+        story.append(Spacer(1, 20))
+
+        # Terms and Conditions
+        story.append(Paragraph("TERMS AND CONDITIONS", section_style))
+        
+        terms = [
+            "1. The Tenant shall pay the monthly rent on or before the 5th day of each month.",
+            "2. The security deposit shall be refundable upon termination, subject to property inspection.",
+            "3. The Tenant shall maintain the property in good condition and report any damages promptly.",
+            "4. Subletting or assignment of the property requires prior written consent from the Landlord.",
+            "5. The Landlord reserves the right to conduct property inspections with reasonable notice.",
+            "6. Utilities and other charges shall be the responsibility of the Tenant unless otherwise stated.",
+            "7. Early termination of this Agreement may result in forfeiture of the security deposit.",
+            "8. The Tenant shall comply with all building rules and regulations."
+        ]
+        
+        for term in terms:
+            story.append(Paragraph(term, normal_style))
+            story.append(Spacer(1, 5))
+
+        story.append(Spacer(1, 30))
+
+        # Signatures Section
+        story.append(Paragraph("ACKNOWLEDGED AND AGREED", section_style))
+        
+        # Create signature table
+        sig_data = [
+            ['', 'TENANT', 'LANDLORD'],
+            ['Name:', f'<b>{tenant_name}</b>', '<b>RenTahanan Property Management</b>'],
+            ['Signature:', '', ''],
+            ['Date:', f'<b>{datetime.now().strftime("%Y-%m-%d")}</b>', f'<b>{datetime.now().strftime("%Y-%m-%d")}</b>']
+        ]
+        
+        sig_table = Table(sig_data, colWidths=[1.5*inch, 2.5*inch, 2.5*inch])
+        sig_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 11),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#ECF0F1')),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('TOPPADDING', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+            ('LEFTPADDING', (0, 0), (-1, -1), 8),  # Fixed: replaced 😎 with 8
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#DDDDDD'))
+        ]))
+        
+        story.append(sig_table)
+        story.append(Spacer(1, 40))
+
+        # Build the PDF
+        doc.build(story)
+
+        # ✅ Add signatures to the final PDF using canvas (if provided)
         if owner_signature_data:
-            img_data = base64.b64decode(owner_signature_data.split(",")[1])
-            sig_image = Image.open(io.BytesIO(img_data))
+            try:
+                # Reopen the PDF to add signatures
+                packet = io.BytesIO()
+                can = canvas.Canvas(packet, pagesize=letter)
+                
+                # Process owner signature
+                img_data = base64.b64decode(owner_signature_data.split(",")[1])
+                sig_image = Image.open(io.BytesIO(img_data))
 
-            # Fix transparency to white background
-            if sig_image.mode == "RGBA":
-                white_bg = Image.new("RGB", sig_image.size, (255, 255, 255))
-                white_bg.paste(sig_image, mask=sig_image.split()[3])
-                sig_image = white_bg
+                # Fix transparency to white background
+                if sig_image.mode == "RGBA":
+                    white_bg = Image.new("RGB", sig_image.size, (255, 255, 255))
+                    white_bg.paste(sig_image, mask=sig_image.split()[3])
+                    sig_image = white_bg
 
-            img_buffer = io.BytesIO()
-            sig_image.save(img_buffer, format="PNG")
-            img_buffer.seek(0)
-            signature_reader = ImageReader(img_buffer)
+                img_buffer = io.BytesIO()
+                sig_image.save(img_buffer, format="PNG")
+                img_buffer.seek(0)
+                signature_reader = ImageReader(img_buffer)
 
-            # Draw owner signature (higher position)
-            c.drawImage(signature_reader, 370, 160, width=120, height=50, mask='auto')
+                # Position for landlord signature (adjust coordinates as needed)
+                can.drawImage(signature_reader, 320, 120, width=120, height=40, mask='auto')
+                
+                can.save()
 
-        c.save()
+                # Merge the signature page with the original PDF
+                packet.seek(0)
+                new_pdf = PdfReader(packet)
+                existing_pdf = PdfReader(open(file_path, "rb"))
+                output = PdfWriter()
+
+                # Merge signatures onto the last page
+                page = existing_pdf.pages[0]
+                page.merge_page(new_pdf.pages[0])
+                output.add_page(page)
+
+                # Save the final PDF with signatures
+                with open(file_path, "wb") as output_stream:
+                    output.write(output_stream)
+                    
+            except Exception as sig_error:
+                print(f"Signature addition failed, but PDF was generated: {sig_error}")
 
         public_url = f"http://localhost:5000/uploads/contracts/{filename}"
 
         return jsonify({
-            "message": "Contract PDF generated successfully!",
+            "message": "Professional contract PDF generated successfully!",
             "pdf_url": public_url,
-            "filename": filename
+            "filename": filename,
+            "contract_id": f"RT-{int(tenant_id):06d}"
         })
 
     except Exception as e:
@@ -284,9 +462,6 @@ def get_contracts_by_tenant(tenant_id):
 # ✅ Tenant sign contract (upload signed PDF)
 @contract_bp.route("/contracts/sign", methods=["POST"])
 def sign_contract():
-    from PyPDF2 import PdfReader, PdfWriter
-    from reportlab.pdfgen import canvas
-    from reportlab.lib.pagesizes import A4
     from io import BytesIO
     from PIL import Image
 
@@ -310,6 +485,11 @@ def sign_contract():
         os.makedirs(signed_folder, exist_ok=True)
 
         contract_path = os.path.join(uploads_root, "contracts", contract.generated_contract)
+        
+        # Check if original contract exists
+        if not os.path.exists(contract_path):
+            return jsonify({"error": "Original contract file not found"}), 404
+
         signed_pdf_path = os.path.join(signed_folder, f"signed_{contract.contractid}.pdf")
 
         # ✅ Save signature temporarily
@@ -354,7 +534,8 @@ def sign_contract():
         db.session.commit()
 
         # Cleanup temp
-        os.remove(sig_temp_path)
+        if os.path.exists(sig_temp_path):
+            os.remove(sig_temp_path)
 
         return jsonify({
             "message": "Contract signed and merged successfully!",
@@ -367,5 +548,25 @@ def sign_contract():
         return jsonify({"error": f"Failed to sign contract: {str(e)}"}), 500
 
 
-
-
+# ✅ Download contract file
+@contract_bp.route("/contracts/download/<filename>", methods=["GET"])
+def download_contract(filename):
+    """Download contract PDF file"""
+    try:
+        contracts_folder = os.path.join(current_app.config["UPLOAD_FOLDER"], "contracts")
+        signed_folder = os.path.join(current_app.config["UPLOAD_FOLDER"], "signed_contracts")
+        
+        # Check in signed contracts first, then regular contracts
+        if filename.startswith("signed_"):
+            file_path = os.path.join(signed_folder, filename)
+            if os.path.exists(file_path):
+                return send_from_directory(signed_folder, filename, as_attachment=True)
+        
+        file_path = os.path.join(contracts_folder, filename)
+        if os.path.exists(file_path):
+            return send_from_directory(contracts_folder, filename, as_attachment=True)
+        
+        return jsonify({"error": "File not found"}), 404
+        
+    except Exception as e:
+        return jsonify({"error": f"Failed to download file: {str(e)}"}), 500

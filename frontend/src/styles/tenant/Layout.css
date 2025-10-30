@@ -80,7 +80,55 @@ body {
     font-weight: 700;
     color: white;
 }
+/* Header Profile Image Styles */
+.profile-image-btn-Layout {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+.header-profile-image-Layout {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  background: #f0f0f0;
+}
+
+/* Ensure the notification and profile buttons are properly aligned */
+.notifprofile-Layout {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.notif-wrapper-Layout {
+  position: relative;
+}
+
+/* Update existing notif-btn-Layout if needed */
+.notif-btn-Layout {
+  background: #061A53;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.notif-btn-Layout:hover {
+  background: #0a2472;
+}
 .logo-Layout {
   height: 50px;
   width: auto;
