@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { CreditCard, DollarSign, Upload, CheckCircle, Clock, AlertCircle, ChevronLeft, Search } from "lucide-react";
+import { CreditCard, DollarSign, Upload, CheckCircle, Clock, AlertCircle, ChevronLeft, Search, X, FileText, Receipt } from "lucide-react";
 import "../../styles/tenant/MyBills.css";
 
 const MyBills = () => {
@@ -12,6 +12,7 @@ const MyBills = () => {
   const [selectedBills, setSelectedBills] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const storedUser = JSON.parse(localStorage.getItem("user")) || {};
   const tenantId = storedUser.tenantid || storedUser.userid || null;
@@ -46,7 +47,7 @@ const MyBills = () => {
 
   const selectedTotalAmount = selectedBills.reduce((sum, billId) => {
     const bill = bills.find(b => b.billid === billId);
-    return sum + (bill ? bill.amount : 0);
+    return sum + (bill ? parseFloat(bill.amount) : 0);
   }, 0);
 
   const handleOpenModal = () => setIsModalOpen(true);
@@ -95,9 +96,10 @@ const MyBills = () => {
         if (!response.ok) throw new Error(result.error || "Payment update failed");
       }
 
-      alert("Bills submitted for validation!");
+      setShowSuccessModal(true);
       handleCloseModal();
       setSelectedBills([]);
+      
       // Refresh bills data
       const res = await fetch(`http://localhost:5000/api/bills/${tenantId}`);
       const data = await res.json();
@@ -110,13 +112,16 @@ const MyBills = () => {
     }
   };
 
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+  };
+
   const handleViewReceipt = async (billId) => {
     try {
       const response = await fetch(`http://localhost:5000/api/transactions/receipt/${billId}`);
       const receiptData = await response.json();
 
       if (response.ok && receiptData.receiptUrl) {
-        // Construct the URL using your existing uploads route
         const receiptFullUrl = `http://localhost:5000/uploads/receipts/${receiptData.receiptUrl}`;
         window.open(receiptFullUrl, '_blank');
       } else {
@@ -129,7 +134,7 @@ const MyBills = () => {
   };
 
   const getStatusIcon = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case "paid":
         return <CheckCircle size={16} />;
       case "for validation":
@@ -139,6 +144,16 @@ const MyBills = () => {
       default:
         return <AlertCircle size={16} />;
     }
+  };
+
+  const formatCurrency = (amount) => {
+    return `₱${parseFloat(amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  const statsData = {
+    unpaid: bills.filter(b => b.status?.toLowerCase() === "unpaid").length,
+    pending: bills.filter(b => b.status?.toLowerCase() === "for validation").length,
+    paid: bills.filter(b => b.status?.toLowerCase() === "paid").length
   };
 
   return (
@@ -152,28 +167,28 @@ const MyBills = () => {
         <div className="header-stats-Tenant-Bills">
           <div className="stat-card-Tenant-Bills">
             <div className="stat-icon-Tenant-Bills unpaid">
-              <AlertCircle size={20} />
+              <AlertCircle size={24} />
             </div>
             <div className="stat-info-Tenant-Bills">
-              <span className="stat-number-Tenant-Bills">{bills.filter(b => b.status.toLowerCase() === "unpaid").length}</span>
+              <span className="stat-number-Tenant-Bills">{statsData.unpaid}</span>
               <span className="stat-label-Tenant-Bills">Unpaid</span>
             </div>
           </div>
           <div className="stat-card-Tenant-Bills">
             <div className="stat-icon-Tenant-Bills pending">
-              <Clock size={20} />
+              <Clock size={24} />
             </div>
             <div className="stat-info-Tenant-Bills">
-              <span className="stat-number-Tenant-Bills">{bills.filter(b => b.status.toLowerCase() === "for validation").length}</span>
+              <span className="stat-number-Tenant-Bills">{statsData.pending}</span>
               <span className="stat-label-Tenant-Bills">For Validation</span>
             </div>
           </div>
           <div className="stat-card-Tenant-Bills">
             <div className="stat-icon-Tenant-Bills paid">
-              <CheckCircle size={20} />
+              <CheckCircle size={24} />
             </div>
             <div className="stat-info-Tenant-Bills">
-              <span className="stat-number-Tenant-Bills">{bills.filter(b => b.status.toLowerCase() === "paid").length}</span>
+              <span className="stat-number-Tenant-Bills">{statsData.paid}</span>
               <span className="stat-label-Tenant-Bills">Paid</span>
             </div>
           </div>
@@ -186,7 +201,7 @@ const MyBills = () => {
           <Search size={20} className="search-icon-Tenant-Bills" />
           <input
             type="text"
-            placeholder="Search bills..."
+            placeholder="Search by Bill ID or Type..."
             className="search-input-Tenant-Bills"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -200,24 +215,28 @@ const MyBills = () => {
               onClick={() => setStatusFilter("all")}
             >
               All Bills
+              <span className="filter-count-Tenant-Bills">{bills.length}</span>
             </button>
             <button
               className={`filter-btn-Tenant-Bills ${statusFilter === "unpaid" ? "filter-btn-active-Tenant-Bills" : ""}`}
               onClick={() => setStatusFilter("unpaid")}
             >
               Unpaid
+              <span className="filter-count-Tenant-Bills">{statsData.unpaid}</span>
             </button>
             <button
               className={`filter-btn-Tenant-Bills ${statusFilter === "for validation" ? "filter-btn-active-Tenant-Bills" : ""}`}
               onClick={() => setStatusFilter("for validation")}
             >
               For Validation
+              <span className="filter-count-Tenant-Bills">{statsData.pending}</span>
             </button>
             <button
               className={`filter-btn-Tenant-Bills ${statusFilter === "paid" ? "filter-btn-active-Tenant-Bills" : ""}`}
               onClick={() => setStatusFilter("paid")}
             >
               Paid
+              <span className="filter-count-Tenant-Bills">{statsData.paid}</span>
             </button>
           </div>
         </div>
@@ -238,140 +257,179 @@ const MyBills = () => {
             </tr>
           </thead>
           <tbody className="table-body-Tenant-Bills">
-            {filteredBills.map((bill) => {
-              const isUnpaid = bill.status.toLowerCase() === "unpaid";
-              const isForValidation = bill.status.toLowerCase() === "for validation";
-              const isPaid = bill.status.toLowerCase() === "paid";
-              const isSelectable = isUnpaid;
+            {filteredBills.length > 0 ? (
+              filteredBills.map((bill) => {
+                const isUnpaid = bill.status?.toLowerCase() === "unpaid";
+                const isForValidation = bill.status?.toLowerCase() === "for validation";
+                const isPaid = bill.status?.toLowerCase() === "paid";
+                const isSelectable = isUnpaid;
 
-              return (
-                <tr key={bill.billid} className="table-row-Tenant-Bills">
-                  <td className="table-data-Tenant-Bills">
-                    <input
-                      type="checkbox"
-                      className="bill-checkbox-Tenant-Bills"
-                      checked={selectedBills.includes(bill.billid)}
-                      onChange={(e) => {
-                        if (e.target.checked && isSelectable) {
-                          setSelectedBills([...selectedBills, bill.billid]);
-                        } else {
-                          setSelectedBills(selectedBills.filter((id) => id !== bill.billid));
-                        }
-                      }}
-                      disabled={!isSelectable}
-                    />
-                  </td>
-                  <td className="table-data-Tenant-Bills bill-id-Tenant-Bills">
-                    {bill.billid}
-                  </td>
-                  <td className="table-data-Tenant-Bills bill-type-Tenant-Bills">
-                    {bill.billtype}
-                  </td>
-                  <td className="table-data-Tenant-Bills bill-amount-Tenant-Bills">
-                    ₱{bill.amount.toLocaleString()}
-                  </td>
-                  <td className="table-data-Tenant-Bills due-date-Tenant-Bills">
-                    {bill.duedate}
-                  </td>
-                  <td className="table-data-Tenant-Bills">
-                    <span className={`status-badge-Tenant-Bills status-${bill.status.toLowerCase()}`}>
-                      {getStatusIcon(bill.status)}
-                      {bill.status}
-                    </span>
-                  </td>
-                  <td className="table-data-Tenant-Bills action-cell-Tenant-Bills">
-                    {isUnpaid ? (
-                      <button className="action-btn-Tenant-Bills pay-now-btn-Tenant-Bills">
-                        Pay Now
-                      </button>
-                    ) : isForValidation ? (
-                      <button className="action-btn-Tenant-Bills pending-btn-Tenant-Bills" disabled>
-                        For Validation
-                      </button>
-                    ) : (
-                      <button
-                        className="action-btn-Tenant-Bills receipt-btn-Tenant-Bills"
-                        onClick={() => handleViewReceipt(bill.billid)}
-                      >
-                        View Receipt
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
+                return (
+                  <tr key={bill.billid} className="table-row-Tenant-Bills">
+                    <td className="table-data-Tenant-Bills">
+                      <input
+                        type="checkbox"
+                        className="bill-checkbox-Tenant-Bills"
+                        checked={selectedBills.includes(bill.billid)}
+                        onChange={(e) => {
+                          if (e.target.checked && isSelectable) {
+                            setSelectedBills([...selectedBills, bill.billid]);
+                          } else {
+                            setSelectedBills(selectedBills.filter((id) => id !== bill.billid));
+                          }
+                        }}
+                        disabled={!isSelectable}
+                      />
+                    </td>
+                    <td className="table-data-Tenant-Bills bill-id-Tenant-Bills">
+                      #{bill.billid}
+                    </td>
+                    <td className="table-data-Tenant-Bills bill-type-Tenant-Bills">
+                      <div className="bill-type-content-Tenant-Bills">
+                        <FileText size={16} />
+                        {bill.billtype}
+                      </div>
+                    </td>
+                    <td className="table-data-Tenant-Bills bill-amount-Tenant-Bills">
+                      {formatCurrency(bill.amount)}
+                    </td>
+                    <td className="table-data-Tenant-Bills due-date-Tenant-Bills">
+                      <div className="due-date-content-Tenant-Bills">
+                        <Clock size={14} />
+                        {bill.duedate}
+                      </div>
+                    </td>
+                    <td className="table-data-Tenant-Bills">
+                      <span className={`status-badge-Tenant-Bills status-${bill.status?.toLowerCase()}`}>
+                        {getStatusIcon(bill.status)}
+                        {bill.status}
+                      </span>
+                    </td>
+                    <td className="table-data-Tenant-Bills action-cell-Tenant-Bills">
+                      {isUnpaid ? (
+                        <button className="action-btn-Tenant-Bills pay-now-btn-Tenant-Bills">
+                          Pay Now
+                        </button>
+                      ) : isForValidation ? (
+                        <button className="action-btn-Tenant-Bills pending-btn-Tenant-Bills" disabled>
+                          <Clock size={14} />
+                          For Validation
+                        </button>
+                      ) : (
+                        <button
+                          className="action-btn-Tenant-Bills receipt-btn-Tenant-Bills"
+                          onClick={() => handleViewReceipt(bill.billid)}
+                        >
+                          <Receipt size={14} />
+                          View Receipt
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr className="no-bills-row-Tenant-Bills">
+                <td colSpan="7" className="no-bills-cell-Tenant-Bills">
+                  <div className="no-bills-content-Tenant-Bills">
+                    <FileText size={48} className="no-bills-icon-Tenant-Bills" />
+                    <h3 className="no-bills-title-Tenant-Bills">No Bills Found</h3>
+                    <p className="no-bills-description-Tenant-Bills">
+                      {searchTerm || statusFilter !== "all" 
+                        ? "No bills match your current search criteria. Try adjusting your filters."
+                        : "You don't have any bills at the moment."}
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Mobile Card View */}
       <div className="mobile-bills-container-Tenant-Bills">
-        {filteredBills.map((bill) => {
-          const isUnpaid = bill.status.toLowerCase() === "unpaid";
-          const isForValidation = bill.status.toLowerCase() === "for validation";
-          const isPaid = bill.status.toLowerCase() === "paid";
-          const isSelectable = isUnpaid;
+        {filteredBills.length > 0 ? (
+          filteredBills.map((bill) => {
+            const isUnpaid = bill.status?.toLowerCase() === "unpaid";
+            const isForValidation = bill.status?.toLowerCase() === "for validation";
+            const isPaid = bill.status?.toLowerCase() === "paid";
+            const isSelectable = isUnpaid;
 
-          return (
-            <div key={bill.billid} className="mobile-bill-card-Tenant-Bills">
-              <div className="mobile-bill-header-Tenant-Bills">
-                <div className="mobile-bill-info-Tenant-Bills">
-                  <span className="mobile-bill-id-Tenant-Bills">{bill.billid}</span>
-                </div>
-                <input
-                  type="checkbox"
-                  className="mobile-bill-checkbox-Tenant-Bills"
-                  checked={selectedBills.includes(bill.billid)}
-                  onChange={(e) => {
-                    if (e.target.checked && isSelectable) {
-                      setSelectedBills([...selectedBills, bill.billid]);
-                    } else {
-                      setSelectedBills(selectedBills.filter((id) => id !== bill.billid));
-                    }
-                  }}
-                  disabled={!isSelectable}
-                />
-              </div>
-              <div className="mobile-bill-content-Tenant-Bills">
-                <div className="mobile-bill-main-Tenant-Bills">
-                  <h4 className="mobile-bill-type-Tenant-Bills">{bill.billtype}</h4>
-                  <span className="mobile-bill-amount-Tenant-Bills">₱{bill.amount.toLocaleString()}</span>
-                </div>
-                <div className="mobile-bill-details-Tenant-Bills">
-                  <div className="mobile-bill-detail-Tenant-Bills">
-                    <span className="mobile-detail-label-Tenant-Bills">Due Date</span>
-                    <span className="mobile-detail-value-Tenant-Bills">{bill.duedate}</span>
+            return (
+              <div key={bill.billid} className="mobile-bill-card-Tenant-Bills">
+                <div className="mobile-bill-header-Tenant-Bills">
+                  <div className="mobile-bill-info-Tenant-Bills">
+                    <span className="mobile-bill-id-Tenant-Bills">#{bill.billid}</span>
+                    <div className="mobile-bill-type-Tenant-Bills">
+                      <FileText size={14} />
+                      {bill.billtype}
+                    </div>
                   </div>
-                  <div className="mobile-bill-detail-Tenant-Bills">
-                    <span className="mobile-detail-label-Tenant-Bills">Status</span>
-                    <span className={`mobile-status-badge-Tenant-Bills status-${bill.status.toLowerCase()}`}>
+                  <input
+                    type="checkbox"
+                    className="mobile-bill-checkbox-Tenant-Bills"
+                    checked={selectedBills.includes(bill.billid)}
+                    onChange={(e) => {
+                      if (e.target.checked && isSelectable) {
+                        setSelectedBills([...selectedBills, bill.billid]);
+                      } else {
+                        setSelectedBills(selectedBills.filter((id) => id !== bill.billid));
+                      }
+                    }}
+                    disabled={!isSelectable}
+                  />
+                </div>
+                <div className="mobile-bill-content-Tenant-Bills">
+                  <div className="mobile-bill-main-Tenant-Bills">
+                    <div className="mobile-amount-section-Tenant-Bills">
+                      <span className="mobile-bill-amount-Tenant-Bills">{formatCurrency(bill.amount)}</span>
+                      <span className="mobile-due-date-Tenant-Bills">
+                        <Clock size={12} />
+                        Due {bill.duedate}
+                      </span>
+                    </div>
+                    <span className={`mobile-status-badge-Tenant-Bills status-${bill.status?.toLowerCase()}`}>
                       {getStatusIcon(bill.status)}
                       {bill.status}
                     </span>
                   </div>
                 </div>
+                <div className="mobile-bill-footer-Tenant-Bills">
+                  {isUnpaid ? (
+                    <button className="mobile-action-btn-Tenant-Bills pay-now-btn-Tenant-Bills">
+                      <CreditCard size={16} />
+                      Pay Now
+                    </button>
+                  ) : isForValidation ? (
+                    <button className="mobile-action-btn-Tenant-Bills mobile-pending-btn-Tenant-Bills" disabled>
+                      <Clock size={16} />
+                      For Validation
+                    </button>
+                  ) : (
+                    <button
+                      className="mobile-action-btn-Tenant-Bills mobile-receipt-btn-Tenant-Bills"
+                      onClick={() => handleViewReceipt(bill.billid)}
+                    >
+                      <Receipt size={16} />
+                      View Receipt
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="mobile-bill-footer-Tenant-Bills">
-                {isUnpaid ? (
-                  <button className="mobile-action-btn-Tenant-Bills pay-now-btn-Tenant-Bills">
-                    Pay Now
-                  </button>
-                ) : isForValidation ? (
-                  <button className="mobile-action-btn-Tenant-Bills mobile-pending-btn-Tenant-Bills" disabled>
-                    For Validation
-                  </button>
-                ) : (
-                  <button
-                    className="mobile-action-btn-Tenant-Bills mobile-receipt-btn-Tenant-Bills"
-                    onClick={() => handleViewReceipt(bill.billid)}
-                  >
-                    View Receipt
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })
+        ) : (
+          <div className="no-bills-mobile-Tenant-Bills">
+            <FileText size={48} className="no-bills-mobile-icon-Tenant-Bills" />
+            <h3 className="no-bills-mobile-title-Tenant-Bills">No Bills Found</h3>
+            <p className="no-bills-mobile-description-Tenant-Bills">
+              {searchTerm || statusFilter !== "all" 
+                ? "No bills match your current search criteria."
+                : "You don't have any bills at the moment."}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Bottom Actions */}
@@ -382,7 +440,7 @@ const MyBills = () => {
               <span className="selected-count-Tenant-Bills">
                 {selectedBills.length} bill{selectedBills.length > 1 ? 's' : ''} selected
               </span>
-              <span className="total-amount-Tenant-Bills">₱{selectedTotalAmount.toLocaleString()}</span>
+              <span className="total-amount-Tenant-Bills">{formatCurrency(selectedTotalAmount)}</span>
             </div>
             <button
               className="proceed-btn-Tenant-Bills"
@@ -420,13 +478,13 @@ const MyBills = () => {
                           <span className="bill-id-Tenant-Bills">#{bill.billid}</span>
                           <span className="bill-type-Tenant-Bills">{bill.billtype}</span>
                         </div>
-                        <span className="bill-amount-Tenant-Bills">₱{bill.amount.toLocaleString()}</span>
+                        <span className="bill-amount-Tenant-Bills">{formatCurrency(bill.amount)}</span>
                       </div>
                     ))}
                 </div>
                 <div className="total-amount-section-Tenant-Bills">
                   <span className="total-label-Tenant-Bills">Total Amount Due</span>
-                  <span className="total-amount-value-Tenant-Bills">₱{selectedTotalAmount.toLocaleString()}</span>
+                  <span className="total-amount-value-Tenant-Bills">{formatCurrency(selectedTotalAmount)}</span>
                 </div>
               </div>
 
@@ -480,6 +538,12 @@ const MyBills = () => {
                             <span className="detail-label-Tenant-Bills">Mobile Number:</span>
                             <span className="detail-value-Tenant-Bills">0917-213-5123</span>
                           </div>
+                          <div className="account-detail-Tenant-Bills">
+                            <span className="detail-label-Tenant-Bills">Amount to Send:</span>
+                            <span className="detail-value-Tenant-Bills amount-highlight-Tenant-Bills">
+                              {formatCurrency(selectedTotalAmount)}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
@@ -511,7 +575,9 @@ const MyBills = () => {
                               onChange={(e) => setGcashReceipt(e.target.files[0])}
                             />
                             {gcashReceipt && (
-                              <span className="file-name-Tenant-Bills">{gcashReceipt.name}</span>
+                              <div className="file-preview-Tenant-Bills">
+                                <span className="file-name-Tenant-Bills">{gcashReceipt.name}</span>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -534,8 +600,71 @@ const MyBills = () => {
                     Processing Payment...
                   </>
                 ) : (
-                  "Submit Payment"
+                  <>
+                    <CreditCard size={18} />
+                    Submit Payment
+                  </>
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="modal-overlay-Tenant-Bills success-modal-overlay">
+          <div className="success-modal-Tenant-Bills">
+            <div className="success-modal-content-Tenant-Bills">
+              <div className="success-animation-container-Tenant-Bills">
+                <div className="success-checkmark-Tenant-Bills">
+                  <CheckCircle size={80} className="check-icon-Tenant-Bills" />
+                </div>
+                <div className="success-confetti-Tenant-Bills">
+                  {[...Array(12)].map((_, i) => (
+                    <div key={i} className="confetti-piece-Tenant-Bills"></div>
+                  ))}
+                </div>
+              </div>
+              
+              <h2 className="success-title-Tenant-Bills">Payment Submitted Successfully!</h2>
+              
+              <p className="success-message-Tenant-Bills">
+                Your payment of <strong>{formatCurrency(selectedTotalAmount)}</strong> has been submitted for validation.
+                {paymentMethod === "gcash" 
+                  ? " Your GCash payment is being processed and will be verified shortly." 
+                  : " Please prepare the cash amount for your next meeting with the owner."
+                }
+              </p>
+
+              <div className="success-details-Tenant-Bills">
+                <div className="success-detail-item-Tenant-Bills">
+                  <span className="detail-label-Tenant-Bills">Payment Method:</span>
+                  <span className="detail-value-Tenant-Bills">{paymentMethod === "cash" ? "Cash" : "GCash"}</span>
+                </div>
+                {paymentMethod === "gcash" && gcashRef && (
+                  <div className="success-detail-item-Tenant-Bills">
+                    <span className="detail-label-Tenant-Bills">Reference Number:</span>
+                    <span className="detail-value-Tenant-Bills">{gcashRef}</span>
+                  </div>
+                )}
+                <div className="success-detail-item-Tenant-Bills">
+                  <span className="detail-label-Tenant-Bills">Bills Paid:</span>
+                  <span className="detail-value-Tenant-Bills">{selectedBills.length} bill{selectedBills.length > 1 ? 's' : ''}</span>
+                </div>
+                <div className="success-detail-item-Tenant-Bills">
+                  <span className="detail-label-Tenant-Bills">Total Amount:</span>
+                  <span className="detail-value-Tenant-Bills amount-highlight-Tenant-Bills">
+                    {formatCurrency(selectedTotalAmount)}
+                  </span>
+                </div>
+              </div>
+
+              <button 
+                className="success-close-btn-Tenant-Bills"
+                onClick={handleCloseSuccessModal}
+              >
+                Continue
               </button>
             </div>
           </div>

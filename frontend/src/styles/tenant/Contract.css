@@ -10,6 +10,7 @@
 .contract-header-Contract {
   margin-bottom: 40px;
   text-align: center;
+  animation: slideDown-Contract 0.6s ease-out;
 }
 
 .contract-title-Contract {
@@ -20,12 +21,69 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.header-icon {
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 .contract-subtitle-Contract {
   color: #666;
   font-size: 1.1rem;
   font-weight: 500;
+}
+
+/* ===== Animations ===== */
+@keyframes slideDown-Contract {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp-Contract {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn-Contract {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn-Contract {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin-Contract {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* ===== Loading States ===== */
@@ -36,20 +94,22 @@
   justify-content: center;
   min-height: 60vh;
   gap: 20px;
+  animation: fadeIn-Contract 0.5s ease;
 }
 
 .loading-spinner-Contract {
   width: 50px;
   height: 50px;
-  border: 4px solid #e8edff;
-  border-top: 4px solid #0a2d8d;
-  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   animation: spin-Contract 1s linear infinite;
 }
 
-@keyframes spin-Contract {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.spinner-icon {
+  color: #0a2d8d;
+  width: 50px;
+  height: 50px;
 }
 
 .loading-text-Contract {
@@ -66,11 +126,12 @@
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   max-width: 500px;
   margin: 50px auto;
+  animation: scaleIn-Contract 0.5s ease;
 }
 
 .no-contract-icon-Contract {
-  font-size: 4rem;
   margin-bottom: 20px;
+  color: #0a2d8d;
 }
 
 .no-contract-title-Contract {
@@ -92,6 +153,7 @@
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 25px;
   margin-bottom: 40px;
+  animation: slideUp-Contract 0.6s ease-out 0.2s both;
 }
 
 .summary-card-Contract {
@@ -112,7 +174,6 @@
 }
 
 .summary-icon-Contract {
-  font-size: 2.5rem;
   width: 60px;
   height: 60px;
   display: flex;
@@ -122,6 +183,11 @@
   border-radius: 12px;
   color: white;
   flex-shrink: 0;
+}
+
+.summary-icon-Contract .icon {
+  width: 30px;
+  height: 30px;
 }
 
 .summary-content-Contract {
@@ -142,6 +208,30 @@
   font-weight: 700;
   color: #1e1e2f;
   line-height: 1.2;
+}
+
+/* Status Icons */
+.status-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.status-icon.signed,
+.status-icon.active {
+  color: #10b981;
+}
+
+.status-icon.pending {
+  color: #f59e0b;
+}
+
+.status-icon.rejected,
+.status-icon.expired {
+  color: #ef4444;
+}
+
+.status-icon.default {
+  color: #6b7280;
 }
 
 /* Status Colors */
@@ -175,6 +265,7 @@
   flex-direction: column;
   gap: 25px;
   margin-bottom: 40px;
+  animation: slideUp-Contract 0.6s ease-out 0.4s both;
 }
 
 /* Contract Preview */
@@ -184,6 +275,7 @@
   padding: 25px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   border: 1px solid #f0f4ff;
+  animation: fadeIn-Contract 0.6s ease;
 }
 
 .preview-header-Contract {
@@ -200,8 +292,12 @@
 }
 
 .pdf-icon-Contract {
-  font-size: 3rem;
   color: #ef4444;
+}
+
+.file-icon {
+  width: 48px;
+  height: 48px;
 }
 
 .file-details-Contract {
@@ -254,6 +350,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 20px;
+  animation: fadeIn-Contract 0.6s ease;
 }
 
 .prompt-content-Contract {
@@ -264,7 +361,6 @@
 }
 
 .prompt-icon-Contract {
-  font-size: 2.5rem;
   width: 60px;
   height: 60px;
   display: flex;
@@ -274,6 +370,11 @@
   border-radius: 12px;
   color: white;
   flex-shrink: 0;
+}
+
+.prompt-icon-Contract .icon {
+  width: 30px;
+  height: 30px;
 }
 
 .prompt-text-Contract {
@@ -321,6 +422,7 @@
   padding: 30px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   border: 1px solid #f0f4ff;
+  animation: scaleIn-Contract 0.4s ease;
 }
 
 .signature-header-Contract {
@@ -394,6 +496,9 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .cancel-btn-Contract:hover {
@@ -427,6 +532,7 @@
   border: 2px solid #10b981;
   border-radius: 16px;
   padding: 25px;
+  animation: fadeIn-Contract 0.6s ease;
 }
 
 .signed-header-Contract {
@@ -437,7 +543,6 @@
 }
 
 .signed-icon-Contract {
-  font-size: 2.5rem;
   width: 60px;
   height: 60px;
   display: flex;
@@ -447,6 +552,11 @@
   border-radius: 12px;
   color: white;
   flex-shrink: 0;
+}
+
+.signed-icon-Contract .icon {
+  width: 30px;
+  height: 30px;
 }
 
 .signed-content-Contract {
@@ -515,6 +625,7 @@
   padding: 25px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   border: 1px solid #f0f4ff;
+  animation: slideUp-Contract 0.6s ease-out 0.6s both;
 }
 
 .details-title-Contract {
@@ -550,9 +661,110 @@
   font-size: 1rem;
 }
 
+/* ===== Modals ===== */
+.modal-overlay-Contract {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn-Contract 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content-Contract {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  animation: scaleIn-Contract 0.3s ease;
+}
+
+.modal-content-Contract.success {
+  border: 2px solid #10b981;
+}
+
+.modal-content-Contract.error {
+  border: 2px solid #ef4444;
+}
+
+.modal-icon-Contract {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-icon-Contract .icon {
+  width: 64px;
+  height: 64px;
+}
+
+.modal-content-Contract.success .modal-icon-Contract .icon {
+  color: #10b981;
+}
+
+.modal-content-Contract.error .modal-icon-Contract .icon {
+  color: #ef4444;
+}
+
+.modal-title-Contract {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #1e1e2f;
+}
+
+.modal-message-Contract {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 25px;
+}
+
+.modal-button-Contract {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.modal-button-Contract.success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.modal-button-Contract.success:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+}
+
+.modal-button-Contract.error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.modal-button-Contract.error:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+}
+
 /* Button Icons */
-.btn-icon-Contract {
-  font-size: 1.1rem;
+.btn-icon {
+  width: 18px;
+  height: 18px;
 }
 
 /* ===== Mobile Responsive ===== */
@@ -618,6 +830,11 @@
     width: 100%;
     max-width: 400px;
   }
+
+  .modal-content-Contract {
+    padding: 30px 20px;
+    margin: 20px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -638,7 +855,11 @@
   .summary-icon-Contract {
     width: 50px;
     height: 50px;
-    font-size: 2rem;
+  }
+
+  .summary-icon-Contract .icon {
+    width: 25px;
+    height: 25px;
   }
   
   .sigCanvas-Contract {

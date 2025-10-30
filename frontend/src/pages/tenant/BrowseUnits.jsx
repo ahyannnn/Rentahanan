@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { Search, Home, DollarSign, Users, CheckCircle, X, Upload, FileText, User, Mail, Phone } from "lucide-react";
 import "../../styles/tenant/BrowseUnits.css";
 
 const BrowseUnits = () => {
@@ -10,14 +11,13 @@ const BrowseUnits = () => {
   const [applicationStatus, setApplicationStatus] = useState({});
   const [hasApplied, setHasApplied] = useState(false);
   const [tenantDetails, setTenantDetails] = useState({});
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // Get the whole user object from localStorage
   const storedUser = JSON.parse(localStorage.getItem("user")) || {};
-  const tenantId = storedUser.userid; // ✅ Now this will be correct
+  const tenantId = storedUser.userid;
 
   const statusOptions = ["All", "Available", "Occupied", "Pending"];
 
-  // 1. Fetch all units on mount
   useEffect(() => {
     fetch("http://localhost:5000/api/houses")
       .then((res) => res.json())
@@ -25,7 +25,6 @@ const BrowseUnits = () => {
       .catch((err) => console.error("Error fetching units:", err));
   }, []);
 
-  // 2. Fetch tenant application status
   useEffect(() => {
     if (!tenantId) return;
 
@@ -39,8 +38,6 @@ const BrowseUnits = () => {
         } else if (res.status === 404) {
           setHasApplied(false);
           setApplicationStatus({});
-        } else {
-          console.error("Unexpected response status:", res.status);
         }
       } catch (err) {
         console.error("Error fetching tenant application:", err);
@@ -50,7 +47,6 @@ const BrowseUnits = () => {
     fetchApplication();
   }, [tenantId]);
 
-  // 3. Fetch tenant details for form pre-filling
   useEffect(() => {
     if (!tenantId) return;
 
@@ -60,9 +56,6 @@ const BrowseUnits = () => {
         if (res.ok) {
           const data = await res.json();
           setTenantDetails(data);
-
-        } else {
-          console.error("Failed to fetch tenant details:", res.status);
         }
       } catch (err) {
         console.error("Error fetching tenant details:", err);
@@ -71,8 +64,7 @@ const BrowseUnits = () => {
 
     fetchTenantDetails();
   }, [tenantId]);
-  console.log(tenantId)
-  // 4. Combined search and filter logic
+
   const filteredUnits = useMemo(() => {
     const statusMap = {
       "All": () => true,
@@ -80,7 +72,6 @@ const BrowseUnits = () => {
       "Occupied": (unit) => unit.status === "Occupied",
       "Pending": (unit) => unit.status === "Pending",
     };
-
 
     return units.filter((unit) => {
       const matchesSearch = unit.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -94,7 +85,6 @@ const BrowseUnits = () => {
 
   const handleApply = () => setShowApplyForm(true);
 
-  // 5. Handle form submission
   const handleFormSubmit = (e) => {
     e.preventDefault();
 
@@ -125,8 +115,8 @@ const BrowseUnits = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        alert(data.message || "Application submitted successfully! Please wait for approval.");
         setShowApplyForm(false);
+        setShowSuccessModal(true);
         setSelectedUnit(null);
         setHasApplied(true);
       })
@@ -136,7 +126,10 @@ const BrowseUnits = () => {
       });
   };
 
-  // Calculate stats from actual data
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+  };
+
   const statsData = {
     total: units.length,
     available: units.filter(unit => unit.status === "Available").length,
@@ -147,22 +140,39 @@ const BrowseUnits = () => {
     <div className="browse-units-container-Browse">
       {/* Header Section */}
       <div className="page-header-section-Browse">
-        <h2 className="page-header-Browse">Browse Units 🏘️</h2>
-        <p className="page-subtext-Browse">Discover available rental units that match your lifestyle and budget</p>
+        <div className="header-content-Browse">
+          <h2 className="page-header-Browse">Browse Units 🏘️</h2>
+          <p className="page-subtext-Browse">Discover available rental units that match your lifestyle and budget</p>
+        </div>
 
         {/* Stats Cards */}
         <div className="stats-container-Browse">
           <div className="stat-card-Browse">
-            <div className="stat-number-Browse">{statsData.total}</div>
-            <div className="stat-label-Browse">Total Units</div>
+            <div className="stat-icon-Browse total">
+              <Home size={24} />
+            </div>
+            <div className="stat-info-Browse">
+              <div className="stat-number-Browse">{statsData.total}</div>
+              <div className="stat-label-Browse">Total Units</div>
+            </div>
           </div>
           <div className="stat-card-Browse">
-            <div className="stat-number-Browse">{statsData.available}</div>
-            <div className="stat-label-Browse">Available</div>
+            <div className="stat-icon-Browse available">
+              <CheckCircle size={24} />
+            </div>
+            <div className="stat-info-Browse">
+              <div className="stat-number-Browse">{statsData.available}</div>
+              <div className="stat-label-Browse">Available</div>
+            </div>
           </div>
           <div className="stat-card-Browse">
-            <div className="stat-number-Browse">{statsData.occupied}</div>
-            <div className="stat-label-Browse">Occupied</div>
+            <div className="stat-icon-Browse occupied">
+              <Users size={24} />
+            </div>
+            <div className="stat-info-Browse">
+              <div className="stat-number-Browse">{statsData.occupied}</div>
+              <div className="stat-label-Browse">Occupied</div>
+            </div>
           </div>
         </div>
       </div>
@@ -171,7 +181,7 @@ const BrowseUnits = () => {
       <div className="controls-container-Browse">
         <div className="search-container-Browse">
           <div className="search-box-Browse">
-            <i className="search-icon-Browse">🔍</i>
+            <Search size={20} className="search-icon-Browse" />
             <input
               type="text"
               placeholder="Search by unit name, description, or features..."
@@ -190,9 +200,12 @@ const BrowseUnits = () => {
                 className={`filter-btn-Browse ${filterStatus === status ? "filter-btn-active-Browse" : ""}`}
                 onClick={() => setFilterStatus(status)}
               >
-                {status} {status === "All" ? "" : units.filter(unit =>
-                  status === "All" ? true : unit.status === status
-                ).length}
+                {status}
+                {status !== "All" && (
+                  <span className="filter-count-Browse">
+                    {units.filter(unit => unit.status === status).length}
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -227,27 +240,44 @@ const BrowseUnits = () => {
                   <div className={`unit-status-Browse unit-status-${unit.status.toLowerCase()}-Browse`}>
                     {unit.status}
                   </div>
+                  <div className="unit-overlay-Browse">
+                    <span className="view-details-Browse">View Details</span>
+                  </div>
                 </div>
 
                 <div className="unit-info-Browse">
-                  <h3 className="unit-name-Browse">{unit.name}</h3>
-                  <p className="unit-price-Browse">₱{unit.price?.toLocaleString() || '0'} / month</p>
+                  <div className="unit-header-Browse">
+                    <h3 className="unit-name-Browse">{unit.name}</h3>
+                    <div className="unit-price-Browse">
+                      <DollarSign size={16} />
+                      ₱{unit.price?.toLocaleString() || '0'}/month
+                    </div>
+                  </div>
+                  
                   <p className="unit-description-Browse">{unit.description}</p>
 
-                  <div className="unit-features-Browse">
-                    {unit.features && unit.features.split(',').map((feature, index) => (
-                      <span key={index} className="feature-tag-Browse">
-                        {feature.trim()}
-                      </span>
-                    ))}
-                  </div>
+                  {unit.features && (
+                    <div className="unit-features-Browse">
+                      {unit.features.split(',').slice(0, 3).map((feature, index) => (
+                        <span key={index} className="feature-tag-Browse">
+                          {feature.trim()}
+                        </span>
+                      ))}
+                      {unit.features.split(',').length > 3 && (
+                        <span className="feature-more-Browse">
+                          +{unit.features.split(',').length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             ))
           ) : (
             <div className="no-results-container-Browse">
-              <div className="no-results-icon-Browse">😟</div>
-              <p className="no-results-Browse">No units found matching your criteria.</p>
+              <div className="no-results-icon-Browse">🔍</div>
+              <h3 className="no-results-title-Browse">No units found</h3>
+              <p className="no-results-Browse">Try adjusting your search criteria or filters</p>
             </div>
           )}
         </div>
@@ -257,7 +287,9 @@ const BrowseUnits = () => {
       {selectedUnit && !showApplyForm && (
         <div className="modal-overlay-Browse" onClick={() => setSelectedUnit(null)}>
           <div className="modal-content-Browse" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn-Browse" onClick={() => setSelectedUnit(null)}>×</button>
+            <button className="close-btn-Browse" onClick={() => setSelectedUnit(null)}>
+              <X size={24} />
+            </button>
 
             <div className="modal-image-container-Browse">
               {selectedUnit.imagepath ? (
@@ -282,28 +314,37 @@ const BrowseUnits = () => {
             </div>
 
             <div className="modal-details-Browse">
-              <div className="detail-item-Browse">
-                <span className="detail-label-Browse">Price:</span>
-                <span className="detail-price-Browse">₱{selectedUnit.price?.toLocaleString() || '0'} / month</span>
-              </div>
-
-              <div className="detail-item-Browse">
-                <span className="detail-label-Browse">Description:</span>
-                <p className="detail-description-Browse">{selectedUnit.description}</p>
-              </div>
-
-              {selectedUnit.features && (
+              <div className="detail-section-Browse">
                 <div className="detail-item-Browse">
-                  <span className="detail-label-Browse">Features:</span>
-                  <div className="features-list-Browse">
-                    {selectedUnit.features.split(',').map((feature, index) => (
-                      <span key={index} className="feature-tag-Browse">
-                        {feature.trim()}
-                      </span>
-                    ))}
+                  <DollarSign size={20} className="detail-icon-Browse" />
+                  <div className="detail-content-Browse">
+                    <span className="detail-label-Browse">Monthly Rent</span>
+                    <span className="detail-price-Browse">₱{selectedUnit.price?.toLocaleString() || '0'}</span>
                   </div>
                 </div>
-              )}
+
+                <div className="detail-item-Browse">
+                  <div className="detail-content-Browse">
+                    <span className="detail-label-Browse">Description</span>
+                    <p className="detail-description-Browse">{selectedUnit.description}</p>
+                  </div>
+                </div>
+
+                {selectedUnit.features && (
+                  <div className="detail-item-Browse">
+                    <div className="detail-content-Browse">
+                      <span className="detail-label-Browse">Features & Amenities</span>
+                      <div className="features-list-Browse">
+                        {selectedUnit.features.split(',').map((feature, index) => (
+                          <span key={index} className="feature-tag-Browse feature-tag-large-Browse">
+                            {feature.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="modal-actions-Browse">
@@ -327,7 +368,9 @@ const BrowseUnits = () => {
       {selectedUnit && showApplyForm && (
         <div className="modal-overlay-Browse" onClick={() => setShowApplyForm(false)}>
           <div className="modal-content-Browse form-modal-Browse" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn-Browse" onClick={() => setShowApplyForm(false)}>×</button>
+            <button className="close-btn-Browse" onClick={() => setShowApplyForm(false)}>
+              <X size={24} />
+            </button>
 
             <div className="form-header-Browse">
               <h2 className="form-title-Browse">Application for {selectedUnit.name}</h2>
@@ -336,90 +379,169 @@ const BrowseUnits = () => {
 
             <form className="application-form-Browse" onSubmit={handleFormSubmit}>
               <div className="form-section-Browse">
-                <h3 className="form-section-title-Browse">Personal Information</h3>
+                <h3 className="form-section-title-Browse">
+                  <User size={20} />
+                  Personal Information
+                </h3>
 
                 <div className="form-row-Browse">
                   <div className="form-field-Browse">
-                    <label className="form-label-Browse">Full Name:</label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      className="form-input-Browse form-input-readonly-Browse"
-                      value={tenantDetails.fullName || ""}
-                      readOnly
-                      required
-                    />
+                    <label className="form-label-Browse">Full Name</label>
+                    <div className="input-with-icon-Browse">
+                      <User size={18} className="input-icon-Browse" />
+                      <input
+                        type="text"
+                        name="fullName"
+                        className="form-input-Browse form-input-readonly-Browse"
+                        value={tenantDetails.fullName || ""}
+                        readOnly
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div className="form-field-Browse">
-                    <label className="form-label-Browse">Email:</label>
-                    <input
-                      type="email"
-                      name="email"
-                      className="form-input-Browse form-input-readonly-Browse"
-                      value={tenantDetails.email || ""}
-                      readOnly
-                      required
-                    />
+                    <label className="form-label-Browse">Email Address</label>
+                    <div className="input-with-icon-Browse">
+                      <Mail size={18} className="input-icon-Browse" />
+                      <input
+                        type="email"
+                        name="email"
+                        className="form-input-Browse form-input-readonly-Browse"
+                        value={tenantDetails.email || ""}
+                        readOnly
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
 
                 <div className="form-field-Browse">
-                  <label className="form-label-Browse">Phone Number:</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    className="form-input-Browse form-input-readonly-Browse"
-                    value={tenantDetails.phone || ""}
-                    readOnly
-                    required
-                  />
+                  <label className="form-label-Browse">Phone Number</label>
+                  <div className="input-with-icon-Browse">
+                    <Phone size={18} className="input-icon-Browse" />
+                    <input
+                      type="tel"
+                      name="phone"
+                      className="form-input-Browse form-input-readonly-Browse"
+                      value={tenantDetails.phone || ""}
+                      readOnly
+                      required
+                    />
+                  </div>
                 </div>
               </div>
 
               <div className="form-section-Browse">
-                <h3 className="form-section-title-Browse">Required Documents</h3>
+                <h3 className="form-section-title-Browse">
+                  <FileText size={20} />
+                  Required Documents
+                </h3>
                 <p className="form-help-text-Browse">Please upload clear photos or scans of the following documents:</p>
 
-                <div className="form-field-Browse">
-                  <label className="form-label-Browse">Valid ID (Government Issued):</label>
-                  <input
-                    type="file"
-                    name="validId"
-                    className="form-file-input-Browse"
-                    accept="image/*,.pdf"
-                    required
-                  />
-                </div>
+                <div className="document-upload-grid-Browse">
+                  <div className="document-upload-Browse">
+                    <label className="document-label-Browse">
+                      <Upload size={20} />
+                      Valid ID (Government Issued)
+                    </label>
+                    <input
+                      type="file"
+                      name="validId"
+                      className="document-file-input-Browse"
+                      accept="image/*,.pdf"
+                      required
+                    />
+                  </div>
 
-                <div className="form-field-Browse">
-                  <label className="form-label-Browse">Barangay Clearance:</label>
-                  <input
-                    type="file"
-                    name="brgyClearance"
-                    className="form-file-input-Browse"
-                    accept="image/*,.pdf"
-                    required
-                  />
-                </div>
+                  <div className="document-upload-Browse">
+                    <label className="document-label-Browse">
+                      <Upload size={20} />
+                      Barangay Clearance
+                    </label>
+                    <input
+                      type="file"
+                      name="brgyClearance"
+                      className="document-file-input-Browse"
+                      accept="image/*,.pdf"
+                      required
+                    />
+                  </div>
 
-                <div className="form-field-Browse">
-                  <label className="form-label-Browse">Proof of Income:</label>
-                  <input
-                    type="file"
-                    name="proofOfIncome"
-                    className="form-file-input-Browse"
-                    accept="image/*,.pdf"
-                    required
-                  />
+                  <div className="document-upload-Browse">
+                    <label className="document-label-Browse">
+                      <Upload size={20} />
+                      Proof of Income
+                    </label>
+                    <input
+                      type="file"
+                      name="proofOfIncome"
+                      className="document-file-input-Browse"
+                      accept="image/*,.pdf"
+                      required
+                    />
+                  </div>
                 </div>
               </div>
 
               <div className="form-buttons-container-Browse">
-                <button type="submit" className="form-submit-btn-Browse">Submit Application</button>
-                <button type="button" className="form-cancel-btn-Browse" onClick={() => setShowApplyForm(false)}>Cancel</button>
+                <button type="button" className="form-cancel-btn-Browse" onClick={() => setShowApplyForm(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="form-submit-btn-Browse">
+                  Submit Application
+                </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="modal-overlay-Browse success-modal-overlay-Browse">
+          <div className="success-modal-Browse">
+            <div className="success-modal-content-Browse">
+              <div className="success-animation-container-Browse">
+                <div className="success-checkmark-Browse">
+                  <CheckCircle size={80} className="check-icon-Browse" />
+                </div>
+                <div className="success-confetti-Browse">
+                  {[...Array(12)].map((_, i) => (
+                    <div key={i} className="confetti-piece-Browse"></div>
+                  ))}
+                </div>
+              </div>
+              
+              <h2 className="success-title-Browse">Application Submitted!</h2>
+              
+              <p className="success-message-Browse">
+                Your application for <strong>{selectedUnit?.name}</strong> has been submitted successfully. 
+                We will review your application and contact you within 2-3 business days.
+              </p>
+
+              <div className="success-details-Browse">
+                <div className="success-detail-item-Browse">
+                  <span className="detail-label-Browse">Property:</span>
+                  <span className="detail-value-Browse">{selectedUnit?.name}</span>
+                </div>
+                <div className="success-detail-item-Browse">
+                  <span className="detail-label-Browse">Monthly Rent:</span>
+                  <span className="detail-value-Browse">₱{selectedUnit?.price?.toLocaleString()}</span>
+                </div>
+                <div className="success-detail-item-Browse">
+                  <span className="detail-label-Browse">Application Date:</span>
+                  <span className="detail-value-Browse">{new Date().toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              <button 
+                className="success-close-btn-Browse"
+                onClick={handleCloseSuccessModal}
+              >
+                Continue Browsing
+              </button>
+            </div>
           </div>
         </div>
       )}

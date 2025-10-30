@@ -22,8 +22,8 @@
 }
 
 .page-title-Tenant-Bills {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 2.2rem;
+    font-weight: 800;
     margin-bottom: 8px;
     color: #0b3c91;
     background: linear-gradient(135deg, #0b3c91 0%, #1e6af5 100%);
@@ -41,28 +41,31 @@
 
 .header-stats-Tenant-Bills {
     display: flex;
-    gap: 16px;
+    gap: 20px;
 }
 
 .stat-card-Tenant-Bills {
     background: #f8fafc;
-    padding: 20px;
-    border-radius: 12px;
+    padding: 25px;
+    border-radius: 16px;
     border: 1px solid #e2e8f0;
-    min-width: 120px;
+    min-width: 140px;
     text-align: center;
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
 }
 
 .stat-card-Tenant-Bills:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
 .stat-icon-Tenant-Bills {
-    padding: 12px;
-    border-radius: 10px;
-    margin: 0 auto 8px;
+    padding: 16px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -85,14 +88,14 @@
 
 .stat-number-Tenant-Bills {
     display: block;
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.8rem;
+    font-weight: 800;
     color: #1e293b;
     line-height: 1;
 }
 
 .stat-label-Tenant-Bills {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: #64748b;
     font-weight: 600;
     text-transform: uppercase;
@@ -104,20 +107,20 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
-    margin-bottom: 25px;
+    gap: 25px;
+    margin-bottom: 30px;
     flex-wrap: wrap;
 }
 
 .search-container-Tenant-Bills {
     position: relative;
     flex: 1;
-    min-width: 300px;
+    min-width: 320px;
 }
 
 .search-icon-Tenant-Bills {
     position: absolute;
-    left: 16px;
+    left: 18px;
     top: 50%;
     transform: translateY(-50%);
     color: #64748b;
@@ -125,27 +128,28 @@
 
 .search-input-Tenant-Bills {
     width: 100%;
-    padding: 14px 16px 14px 48px;
+    padding: 16px 20px 16px 50px;
     border: 2px solid #e2e8f0;
     border-radius: 12px;
     font-size: 1rem;
     background: #f8fafc;
     color: #1e293b;
     transition: all 0.3s ease;
+    font-weight: 500;
 }
 
 .search-input-Tenant-Bills:focus {
     outline: none;
     border-color: #0b3c91;
     background: #fff;
-    box-shadow: 0 0 0 3px rgba(11, 60, 145, 0.1);
+    box-shadow: 0 0 0 4px rgba(11, 60, 145, 0.1);
 }
 
 .filter-tabs-Tenant-Bills {
     display: flex;
     gap: 8px;
     background: #f1f5f9;
-    padding: 4px;
+    padding: 6px;
     border-radius: 12px;
 }
 
@@ -153,13 +157,16 @@
     background: transparent;
     border: none;
     color: #64748b;
-    padding: 10px 20px;
+    padding: 12px 20px;
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.9rem;
     transition: all 0.3s ease;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .filter-btn-Tenant-Bills:hover {
@@ -171,6 +178,15 @@
     color: #0b3c91;
     background: #fff;
     box-shadow: 0 2px 8px rgba(11, 60, 145, 0.15);
+}
+
+.filter-count-Tenant-Bills {
+    background: rgba(11, 60, 145, 0.1);
+    color: #0b3c91;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
 }
 
 /* ===== Table Styles ===== */
@@ -197,7 +213,7 @@
 }
 
 .table-heading-Tenant-Bills {
-    padding: 18px 16px;
+    padding: 20px 16px;
     color: #475569;
     font-weight: 600;
     font-size: 0.9rem;
@@ -221,20 +237,27 @@
 }
 
 .table-data-Tenant-Bills {
-    padding: 18px 16px;
+    padding: 20px 16px;
     font-size: 0.95rem;
     color: #475569;
     vertical-align: middle;
 }
 
 .bill-id-Tenant-Bills {
-    font-weight: 600;
+    font-weight: 700;
     color: #0b3c91;
+    font-size: 0.9rem;
 }
 
 .bill-type-Tenant-Bills {
     font-weight: 500;
     color: #1e293b;
+}
+
+.bill-type-content-Tenant-Bills {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .bill-amount-Tenant-Bills {
@@ -248,32 +271,10 @@
     font-weight: 500;
 }
 
-/* Category Badges */
-.category-badge-Tenant-Bills {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.category-rent {
-    background: #f0f7ff;
-    color: #1d4ed8;
-    border: 1px solid #dbeafe;
-}
-
-.category-utilities {
-    background: #f0fdf4;
-    color: #15803d;
-    border: 1px solid #bbf7d0;
-}
-
-.category-other {
-    background: #faf5ff;
-    color: #7c3aed;
-    border: 1px solid #ddd6fe;
+.due-date-content-Tenant-Bills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 /* Status Badges */
@@ -322,7 +323,7 @@
 
 /* ===== Action Buttons ===== */
 .action-btn-Tenant-Bills {
-    padding: 10px 20px;
+    padding: 10px 16px;
     border: none;
     border-radius: 8px;
     font-size: 0.85rem;
@@ -331,6 +332,10 @@
     transition: all 0.3s ease;
     min-width: 120px;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .pay-now-btn-Tenant-Bills {
@@ -360,6 +365,47 @@
     color: white;
     cursor: not-allowed;
     opacity: 0.7;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ===== No Bills State ===== */
+.no-bills-row-Tenant-Bills {
+    border: none;
+}
+
+.no-bills-cell-Tenant-Bills {
+    padding: 60px 20px;
+    text-align: center;
+    border: none;
+}
+
+.no-bills-content-Tenant-Bills {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.no-bills-icon-Tenant-Bills {
+    color: #e2e8f0;
+}
+
+.no-bills-title-Tenant-Bills {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #64748b;
+    margin: 0;
+}
+
+.no-bills-description-Tenant-Bills {
+    color: #94a3b8;
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.5;
 }
 
 /* ===== Bottom Actions ===== */
@@ -451,8 +497,8 @@
 
 .mobile-bill-info-Tenant-Bills {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .mobile-bill-id-Tenant-Bills {
@@ -461,13 +507,12 @@
     font-size: 1rem;
 }
 
-.mobile-category-badge-Tenant-Bills {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.mobile-bill-type-Tenant-Bills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #64748b;
+    font-size: 0.9rem;
 }
 
 .mobile-bill-checkbox-Tenant-Bills {
@@ -484,46 +529,27 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
-}
-
-.mobile-bill-type-Tenant-Bills {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin: 0;
-}
-
-.mobile-bill-amount-Tenant-Bills {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #0b3c91;
-}
-
-.mobile-bill-details-Tenant-Bills {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 12px;
 }
 
-.mobile-bill-detail-Tenant-Bills {
+.mobile-amount-section-Tenant-Bills {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.mobile-detail-label-Tenant-Bills {
-    font-size: 0.8rem;
-    color: #64748b;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.mobile-bill-amount-Tenant-Bills {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #0b3c91;
 }
 
-.mobile-detail-value-Tenant-Bills {
-    font-size: 0.9rem;
-    color: #1e293b;
-    font-weight: 500;
+.mobile-due-date-Tenant-Bills {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #64748b;
+    font-size: 0.8rem;
 }
 
 .mobile-status-badge-Tenant-Bills {
@@ -544,7 +570,7 @@
 }
 
 .mobile-action-btn-Tenant-Bills {
-    padding: 10px 20px;
+    padding: 12px 20px;
     border: none;
     border-radius: 8px;
     font-size: 0.85rem;
@@ -553,6 +579,39 @@
     transition: all 0.3s ease;
     width: 100%;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* No Bills Mobile */
+.no-bills-mobile-Tenant-Bills {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+}
+
+.no-bills-mobile-icon-Tenant-Bills {
+    color: #e2e8f0;
+    margin-bottom: 16px;
+}
+
+.no-bills-mobile-title-Tenant-Bills {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #64748b;
+    margin: 0 0 8px 0;
+}
+
+.no-bills-mobile-description-Tenant-Bills {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.5;
 }
 
 /* ===== Modal Styles ===== */
@@ -835,6 +894,11 @@
     font-weight: 700;
 }
 
+.amount-highlight-Tenant-Bills {
+    color: #0b3c91;
+    font-weight: 800;
+}
+
 /* GCash Form */
 .gcash-form-Tenant-Bills {
     display: flex;
@@ -912,9 +976,15 @@
     cursor: pointer;
 }
 
+.file-preview-Tenant-Bills {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: #f0f7ff;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
 .file-name-Tenant-Bills {
-    display: block;
-    margin-top: 8px;
     font-size: 0.9rem;
     color: #0b3c91;
     font-weight: 600;
@@ -971,9 +1041,228 @@
     100% { transform: rotate(360deg); }
 }
 
-/* ===== Media Queries ===== */
+/* ===== Success Modal Styles ===== */
+.success-modal-overlay {
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.7);
+  animation: fadeIn 0.3s ease-out;
+}
 
-/* Tablets and small screens */
+.success-modal-Tenant-Bills {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: slideUp 0.4s ease-out;
+}
+
+.success-modal-content-Tenant-Bills {
+  padding: 40px 30px 30px;
+  text-align: center;
+  position: relative;
+}
+
+.success-animation-container-Tenant-Bills {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.success-checkmark-Tenant-Bills {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  margin: 0 auto 20px;
+  animation: scaleIn 0.5s ease-out, bounce 1s ease-in-out 0.5s;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.check-icon-Tenant-Bills {
+  animation: checkmark 0.5s ease-out 0.2s both;
+}
+
+.success-confetti-Tenant-Bills {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+}
+
+.confetti-piece-Tenant-Bills {
+  position: absolute;
+  width: 8px;
+  height: 16px;
+  background: linear-gradient(45deg, #10b981, #8b5cf6, #3b82f6, #f59e0b);
+  top: 50%;
+  left: 50%;
+  opacity: 0;
+  animation: confetti 1s ease-out 0.5s;
+}
+
+.confetti-piece-Tenant-Bills:nth-child(1) { transform: translate(-50%, -50%) rotate(0deg) translateY(-60px); animation-delay: 0.5s; }
+.confetti-piece-Tenant-Bills:nth-child(2) { transform: translate(-50%, -50%) rotate(30deg) translateY(-60px); animation-delay: 0.6s; }
+.confetti-piece-Tenant-Bills:nth-child(3) { transform: translate(-50%, -50%) rotate(60deg) translateY(-60px); animation-delay: 0.7s; }
+.confetti-piece-Tenant-Bills:nth-child(4) { transform: translate(-50%, -50%) rotate(90deg) translateY(-60px); animation-delay: 0.8s; }
+.confetti-piece-Tenant-Bills:nth-child(5) { transform: translate(-50%, -50%) rotate(120deg) translateY(-60px); animation-delay: 0.9s; }
+.confetti-piece-Tenant-Bills:nth-child(6) { transform: translate(-50%, -50%) rotate(150deg) translateY(-60px); animation-delay: 1.0s; }
+.confetti-piece-Tenant-Bills:nth-child(7) { transform: translate(-50%, -50%) rotate(180deg) translateY(-60px); animation-delay: 1.1s; }
+.confetti-piece-Tenant-Bills:nth-child(8) { transform: translate(-50%, -50%) rotate(210deg) translateY(-60px); animation-delay: 1.2s; }
+.confetti-piece-Tenant-Bills:nth-child(9) { transform: translate(-50%, -50%) rotate(240deg) translateY(-60px); animation-delay: 1.3s; }
+.confetti-piece-Tenant-Bills:nth-child(10) { transform: translate(-50%, -50%) rotate(270deg) translateY(-60px); animation-delay: 1.4s; }
+.confetti-piece-Tenant-Bills:nth-child(11) { transform: translate(-50%, -50%) rotate(300deg) translateY(-60px); animation-delay: 1.5s; }
+.confetti-piece-Tenant-Bills:nth-child(12) { transform: translate(-50%, -50%) rotate(330deg) translateY(-60px); animation-delay: 1.6s; }
+
+.success-title-Tenant-Bills {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0 0 16px 0;
+  background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.success-message-Tenant-Bills {
+  color: #374151;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0 0 30px 0;
+}
+
+.success-details-Tenant-Bills {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 16px;
+  padding: 24px;
+  margin: 0 0 30px 0;
+  text-align: left;
+}
+
+.success-detail-item-Tenant-Bills {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #dcfce7;
+}
+
+.success-detail-item-Tenant-Bills:last-child {
+  border-bottom: none;
+}
+
+.detail-label-Tenant-Bills {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.detail-value-Tenant-Bills {
+  font-weight: 700;
+  color: #065f46;
+  font-size: 0.95rem;
+}
+
+.success-close-btn-Tenant-Bills {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  width: 100%;
+  max-width: 200px;
+}
+
+.success-close-btn-Tenant-Bills:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* ===== Success Modal Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.1);
+  }
+  60% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes checkmark {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-45deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) rotate(-45deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes confetti {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--rotate, 0deg)) translateY(-60px) scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--rotate, 0deg)) translateY(-30px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--rotate, 0deg)) translateY(0px) scale(0.5);
+  }
+}
+
+/* ===== Media Queries ===== */
 @media (max-width: 1024px) {
     .bills-invoice-container-Tenant-Bills {
         padding: 20px;
@@ -1054,6 +1343,41 @@
     .modal-footer-Tenant-Bills {
         padding: 20px;
     }
+
+    .success-modal-Tenant-Bills {
+        width: 95%;
+        margin: 20px;
+    }
+
+    .success-modal-content-Tenant-Bills {
+        padding: 30px 20px 20px;
+    }
+
+    .success-checkmark-Tenant-Bills {
+        width: 100px;
+        height: 100px;
+    }
+
+    .check-icon-Tenant-Bills {
+        size: 60px;
+    }
+
+    .success-title-Tenant-Bills {
+        font-size: 1.5rem;
+    }
+
+    .success-message-Tenant-Bills {
+        font-size: 1rem;
+    }
+
+    .success-details-Tenant-Bills {
+        padding: 20px;
+    }
+
+    .success-close-btn-Tenant-Bills {
+        padding: 14px 32px;
+        font-size: 1rem;
+    }
 }
 
 /* Small mobile devices */
@@ -1094,5 +1418,36 @@
 
     .method-header-Tenant-Bills {
         gap: 12px;
+    }
+
+    .success-modal-content-Tenant-Bills {
+        padding: 25px 15px 15px;
+    }
+
+    .success-checkmark-Tenant-Bills {
+        width: 80px;
+        height: 80px;
+    }
+
+    .check-icon-Tenant-Bills {
+        size: 50px;
+    }
+
+    .success-title-Tenant-Bills {
+        font-size: 1.3rem;
+    }
+
+    .success-message-Tenant-Bills {
+        font-size: 0.95rem;
+    }
+
+    .success-details-Tenant-Bills {
+        padding: 16px;
+    }
+
+    .success-detail-item-Tenant-Bills {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
     }
 }
