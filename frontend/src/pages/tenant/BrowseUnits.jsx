@@ -145,36 +145,6 @@ const BrowseUnits = () => {
           <p className="page-subtext-Browse">Discover available rental units that match your lifestyle and budget</p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="stats-container-Browse">
-          <div className="stat-card-Browse">
-            <div className="stat-icon-Browse total">
-              <Home size={24} />
-            </div>
-            <div className="stat-info-Browse">
-              <div className="stat-number-Browse">{statsData.total}</div>
-              <div className="stat-label-Browse">Total Units</div>
-            </div>
-          </div>
-          <div className="stat-card-Browse">
-            <div className="stat-icon-Browse available">
-              <CheckCircle size={24} />
-            </div>
-            <div className="stat-info-Browse">
-              <div className="stat-number-Browse">{statsData.available}</div>
-              <div className="stat-label-Browse">Available</div>
-            </div>
-          </div>
-          <div className="stat-card-Browse">
-            <div className="stat-icon-Browse occupied">
-              <Users size={24} />
-            </div>
-            <div className="stat-info-Browse">
-              <div className="stat-number-Browse">{statsData.occupied}</div>
-              <div className="stat-label-Browse">Occupied</div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Search and Filter Section */}
