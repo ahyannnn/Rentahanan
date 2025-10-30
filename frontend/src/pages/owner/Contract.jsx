@@ -33,6 +33,7 @@ const OwnerContract = () => {
         }
     }, [location.state]);
 
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -60,6 +61,27 @@ const OwnerContract = () => {
         };
         fetchData();
     }, []);
+
+    // Function to get profile image URL
+    const getProfileImage = (user) => {
+        if (user.image) {
+            return `http://localhost:5000/uploads/profile_images/${user.image}`;
+        }
+        if (user.profile_image) {
+            return `http://localhost:5000/uploads/profile_images/${user.profile_image}`;
+        }
+        return null;
+    };
+
+    // Function to handle image error
+    const handleImageError = (e, user) => {
+        console.log("Image failed to load for user:", user.fullname);
+        e.target.style.display = 'none';
+        const fallbackElement = e.target.nextSibling;
+        if (fallbackElement) {
+            fallbackElement.style.display = 'flex';
+        }
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -226,42 +248,61 @@ const OwnerContract = () => {
                                     <p>There are no active contracts at the moment.</p>
                                 </div>
                             ) : (
-                                contracts.map((contract, index) => (
-                                    <div className="Owner-Contract-card" key={index}>
-                                        <div className="Owner-Contract-card-header">
-                                            <div className="Owner-Contract-tenant-avatar">
-                                                <User size={20} />
+                                contracts.map((contract, index) => {
+                                    const profileImage = getProfileImage(contract);
+                                    return (
+                                        <div className="Owner-Contract-card" key={index}>
+                                            <div className="Owner-Contract-card-header">
+                                                <div className="Owner-Contract-tenant-avatar">
+                                                    {profileImage ? (
+                                                        <>
+                                                            <img 
+                                                                src={profileImage} 
+                                                                alt={contract.fullname}
+                                                                className="Owner-Contract-avatar-image"
+                                                                onError={(e) => handleImageError(e, contract)}
+                                                            />
+                                                            <div className="Owner-Contract-avatar-fallback" style={{display: 'none'}}>
+                                                                <User size={20} />
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <div className="Owner-Contract-avatar-fallback">
+                                                            <User size={20} />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="Owner-Contract-tenant-info">
+                                                    <h3>{contract.fullname}</h3>
+                                                    <span className="Owner-Contract-tenant-email">{contract.email}</span>
+                                                </div>
                                             </div>
-                                            <div className="Owner-Contract-tenant-info">
-                                                <h3>{contract.fullname}</h3>
-                                                <span className="Owner-Contract-tenant-email">{contract.email}</span>
+                                            
+                                            <div className="Owner-Contract-card-details">
+                                                <div className="Owner-Contract-detail-item">
+                                                    <Home size={16} />
+                                                    <span>{contract.unit_name}</span>
+                                                </div>
+                                                <div className="Owner-Contract-detail-item">
+                                                    <DollarSign size={16} />
+                                                    <span>₱{contract.unit_price}/month</span>
+                                                </div>
+                                                <div className="Owner-Contract-detail-item">
+                                                    <Calendar size={16} />
+                                                    <span>Started {new Date(contract.start_date).toLocaleDateString()}</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        
-                                        <div className="Owner-Contract-card-details">
-                                            <div className="Owner-Contract-detail-item">
-                                                <Home size={16} />
-                                                <span>{contract.unit_name}</span>
-                                            </div>
-                                            <div className="Owner-Contract-detail-item">
-                                                <DollarSign size={16} />
-                                                <span>₱{contract.unit_price}/month</span>
-                                            </div>
-                                            <div className="Owner-Contract-detail-item">
-                                                <Calendar size={16} />
-                                                <span>Started {new Date(contract.start_date).toLocaleDateString()}</span>
-                                            </div>
-                                        </div>
 
-                                        <button
-                                            className="Owner-Contract-view-btn"
-                                            onClick={() => window.open(`http://localhost:5000/uploads/signed_contracts/${contract.signed_contract}`, "_blank")}
-                                        >
-                                            <Download size={16} />
-                                            View Contract
-                                        </button>
-                                    </div>
-                                ))
+                                            <button
+                                                className="Owner-Contract-view-btn"
+                                                onClick={() => window.open(`http://localhost:5000/uploads/signed_contracts/${contract.signed_contract}`, "_blank")}
+                                            >
+                                                <Download size={16} />
+                                                View Contract
+                                            </button>
+                                        </div>
+                                    );
+                                })
                             )}
                         </div>
                     )}
@@ -295,48 +336,51 @@ const OwnerContract = () => {
                                 </thead>
                                 <tbody>
                                     {applicants.length > 0 ? (
-                                        applicants.map((app, i) => (
-                                            <tr
-                                                key={i}
-                                                className={`Owner-Contract-table-row ${highlightedApplicantId === app.applicationid ? "Owner-Contract-highlight-row" : ""}`}
-                                            >
-                                                <td>
-                                                    <div className="Owner-Contract-applicant-info">
-                                                        <span className="Owner-Contract-applicant-name">{app.fullname}</span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div className="Owner-Contract-contact-info">
-                                                        <span className="Owner-Contract-contact-email">
-                                                            <Mail size={12} />
-                                                            {app.email}
-                                                        </span>
-                                                        <span className="Owner-Contract-contact-phone">
-                                                            <Phone size={12} />
-                                                            {app.phone}
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div className="Owner-Contract-unit-info">
-                                                        <Home size={12} />
-                                                        {app.unit_name}
-                                                    </div>
-                                                </td>
-                                                <td className="Owner-Contract-amount">
-                                                    ₱{parseFloat(app.unit_price || 0).toLocaleString()}
-                                                </td>
-                                                <td>
-                                                    <button 
-                                                        className="Owner-Contract-issue-btn"
-                                                        onClick={() => openIssueModal(app)}
-                                                    >
-                                                        <FileText size={14} />
-                                                        Issue Contract
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
+                                        applicants.map((app, i) => {
+                                            const profileImage = getProfileImage(app);
+                                            return (
+                                                <tr
+                                                    key={i}
+                                                    className={`Owner-Contract-table-row ${highlightedApplicantId === app.applicationid ? "Owner-Contract-highlight-row" : ""}`}
+                                                >
+                                                    <td>
+                                                        <div className="Owner-Contract-applicant-info">
+                                                            <span className="Owner-Contract-applicant-name">{app.fullname}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div className="Owner-Contract-contact-info">
+                                                            <span className="Owner-Contract-contact-email">
+                                                                <Mail size={12} />
+                                                                {app.email}
+                                                            </span>
+                                                            <span className="Owner-Contract-contact-phone">
+                                                                <Phone size={12} />
+                                                                {app.phone}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div className="Owner-Contract-unit-info">
+                                                            <Home size={12} />
+                                                            {app.unit_name}
+                                                        </div>
+                                                    </td>
+                                                    <td className="Owner-Contract-amount">
+                                                        ₱{parseFloat(app.unit_price || 0).toLocaleString()}
+                                                    </td>
+                                                    <td>
+                                                        <button 
+                                                            className="Owner-Contract-issue-btn"
+                                                            onClick={() => openIssueModal(app)}
+                                                        >
+                                                            <FileText size={14} />
+                                                            Issue Contract
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
                                     ) : (
                                         <tr>
                                             <td colSpan="5" className="Owner-Contract-empty-state">
@@ -367,7 +411,23 @@ const OwnerContract = () => {
                             {/* Applicant Summary */}
                             <div className="Owner-Contract-applicant-summary">
                                 <div className="Owner-Contract-applicant-avatar">
-                                    <User size={24} />
+                                    {getProfileImage(selectedApplicant) ? (
+                                        <>
+                                            <img 
+                                                src={getProfileImage(selectedApplicant)} 
+                                                alt={selectedApplicant.fullname}
+                                                className="Owner-Contract-modal-avatar-image"
+                                                onError={(e) => handleImageError(e, selectedApplicant)}
+                                            />
+                                            <div className="Owner-Contract-modal-avatar-fallback" style={{display: 'none'}}>
+                                                <User size={24} />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="Owner-Contract-modal-avatar-fallback">
+                                            <User size={24} />
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="Owner-Contract-applicant-details">
                                     <h4>{selectedApplicant.fullname}</h4>

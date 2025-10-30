@@ -188,6 +188,7 @@
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
 }
 
+/* === AVATAR STYLES WITH IMAGE SUPPORT === */
 .Owner-Tenant-avatar {
     width: 70px;
     height: 70px;
@@ -201,6 +202,28 @@
     font-weight: 700;
     font-size: 1.3rem;
     box-shadow: 0 4px 15px rgba(10, 45, 141, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.Owner-Tenant-avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.Owner-Tenant-avatar-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    color: white;
+    font-weight: bold;
+    font-size: 1.3rem;
+    border-radius: 50%;
 }
 
 .Owner-Tenant-info h4 {
@@ -324,6 +347,7 @@
     gap: 15px;
 }
 
+/* === MODAL AVATAR STYLES === */
 .Owner-Tenant-modal-avatar {
     width: 60px;
     height: 60px;
@@ -336,6 +360,28 @@
     font-weight: 700;
     font-size: 1.2rem;
     box-shadow: 0 4px 15px rgba(10, 45, 141, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.Owner-Tenant-modal-avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.Owner-Tenant-modal-avatar-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    border-radius: 50%;
 }
 
 .Owner-Tenant-modal-user-info h2 {

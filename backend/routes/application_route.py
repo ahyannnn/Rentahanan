@@ -6,6 +6,7 @@ from extensions import db
 from models.applications_model import Application
 from models.users_model import User
 from models.units_model import House as Unit
+from models.notifications_model import Notification
 
 application_bp = Blueprint("application_bp", __name__)
 
@@ -27,6 +28,9 @@ def apply_unit():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
+    # Get ALL landlords in the system
+    all_landlords = User.query.filter_by(role='landlord').all()
+
     # Base folder setup
     base_folder = current_app.config["UPLOAD_FOLDER"]
     folders = {
@@ -45,7 +49,6 @@ def apply_unit():
         unique_filename = f"{user_id}_{prefix}_{timestamp}_{filename}"
         save_path = os.path.join(folders[folder_key], unique_filename)
         file.save(save_path)
-        # ✅ Return only the filename, not the full path
         return unique_filename
 
     try:
@@ -55,6 +58,7 @@ def apply_unit():
 
         # Check if application exists
         application = Application.query.filter_by(userid=user_id).first()
+        application_id = None
 
         if application:
             application.unitid = unit_id
@@ -63,6 +67,7 @@ def apply_unit():
             application.proof_of_income = proof_filename
             application.status = "Pending"
             application.submissiondate = datetime.utcnow()
+            application_id = application.applicationid
         else:
             new_app = Application(
                 unitid=unit_id,
@@ -74,9 +79,32 @@ def apply_unit():
                 submissiondate=datetime.utcnow()
             )
             db.session.add(new_app)
+            db.session.flush()
+            application_id = new_app.applicationid
+
+        # ✅ Create notification for ALL landlords
+        for landlord in all_landlords:
+            landlord_notification = Notification(
+                userid=landlord.userid,
+                userrole='landlord',
+                title='New Rental Application',
+                message=f'{user.firstname} {user.lastname} has submitted a new rental application. Application ID: #{application_id}',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(landlord_notification)
+
+        # ✅ Create notification for tenant
+        tenant_notification = Notification(
+            userid=user.userid,
+            userrole='tenant',
+            title='Application Submitted',
+            message=f'Your rental application has been submitted successfully. Application ID: #{application_id}',
+            creationdate=datetime.utcnow()
+        )
+        db.session.add(tenant_notification)
 
         db.session.commit()
-        return jsonify({"message": "Application submitted successfully!"})
+        return jsonify({"message": "Application submitted successfully!", "application_id": application_id})
 
     except Exception as e:
         db.session.rollback()

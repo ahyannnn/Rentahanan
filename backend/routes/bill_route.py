@@ -6,6 +6,7 @@ from models.users_model import User
 from models.units_model import House as Unit
 from models.contracts_model import Contract
 from models.bills_model import Bill
+from models.notifications_model import Notification  # Add this import
 from werkzeug.utils import secure_filename
 import os
 
@@ -99,21 +100,91 @@ def create_bill():
             description=description
         )
         db.session.add(new_bill)
-        db.session.commit()
+        db.session.flush()  # Get bill ID without committing
 
         contract = Contract.query.filter_by(tenantid=tenantid).first()
         if contract:
             new_bill.contractid = contract.contractid
-            db.session.commit()
 
+        # ✅ Create notification for tenant
+        tenant = Tenant.query.filter_by(tenantid=tenantid).first()
+        if tenant:
+            tenant_notification = Notification(
+                userid=tenant.userid,
+                userrole='tenant',
+                title='New Bill Issued',
+                message=f'New {billtype} bill for ₱{amount:,.2f} has been issued. Due date: {duedate}',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(tenant_notification)
+
+        db.session.commit()
         return jsonify({"message": "Bill created successfully!"}), 201
 
     except Exception as e:
         db.session.rollback()
         print("Error creating bill:", e)
         return jsonify({"error": "Failed to create bill"}), 500
-    
-    
+
+
+# -------------------------------
+# 📋 Get Paid Bills for Payment History
+# -------------------------------
+@bill_bp.route("/bills/paid/<int:tenant_id>", methods=["GET"])
+def get_paid_bills(tenant_id):
+    try:
+        print(f"🔹 Fetching paid bills for tenant {tenant_id}")
+        
+        # Query only paid bills for the specific tenant
+        paid_bills = (
+            db.session.query(
+                Bill.billid,
+                Bill.tenantid,
+                Bill.billtype,
+                Bill.amount,
+                Bill.status,
+                Bill.issuedate,
+                Bill.duedate,
+                Bill.paymenttype,
+                Bill.gcash_ref,
+                Bill.description
+            )
+            .filter(
+                Bill.tenantid == tenant_id,
+                Bill.status.in_(["PAID", "For Validation", "Completed"])  # Include various paid statuses
+            )
+            .order_by(Bill.issuedate.desc())
+            .all()
+        )
+
+        bills_list = []
+        for bill in paid_bills:
+            # Format the date for display
+            issue_date = (
+                bill.issuedate.strftime("%Y-%m-%d")
+                if hasattr(bill.issuedate, "strftime")
+                else str(bill.issuedate)
+            )
+            
+            bills_list.append({
+                "id": bill.billid,
+                "billType": bill.billtype,
+                "status": bill.status,
+                "date": issue_date,
+                "amount": f"P{bill.amount:,.2f}",  # Format as currency
+                "paymentType": bill.paymenttype,
+                "gcashRef": bill.gcash_ref,
+                "description": bill.description,
+                "dueDate": bill.duedate.strftime("%Y-%m-%d") if bill.duedate and hasattr(bill.duedate, "strftime") else None
+            })
+
+        print(f"✅ Returning {len(bills_list)} paid bills for tenant {tenant_id}")
+        return jsonify(bills_list), 200
+
+    except Exception as e:
+        print(f"❌ Error fetching paid bills for tenant {tenant_id}: {e}")
+        return jsonify({"error": f"Failed to fetch paid bills: {str(e)}"}), 500
+
 
 @bill_bp.route("/billing/create-tenant-invoice", methods=["POST"])
 def create_tenant_bill():
@@ -147,6 +218,20 @@ def create_tenant_bill():
             description=description
         )
         db.session.add(new_bill)
+        db.session.flush()  # Get bill ID without committing
+
+        # ✅ Create notification for tenant
+        tenant = Tenant.query.filter_by(tenantid=tenantid).first()
+        if tenant:
+            tenant_notification = Notification(
+                userid=tenant.userid,
+                userrole='tenant',
+                title='New Invoice Created',
+                message=f'New {billtype} invoice for ₱{amount:,.2f} has been created. Due date: {duedate}',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(tenant_notification)
+
         db.session.commit()
 
         return jsonify({
@@ -159,9 +244,8 @@ def create_tenant_bill():
         db.session.rollback()
         print("Error creating bill:", e)
         return jsonify({"error": "Failed to create bill"}), 500
-    
-    
-    
+
+
 # -------------------------------
 # 📄 Get bills by tenant
 # -------------------------------
@@ -187,7 +271,6 @@ def get_tenant_bills(tenant_id):
                     if hasattr(bill.duedate, "strftime")
                     else bill.duedate
                 ),
-
                 "amount": float(bill.amount),
                 "billtype": bill.billtype,
                 "status": bill.status,
@@ -248,6 +331,31 @@ def pay_bill(bill_id):
 
         # ✅ Update bill status
         bill.status = "For Validation"
+        
+        # ✅ Create notification for tenant
+        tenant = Tenant.query.filter_by(tenantid=bill.tenantid).first()
+        if tenant:
+            tenant_notification = Notification(
+                userid=tenant.userid,
+                userrole='tenant',
+                title='Payment Submitted',
+                message=f'Your payment for bill #{bill_id} has been submitted and is awaiting validation.',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(tenant_notification)
+
+        # ✅ Create notification for ALL landlords
+        all_landlords = User.query.filter_by(role='landlord').all()
+        for landlord in all_landlords:
+            landlord_notification = Notification(
+                userid=landlord.userid,
+                userrole='landlord',
+                title='New Payment Submitted',
+                message=f'Tenant has submitted a payment for bill #{bill_id}. Status: For Validation',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(landlord_notification)
+
         db.session.commit()
 
         return jsonify({"message": "Bill marked as 'For Validation' successfully!"}), 200
@@ -257,5 +365,77 @@ def pay_bill(bill_id):
         print(f"❌ Error updating bill payment: {e}")
         return jsonify({"error": f"Failed to update bill payment: {str(e)}"}), 500
 
-    finally:
-        db.session.close()
+
+# -------------------------------
+# ✅ Approve/Validate Bill Payment
+# -------------------------------
+@bill_bp.route("/bills/approve/<int:bill_id>", methods=["PUT"])
+def approve_bill_payment(bill_id):
+    try:
+        bill = Bill.query.get(bill_id)
+        if not bill:
+            return jsonify({"error": "Bill not found"}), 404
+
+        # Update bill status to PAID
+        bill.status = "PAID"
+        
+        # ✅ Create notification for tenant
+        tenant = Tenant.query.filter_by(tenantid=bill.tenantid).first()
+        if tenant:
+            tenant_notification = Notification(
+                userid=tenant.userid,
+                userrole='tenant',
+                title='Payment Approved',
+                message=f'Your payment for bill #{bill_id} has been approved. Thank you!',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(tenant_notification)
+
+        db.session.commit()
+
+        return jsonify({"message": "Payment approved successfully!"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ Error approving payment: {e}")
+        return jsonify({"error": f"Failed to approve payment: {str(e)}"}), 500
+
+
+# -------------------------------
+# ❌ Reject Bill Payment
+# -------------------------------
+@bill_bp.route("/bills/reject/<int:bill_id>", methods=["PUT"])
+def reject_bill_payment(bill_id):
+    try:
+        data = request.get_json()
+        reason = data.get("reason", "Payment verification failed")
+        
+        bill = Bill.query.get(bill_id)
+        if not bill:
+            return jsonify({"error": "Bill not found"}), 404
+
+        # Update bill status back to Unpaid
+        bill.status = "Unpaid"
+        bill.paymenttype = None
+        bill.gcash_ref = None
+        
+        # ✅ Create notification for tenant
+        tenant = Tenant.query.filter_by(tenantid=bill.tenantid).first()
+        if tenant:
+            tenant_notification = Notification(
+                userid=tenant.userid,
+                userrole='tenant',
+                title='Payment Rejected',
+                message=f'Your payment for bill #{bill_id} was rejected. Reason: {reason}. Please try again.',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(tenant_notification)
+
+        db.session.commit()
+
+        return jsonify({"message": "Payment rejected successfully!"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ Error rejecting payment: {e}")
+        return jsonify({"error": f"Failed to reject payment: {str(e)}"}), 500

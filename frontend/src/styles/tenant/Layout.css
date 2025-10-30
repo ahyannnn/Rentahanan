@@ -80,55 +80,7 @@ body {
     font-weight: 700;
     color: white;
 }
-/* Header Profile Image Styles */
-.profile-image-btn-Layout {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.header-profile-image-Layout {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #fff;
-  background: #f0f0f0;
-}
-
-/* Ensure the notification and profile buttons are properly aligned */
-.notifprofile-Layout {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.notif-wrapper-Layout {
-  position: relative;
-}
-
-/* Update existing notif-btn-Layout if needed */
-.notif-btn-Layout {
-  background: #061A53;
-  border: none;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.notif-btn-Layout:hover {
-  background: #0a2472;
-}
 .logo-Layout {
   height: 50px;
   width: auto;
@@ -249,6 +201,7 @@ body {
     gap: 14px;
 }
 
+/* ===== Notification Button - UPDATED TO MATCH DESIGN ===== */
 .notif-btn-Layout {
     width: 45px;
     height: 45px;
@@ -259,23 +212,85 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
+    position: relative;
 }
 
 .notif-btn-Layout:hover {
     background-color: #153ea3;
+    transform: translateY(-1px);
 }
 
-.notif-btn-Layout img {
-    width: 20px;
-    height: 20px;
-    filter: brightness(0) invert(1);
+.notif-btn-Layout:active {
+    transform: translateY(0);
 }
 
+/* Ensure Lucide Bell icon is white */
 .notif-btn-Layout svg {
     color: white !important;
-    fill: white !important;
     stroke: white !important;
+    width: 20px;
+    height: 20px;
+}
+
+/* Notification badge */
+.notif-badge-Layout {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #ff4757;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+}
+
+/* ===== Profile Image Button ===== */
+.profile-image-btn-Layout {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+.profile-image-btn-Layout:hover {
+    transform: scale(1.05);
+}
+
+.header-profile-image-Layout {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #e0e0e0;
+}
+
+.header-profile-icon-fallback-Layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: #0a2d8d;
+    color: white;
+    border-radius: 50%;
+    border: 2px solid #e0e0e0;
+}
+
+.header-profile-icon-fallback-Layout svg {
+    width: 20px;
+    height: 20px;
 }
 
 /* ===== Main Content ===== */
@@ -497,6 +512,24 @@ body {
     outline: none;
 }
 
+/* Profile Icon Fallback */
+.profile-icon-fallback-Layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #0a2d8d;
+    color: white;
+    border: 4px solid #f0f0f0;
+}
+
+.profile-icon-fallback-Layout svg {
+    width: 48px;
+    height: 48px;
+}
+
 /* --- ACTION BUTTONS (Edit, Save, Cancel) --- */
 
 .modal-actions-Layout {
@@ -571,43 +604,47 @@ body {
 
 .notif-dropdown-Layout {
   position: absolute;
-  top: 40px;
+  top: 50px;
   right: 0;
-  width: 300px;
+  width: 320px;
   background-color: #ffffff;
   color: #333;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  padding: 15px;
   z-index: 999;
   animation: fadeIn-Layout 0.2s ease-in-out;
+  border: 1px solid #e0e0e0;
 }
 
 .notif-dropdown-Layout h4 {
-  margin: 5px 10px 10px;
+  margin: 0 0 15px;
   font-size: 16px;
   font-weight: 600;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 5px;
+  color: #071b63;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
 }
 
 .notif-card-Layout {
   background-color: #f8f9fa;
-  border-radius: 6px;
-  padding: 10px 12px;
+  border-radius: 8px;
+  padding: 12px 15px;
   margin: 8px 0;
-  border-left: 4px solid #4a90e2;
-  transition: background 0.2s ease;
+  border-left: 4px solid #0a2d8d;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .notif-card-Layout:hover {
   background-color: #eef4ff;
+  transform: translateX(2px);
 }
 
 .notif-card-Layout h5 {
-  margin: 0 0 5px;
+  margin: 0 0 6px;
   font-size: 14px;
-  color: #222;
+  color: #1e1e2f;
   font-weight: 600;
 }
 
@@ -624,19 +661,20 @@ body {
   font-size: 12px;
   color: #888;
   text-align: right;
+  font-weight: 500;
 }
 
 .no-notifs-Layout {
   text-align: center;
   color: #999;
-  font-size: 13px;
-  padding: 15px 0;
+  font-size: 14px;
+  padding: 20px 0;
 }
 
 @keyframes fadeIn-Layout {
   from {
     opacity: 0;
-    transform: translateY(-5px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;
@@ -646,20 +684,21 @@ body {
 
 .view-all-btn-Layout {
   width: 100%;
-  background: #4a90e2;
+  background: #0a2d8d;
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 8px 0;
-  margin-top: 8px;
+  border-radius: 8px;
+  padding: 10px 0;
+  margin-top: 10px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .view-all-btn-Layout:hover {
-  background: #357ad6;
+  background: #071b63;
+  transform: translateY(-1px);
 }
 
 /* ===== Mobile & Tablet ===== */
@@ -697,5 +736,37 @@ body {
 
     .main-Layout {
         padding: 20px;
+    }
+
+    .notif-dropdown-Layout {
+        width: 280px;
+        right: -10px;
+    }
+
+    .profile-image-btn-Layout,
+    .notif-btn-Layout {
+        width: 40px;
+        height: 40px;
+    }
+
+    .header-profile-icon-fallback-Layout svg,
+    .notif-btn-Layout svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .notif-dropdown-Layout {
+        width: 250px;
+        right: -20px;
+    }
+    
+    .header-Layout {
+        padding: 0 15px;
+    }
+    
+    .notifprofile-Layout {
+        gap: 10px;
     }
 }
