@@ -132,6 +132,7 @@ def get_user_profile(user_id):
 
         user, tenantid, application_status = user_data
 
+
         profile = {
             "userid": user.userid,
             "tenantid": tenantid,  # ✅ Include tenantid

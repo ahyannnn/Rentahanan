@@ -269,6 +269,125 @@
     font-size: 0.9rem;
 }
 
+/* === Avatar Styles with Image Support === */
+.Owner-Contract-tenant-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.Owner-Contract-avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.Owner-Contract-avatar-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    color: white;
+}
+
+/* Table Avatar Styles */
+.Owner-Contract-applicant-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.Owner-Contract-applicant-avatar-table {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.Owner-Contract-avatar-table-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.Owner-Contract-avatar-table-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    color: white;
+}
+
+/* Modal Avatar Styles */
+.Owner-Contract-applicant-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.Owner-Contract-modal-avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.Owner-Contract-modal-avatar-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+    color: white;
+}
+
+/* Ensure proper sizing for table avatars */
+.Owner-Contract-applicant-avatar-table svg,
+.Owner-Contract-avatar-table-fallback svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Ensure proper sizing for card avatars */
+.Owner-Contract-tenant-avatar svg,
+.Owner-Contract-avatar-fallback svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Ensure proper sizing for modal avatars */
+.Owner-Contract-applicant-avatar svg,
+.Owner-Contract-modal-avatar-fallback svg {
+    width: 24px;
+    height: 24px;
+}
 .Owner-Contract-view-btn {
     display: flex;
     align-items: center;

@@ -4,6 +4,7 @@ from models.bills_model import Bill
 from models.tenants_model import Tenant
 from models.transaction_model import Transaction
 from models.users_model import User
+from models.notifications_model import Notification  # Add this import
 from datetime import datetime
 from reportlab.pdfgen import canvas
 import os
@@ -125,8 +126,8 @@ def issue_receipt(billid):
             ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#F8F9FA')),
             ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
             ('FONTSIZE', (0, 1), (-1, -1), 10),
-            ('TOPPADDING', (0, 1), (-1, -1), 8),  # Fixed: replaced 😎 with 8
-            ('BOTTOMPADDING', (0, 1), (-1, -1), 8),  # Fixed: replaced 😎 with 8
+            ('TOPPADDING', (0, 1), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 1), (-1, -1), 8),
             ('LEFTPADDING', (0, 0), (-1, -1), 12),
             ('RIGHTPADDING', (0, 0), (-1, -1), 12),
         ]))
@@ -231,6 +232,28 @@ def issue_receipt(billid):
         )
         db.session.add(transaction)
 
+        # ✅ Create notification for tenant
+        tenant_notification = Notification(
+            userid=tenant.userid,
+            userrole='tenant',
+            title='Payment Confirmed',
+            message=f'Your payment for {bill.billtype} (₱{float(bill.amount):,.2f}) has been confirmed. Receipt #RMS-{bill.billid:06d}',
+            creationdate=datetime.utcnow()
+        )
+        db.session.add(tenant_notification)
+
+        # ✅ Create notification for ALL landlords
+        all_landlords = User.query.filter_by(role='landlord').all()
+        for landlord in all_landlords:
+            landlord_notification = Notification(
+                userid=landlord.userid,
+                userrole='landlord',
+                title='Payment Received',
+                message=f'Tenant {full_name} has paid {bill.billtype} of ₱{float(bill.amount):,.2f}. Receipt #RMS-{bill.billid:06d}',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(landlord_notification)
+
         # ✅ Commit all changes
         db.session.commit()
 
@@ -296,3 +319,83 @@ def download_receipt(billid):
         
     except Exception as e:
         return jsonify({"error": f"Failed to download receipt: {str(e)}"}), 500
+
+
+# ✅ Additional route to get all transactions (for admin/landlord view)
+@transaction_bp.route("/transactions/all", methods=["GET"])
+def get_all_transactions():
+    try:
+        transactions = (
+            db.session.query(
+                Transaction.transactionid,
+                Transaction.billid,
+                Transaction.tenantid,
+                Transaction.paymentdate,
+                Transaction.amountpaid,
+                Transaction.receipt,
+                User.firstname,
+                User.lastname,
+                Bill.billtype
+            )
+            .join(Bill, Transaction.billid == Bill.billid)
+            .join(Tenant, Transaction.tenantid == Tenant.tenantid)
+            .join(User, Tenant.userid == User.userid)
+            .order_by(Transaction.paymentdate.desc())
+            .all()
+        )
+
+        result = []
+        for t in transactions:
+            result.append({
+                "transactionid": t.transactionid,
+                "billid": t.billid,
+                "tenantid": t.tenantid,
+                "tenant_name": f"{t.firstname} {t.lastname}",
+                "payment_date": t.paymentdate.strftime("%Y-%m-%d") if t.paymentdate else None,
+                "amount_paid": float(t.amountpaid),
+                "receipt": t.receipt,
+                "bill_type": t.billtype
+            })
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch transactions: {str(e)}"}), 500
+
+
+# ✅ Additional route to get tenant's transaction history
+@transaction_bp.route("/transactions/tenant/<int:tenant_id>", methods=["GET"])
+def get_tenant_transactions(tenant_id):
+    try:
+        transactions = (
+            db.session.query(
+                Transaction.transactionid,
+                Transaction.billid,
+                Transaction.paymentdate,
+                Transaction.amountpaid,
+                Transaction.receipt,
+                Bill.billtype,
+                Bill.description
+            )
+            .join(Bill, Transaction.billid == Bill.billid)
+            .filter(Transaction.tenantid == tenant_id)
+            .order_by(Transaction.paymentdate.desc())
+            .all()
+        )
+
+        result = []
+        for t in transactions:
+            result.append({
+                "transactionid": t.transactionid,
+                "billid": t.billid,
+                "payment_date": t.paymentdate.strftime("%Y-%m-%d") if t.paymentdate else None,
+                "amount_paid": float(t.amountpaid),
+                "receipt": t.receipt,
+                "bill_type": t.billtype,
+                "description": t.description
+            })
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch tenant transactions: {str(e)}"}), 500

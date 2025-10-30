@@ -7,6 +7,7 @@ from models.tenants_model import Tenant
 from models.units_model import House as Unit
 from models.applications_model import Application
 from models.users_model import User
+from models.notifications_model import Notification  # Add this import
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 import os, traceback
@@ -25,6 +26,7 @@ def get_tenant_contracts():
             User.firstname,
             User.middlename,
             User.lastname,
+            User.image,
             Unit.name.label("unit_name"),
             Unit.price.label("unit_price"),
             Contract.startdate,
@@ -43,6 +45,7 @@ def get_tenant_contracts():
             "contractid": contractid,
             "tenantid": tenantid,
             "fullname": f"{firstname} {middlename + ' ' if middlename else ''}{lastname}",
+            "image":image,
             "unit_name": unit_name,
             "unit_price": unit_price,
             "start_date": start_date.strftime("%Y-%m-%d"),
@@ -50,7 +53,7 @@ def get_tenant_contracts():
             "status": status,
             "signed_contract": signed_contract
         }
-        for contractid, tenantid, firstname, middlename, lastname, unit_name, unit_price, start_date, end_date, status, signed_contract in contracts
+        for contractid, tenantid, firstname, middlename, lastname, image, unit_name, unit_price, start_date, end_date, status, signed_contract in contracts
     ]
 
     return jsonify(result)
@@ -265,8 +268,8 @@ def generate_contract_pdf():
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
             ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('TOPPADDING', (0, 0), (-1, -1), 8),  # Fixed: replaced 😎 with 8
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),  # Fixed: replaced 😎 with 8
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
             ('LEFTPADDING', (0, 0), (-1, -1), 12),
         ]))
         
@@ -319,7 +322,7 @@ def generate_contract_pdf():
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ('TOPPADDING', (0, 0), (-1, -1), 10),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
-            ('LEFTPADDING', (0, 0), (-1, -1), 8),  # Fixed: replaced 😎 with 8
+            ('LEFTPADDING', (0, 0), (-1, -1), 8),
             ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#DDDDDD'))
         ]))
         
@@ -413,6 +416,35 @@ def issue_contract():
             signed_contract=None
         )
         db.session.add(new_contract)
+        db.session.flush()  # Get contract ID without committing
+
+        # ✅ Get tenant info for notification
+        tenant = Tenant.query.filter_by(tenantid=tenant_id).first()
+        unit = Unit.query.filter_by(unitid=unit_id).first()
+
+        if tenant:
+            # ✅ Create notification for tenant
+            tenant_notification = Notification(
+                userid=tenant.userid,
+                userrole='tenant',
+                title='New Contract Issued',
+                message=f'A new rental contract has been issued for {unit.name if unit else "your unit"}. Please review and sign the contract.',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(tenant_notification)
+
+            # ✅ Create notification for ALL landlords
+            all_landlords = User.query.filter_by(role='landlord').all()
+            for landlord in all_landlords:
+                landlord_notification = Notification(
+                    userid=landlord.userid,
+                    userrole='landlord',
+                    title='New Contract Created',
+                    message=f'New rental contract issued to tenant for {unit.name if unit else "a unit"}. Contract ID: {new_contract.contractid}',
+                    creationdate=datetime.utcnow()
+                )
+                db.session.add(landlord_notification)
+
         db.session.commit()
 
         return jsonify({"message": "Contract issued successfully!"})
@@ -531,6 +563,34 @@ def sign_contract():
         # ✅ Update DB
         contract.signed_contract = os.path.basename(signed_pdf_path)
         contract.status = "Signed"
+        
+        # ✅ Get tenant info for notification
+        tenant = Tenant.query.filter_by(tenantid=contract.tenantid).first()
+        unit = Unit.query.filter_by(unitid=contract.unitid).first()
+
+        if tenant:
+            # ✅ Create notification for tenant
+            tenant_notification = Notification(
+                userid=tenant.userid,
+                userrole='tenant',
+                title='Contract Signed',
+                message=f'You have successfully signed the rental contract for {unit.name if unit else "your unit"}.',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(tenant_notification)
+
+            # ✅ Create notification for ALL landlords
+            all_landlords = User.query.filter_by(role='landlord').all()
+            for landlord in all_landlords:
+                landlord_notification = Notification(
+                    userid=landlord.userid,
+                    userrole='landlord',
+                    title='Contract Signed by Tenant',
+                    message=f'Tenant has signed the rental contract for {unit.name if unit else "a unit"}. Contract ID: {contract.contractid}',
+                    creationdate=datetime.utcnow()
+                )
+                db.session.add(landlord_notification)
+
         db.session.commit()
 
         # Cleanup temp
@@ -570,3 +630,55 @@ def download_contract(filename):
         
     except Exception as e:
         return jsonify({"error": f"Failed to download file: {str(e)}"}), 500
+
+
+# ✅ Update Contract Status (for landlords to approve/reject)
+@contract_bp.route("/contracts/update-status/<int:contract_id>", methods=["PUT"])
+def update_contract_status(contract_id):
+    try:
+        data = request.get_json()
+        new_status = data.get("status")
+        remarks = data.get("remarks", "")
+
+        if not new_status:
+            return jsonify({"error": "Missing status"}), 400
+
+        contract = Contract.query.filter_by(contractid=contract_id).first()
+        if not contract:
+            return jsonify({"error": "Contract not found"}), 404
+
+        old_status = contract.status
+        contract.status = new_status
+
+        # ✅ Get tenant info for notification
+        tenant = Tenant.query.filter_by(tenantid=contract.tenantid).first()
+        unit = Unit.query.filter_by(unitid=contract.unitid).first()
+
+        if tenant:
+            status_messages = {
+                "Approved": "Your rental contract has been approved and is now active!",
+                "Rejected": f"Your rental contract has been rejected. {remarks}",
+                "Cancelled": f"Your rental contract has been cancelled. {remarks}",
+                "Expired": "Your rental contract has expired."
+            }
+
+            message = status_messages.get(new_status, f"Contract status updated to {new_status}.")
+
+            # ✅ Create notification for tenant
+            tenant_notification = Notification(
+                userid=tenant.userid,
+                userrole='tenant',
+                title=f'Contract {new_status}',
+                message=message,
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(tenant_notification)
+
+        db.session.commit()
+
+        return jsonify({"message": f"Contract status updated to {new_status} successfully!"})
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ Error updating contract status: {e}")
+        return jsonify({"error": f"Failed to update contract status: {str(e)}"}), 500

@@ -33,29 +33,13 @@ const Layout = () => {
   const [headerProfilePictureUrl, setHeaderProfilePictureUrl] = useState("/default-profile.png");
   const [loading, setLoading] = useState(false);
   const [selectedImageFile, setSelectedImageFile] = useState(null);
+  const [profileImageError, setProfileImageError] = useState(false);
+  const [headerImageError, setHeaderImageError] = useState(false);
 
-  // ✅ Notifications
+  // ✅ Notifications State
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications] = useState([
-    {
-      id: 1,
-      title: "Rental Payment Due",
-      message: "Your rent is due on October 30, 2025. Please make your payment soon.",
-      time: "2 days left",
-    },
-    {
-      id: 2,
-      title: "Scheduled Maintenance",
-      message: "Plumbing maintenance will occur on October 28.",
-      time: "in 2 days",
-    },
-    {
-      id: 3,
-      title: "Receipt Confirmation",
-      message: "Your last payment was received successfully.",
-      time: "3 days ago",
-    },
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -71,6 +55,10 @@ const Layout = () => {
         setUserData(data.profile);
         setApplicationStatus(data.profile.application_status || "Registered");
         setUserRole(data.profile.role?.toLowerCase() || "tenant");
+        
+        // Reset error states when fetching new data
+        setProfileImageError(false);
+        setHeaderImageError(false);
         
         // Set profile picture URL for both modal and header
         if (data.profile.image) {
@@ -90,6 +78,43 @@ const Layout = () => {
       console.error("Error fetching user profile:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Fetch notifications from API
+  const fetchNotifications = async () => {
+    try {
+      setNotificationsLoading(true);
+      const storedUserRaw = localStorage.getItem("user");
+      if (!storedUserRaw) return;
+
+      const storedUser = JSON.parse(storedUserRaw);
+      const userId = storedUser.userid;
+
+      const response = await fetch(`http://127.0.0.1:5000/api/notifications/${userId}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setNotifications(data.notifications || []);
+      } else {
+        console.error("Failed to fetch notifications:", data.message);
+        setNotifications([]);
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      setNotifications([]);
+    } finally {
+      setNotificationsLoading(false);
+    }
+  };
+
+  // Toggle notifications dropdown and fetch data when opened
+  const handleNotificationsToggle = () => {
+    const newShowState = !showNotifications;
+    setShowNotifications(newShowState);
+    
+    if (newShowState) {
+      fetchNotifications();
     }
   };
 
@@ -132,13 +157,14 @@ const Layout = () => {
   const openProfileModal = () => {
     setIsProfileModalOpen(true);
     setIsEditing(false);
-    setSelectedImageFile(null); // Reset selected image when opening modal
+    setSelectedImageFile(null);
+    setProfileImageError(false);
   };
 
   const closeProfileModal = () => {
     setIsProfileModalOpen(false);
     setIsEditing(false);
-    setSelectedImageFile(null); // Reset selected image when closing modal
+    setSelectedImageFile(null);
   };
 
   const handleLogout = () => {
@@ -155,11 +181,9 @@ const Layout = () => {
     try {
       const formData = new FormData();
       
-      // Append ONLY editable fields
       formData.append("email", userData.email);
       formData.append("phone", userData.phone);
       
-      // Append image file if a new one was selected
       if (selectedImageFile) {
         formData.append("image", selectedImageFile);
       }
@@ -172,15 +196,15 @@ const Layout = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Update local state with new data
         setUserData(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
         
-        // Update profile picture URL if image was uploaded
         if (data.user.image) {
           const imageUrl = `http://127.0.0.1:5000/api/profile/image/${data.user.image}`;
           setProfilePictureUrl(imageUrl);
           setHeaderProfilePictureUrl(imageUrl);
+          setProfileImageError(false);
+          setHeaderImageError(false);
         }
         
         setIsEditing(false);
@@ -197,16 +221,14 @@ const Layout = () => {
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      // Create temporary URL for preview
       const tempUrl = URL.createObjectURL(file);
       setProfilePictureUrl(tempUrl);
-      // Store the file for upload
       setSelectedImageFile(file);
+      setProfileImageError(false);
     }
   };
 
   const handleCancelEdit = () => {
-    // Reset to original image and data
     if (userData?.image) {
       const imageUrl = `http://localhost:5000/uploads/profile_images/${userData.image}`;
       setProfilePictureUrl(imageUrl);
@@ -216,8 +238,8 @@ const Layout = () => {
       setHeaderProfilePictureUrl("/default-profile.png");
     }
     setSelectedImageFile(null);
+    setProfileImageError(false);
     
-    // Reload fresh data from API to discard any changes
     if (userData?.userid) {
       fetchUserProfile(userData.userid);
     }
@@ -231,6 +253,33 @@ const Layout = () => {
     } else {
       navigate("/tenant/notifications");
     }
+  };
+
+  const handleProfileImageError = () => {
+    setProfileImageError(true);
+  };
+
+  const handleHeaderImageError = () => {
+    setHeaderImageError(true);
+  };
+
+  // Format time for notifications
+  const formatNotificationTime = (dateString) => {
+    if (!dateString) return "Recently";
+    
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now - date;
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+    
+    return date.toLocaleDateString();
   };
 
   const tenantLinksByStatus = {
@@ -319,14 +368,20 @@ const Layout = () => {
 
           <div className="modal-body-Layout">
             <div className="current-pic-holder-Layout">
-              <img
-                src={profilePictureUrl}
-                alt="Profile"
-                width="120"
-                height="120"
-                style={{ borderRadius: "50%", background: "#eee", objectFit: "cover" }}
-              />
-              {/* Show camera icon ONLY when editing */}
+              {profileImageError || !profilePictureUrl || profilePictureUrl === "/default-profile.png" ? (
+                <div className="profile-icon-fallback-Layout">
+                  <User size={48} />
+                </div>
+              ) : (
+                <img
+                  src={profilePictureUrl}
+                  alt="Profile"
+                  width="120"
+                  height="120"
+                  style={{ borderRadius: "50%", background: "#eee", objectFit: "cover" }}
+                  onError={handleProfileImageError}
+                />
+              )}
               {isEditing && (
                 <label className="upload-btn-icon-label-Layout">
                   <Camera size={18} />
@@ -348,7 +403,6 @@ const Layout = () => {
             </p>
 
             <div className="user-details-list-Layout">
-              {/* Email - Editable */}
               <div className="detail-item-Layout">
                 <Mail size={18} className="detail-icon-Layout" />
                 {isEditing ? (
@@ -364,7 +418,6 @@ const Layout = () => {
                 )}
               </div>
 
-              {/* Phone - Editable */}
               <div className="detail-item-Layout">
                 <Phone size={18} className="detail-icon-Layout" />
                 {isEditing ? (
@@ -380,13 +433,10 @@ const Layout = () => {
                 )}
               </div>
 
-              {/* Joined Date - Read Only */}
               <div className="detail-item-Layout detail-view-only-Layout">
                 <Calendar size={18} className="detail-icon-Layout" />
                 <span>Joined: {formatDate(userData.datecreated || "")}</span>
               </div>
-
-              
             </div>
 
             <div className="modal-actions-Layout">
@@ -460,7 +510,7 @@ const Layout = () => {
           <div className="notif-wrapper-Layout">
             <button
               className="notif-btn-Layout"
-              onClick={() => setShowNotifications(!showNotifications)}
+              onClick={handleNotificationsToggle}
             >
               <Bell size={20} color="white" />
             </button>
@@ -468,33 +518,46 @@ const Layout = () => {
             {showNotifications && (
               <div className="notif-dropdown-Layout">
                 <h4>Notifications</h4>
-                {notifications.map((notif) => (
-                  <div key={notif.id} className="notif-card-Layout">
-                    <h5>{notif.title}</h5>
-                    <p>{notif.message}</p>
-                    <span className="notif-time-Layout">{notif.time}</span>
-                  </div>
-                ))}
-                <button
-                  className="view-all-btn-Layout"
-                  onClick={handleViewAllNotifications}
-                >
-                  View All Notifications →
-                </button>
+                {notificationsLoading ? (
+                  <div className="notif-loading-Layout">Loading notifications...</div>
+                ) : notifications.length === 0 ? (
+                  <div className="no-notifications-Layout">No notifications</div>
+                ) : (
+                  <>
+                    {notifications.slice(0, 5).map((notif) => (
+                      <div key={notif.notificationid} className="notif-card-Layout">
+                        <h5>{notif.title}</h5>
+                        <p>{notif.message}</p>
+                        <span className="notif-time-Layout">
+                          {formatNotificationTime(notif.creationdate)}
+                        </span>
+                      </div>
+                    ))}
+                    <button
+                      className="view-all-btn-Layout"
+                      onClick={handleViewAllNotifications}
+                    >
+                      View All Notifications →
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
 
-          {/* Show profile image instead of user icon */}
           <button className="profile-image-btn-Layout" onClick={openProfileModal}>
-            <img 
-              src={headerProfilePictureUrl} 
-              alt="Profile" 
-              className="header-profile-image-Layout"
-              onError={(e) => {
-                e.target.src = "/default-profile.png";
-              }}
-            />
+            {headerImageError || !headerProfilePictureUrl || headerProfilePictureUrl === "/default-profile.png" ? (
+              <div className="header-profile-icon-fallback-Layout">
+                <User size={20} />
+              </div>
+            ) : (
+              <img 
+                src={headerProfilePictureUrl} 
+                alt="Profile" 
+                className="header-profile-image-Layout"
+                onError={handleHeaderImageError}
+              />
+            )}
           </button>
         </div>
       </div>

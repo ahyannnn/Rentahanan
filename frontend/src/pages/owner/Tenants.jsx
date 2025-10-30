@@ -46,11 +46,45 @@ const Tenants = () => {
     setSelectedDocument(null);
   };
 
+  // Function to get profile image URL or fallback to initials
+  const getProfileImage = (user) => {
+    if (user.image) {
+      return `http://localhost:5000/uploads/profile_images/${user.image}`;
+    }
+    return null;
+  };
+
+  // Function to handle image error and fallback to initials
+  const handleImageError = (e, user) => {
+    e.target.style.display = 'none';
+    // Show the initials fallback
+    const fallbackElement = e.target.nextSibling;
+    if (fallbackElement) {
+      fallbackElement.style.display = 'flex';
+    }
+  };
+
   const renderCards = (data, type) =>
     data.map((item, index) => (
       <div className="Owner-Tenant-card" key={index}>
         <div className="Owner-Tenant-avatar">
-          {item.fullname.split(' ').map(n => n[0]).join('').toUpperCase()}
+          {getProfileImage(item) ? (
+            <>
+              <img 
+                src={getProfileImage(item)} 
+                alt={item.fullname}
+                className="Owner-Tenant-avatar-image"
+                onError={(e) => handleImageError(e, item)}
+              />
+              <div className="Owner-Tenant-avatar-fallback" style={{display: 'none'}}>
+                {item.fullname.split(' ').map(n => n[0]).join('').toUpperCase()}
+              </div>
+            </>
+          ) : (
+            <div className="Owner-Tenant-avatar-fallback">
+              {item.fullname.split(' ').map(n => n[0]).join('').toUpperCase()}
+            </div>
+          )}
         </div>
         <div className="Owner-Tenant-info">
           <h4>{item.fullname}</h4>
@@ -206,7 +240,23 @@ const Tenants = () => {
             <div className="Owner-Tenant-modal-header">
               <div className="Owner-Tenant-modal-user-info">
                 <div className="Owner-Tenant-modal-avatar">
-                  {selectedUser.fullname.split(' ').map(n => n[0]).join('').toUpperCase()}
+                  {getProfileImage(selectedUser) ? (
+                    <>
+                      <img 
+                        src={getProfileImage(selectedUser)} 
+                        alt={selectedUser.fullname}
+                        className="Owner-Tenant-modal-avatar-image"
+                        onError={(e) => handleImageError(e, selectedUser)}
+                      />
+                      <div className="Owner-Tenant-modal-avatar-fallback" style={{display: 'none'}}>
+                        {selectedUser.fullname.split(' ').map(n => n[0]).join('').toUpperCase()}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="Owner-Tenant-modal-avatar-fallback">
+                      {selectedUser.fullname.split(' ').map(n => n[0]).join('').toUpperCase()}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <h2>{selectedUser.fullname}</h2>

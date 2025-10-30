@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from extensions import db
 from models.concerns_model import Concern
+from models.notifications_model import Notification  # Add this import
 from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
@@ -57,6 +58,33 @@ def add_concern():
         )
 
         db.session.add(new_concern)
+        db.session.flush()  # Get concern ID without committing
+
+        # ✅ Get tenant info for notification
+        tenant = Tenant.query.filter_by(tenantid=tenantid).first()
+        if tenant:
+            # ✅ Create notification for tenant
+            tenant_notification = Notification(
+                userid=tenant.userid,
+                userrole='tenant',
+                title='Concern Submitted',
+                message=f'Your {concerntype} concern "{subject}" has been submitted successfully. We will review it soon.',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(tenant_notification)
+
+            # ✅ Create notification for ALL landlords
+            all_landlords = User.query.filter_by(role='landlord').all()
+            for landlord in all_landlords:
+                landlord_notification = Notification(
+                    userid=landlord.userid,
+                    userrole='landlord',
+                    title='New Concern Reported',
+                    message=f'New {concerntype} concern reported by tenant: "{subject}"',
+                    creationdate=datetime.utcnow()
+                )
+                db.session.add(landlord_notification)
+
         db.session.commit()
 
         return jsonify({
@@ -167,8 +195,43 @@ def update_concern(concernid):
         if status.lower() == "resolved" and not landlordimage_path:
             return jsonify({"error": "Cannot mark as resolved without uploading a fix photo"}), 400
 
+        old_status = concern.status
         concern.status = status
         concern.landlordimage = landlordimage_path
+
+        # ✅ Get tenant info for notification
+        tenant = Tenant.query.filter_by(tenantid=concern.tenantid).first()
+        if tenant and old_status != status:
+            status_messages = {
+                "In Progress": f'Your concern "{concern.subject}" is now being addressed.',
+                "Resolved": f'Your concern "{concern.subject}" has been resolved! Thank you for your patience.',
+                "Pending": f'Your concern "{concern.subject}" status has been updated to pending review.'
+            }
+
+            message = status_messages.get(status, f'Your concern status has been updated to {status}.')
+
+            # ✅ Create notification for tenant
+            tenant_notification = Notification(
+                userid=tenant.userid,
+                userrole='tenant',
+                title=f'Concern {status}',
+                message=message,
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(tenant_notification)
+
+            # ✅ Create notification for ALL landlords for important status changes
+            if status in ["Resolved", "In Progress"]:
+                all_landlords = User.query.filter_by(role='landlord').all()
+                for landlord in all_landlords:
+                    landlord_notification = Notification(
+                        userid=landlord.userid,
+                        userrole='landlord',
+                        title=f'Concern {status}',
+                        message=f'Concern "{concern.subject}" has been marked as {status}.',
+                        creationdate=datetime.utcnow()
+                    )
+                    db.session.add(landlord_notification)
 
         db.session.commit()
 
@@ -275,3 +338,45 @@ def reset_deleted_concerns():
     deleted_concerns_tracker['tenant'].clear()
     deleted_concerns_tracker['landlord'].clear()
     return jsonify({"message": "Deleted concerns reset successfully"}), 200
+
+# ✅ Add comment/response to concern (for landlords)
+@concern_bp.route("/concerns/<int:concernid>/comment", methods=["POST"])
+def add_concern_comment(concernid):
+    try:
+        data = request.get_json()
+        comment = data.get("comment")
+        
+        if not comment:
+            return jsonify({"error": "Comment is required"}), 400
+
+        concern = Concern.query.get(concernid)
+        if not concern:
+            return jsonify({"error": "Concern not found"}), 404
+
+        # Update concern with comment (you might want to add a comments field to your model)
+        # For now, we'll just send a notification
+        
+        # ✅ Get tenant info for notification
+        tenant = Tenant.query.filter_by(tenantid=concern.tenantid).first()
+        if tenant:
+            # ✅ Create notification for tenant
+            tenant_notification = Notification(
+                userid=tenant.userid,
+                userrole='tenant',
+                title='Update on Your Concern',
+                message=f'New update on your concern "{concern.subject}": {comment}',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(tenant_notification)
+
+        db.session.commit()
+
+        return jsonify({
+            "message": "Comment added successfully",
+            "concernid": concernid
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print("Error adding comment:", e)
+        return jsonify({"error": "Failed to add comment"}), 500

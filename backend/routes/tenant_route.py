@@ -4,9 +4,10 @@ from models.users_model import User
 from models.tenants_model import Tenant
 from models.contracts_model import Contract
 from models.units_model import House as Unit
-from models.contracts_model import Contract
 from models.applications_model import Application
 from models.bills_model import Bill
+from models.notifications_model import Notification  # Add this import
+from datetime import datetime
 
 tenant_bp = Blueprint("tenant_bp", __name__)
 
@@ -27,19 +28,16 @@ def get_active_tenants():
             User.city,
             User.province,
             User.zipcode,
+            User.image,
             Unit.name.label("unit_name"),
             Unit.price.label("unit_price"),
             Application.valid_id,
             Application.brgy_clearance,
             Application.proof_of_income
-            
-            
-            
         )
         .join(Tenant, Tenant.userid == User.userid)
         .join(Contract, Contract.tenantid == Tenant.tenantid)
         .join(Unit, Unit.unitid == Contract.unitid)
-        
         .join(Application, Application.applicationid == Tenant.applicationid)
         .filter(Contract.status == "Active")
         .all()
@@ -53,20 +51,17 @@ def get_active_tenants():
             "phone": phone,
             "dateofbirth": dateofbirth,
             "address": f"{street}, {barangay}, {city}, {province}, {zipcode}",
+            "image":image,
             "unit_name": unit_name,
             "unit_price": unit_price,
             "valid_id": valid_id,
             "brgy_clearance": brgy_clearance,
             "proof_of_income": proof_of_income,
         }
-        for applicationid, firstname, middlename, lastname, email, phone, dateofbirth, street, barangay, city, province, zipcode, unit_name, unit_price, valid_id, brgy_clearance, proof_of_income in tenants
+        for applicationid, firstname, middlename, lastname, email, phone, dateofbirth, street, barangay, city, province, zipcode, image, unit_name, unit_price, valid_id, brgy_clearance, proof_of_income in tenants
     ]
 
     return jsonify(result)
-
-
-
-
 
 @tenant_bp.route("/tenants/applicants")
 def get_applicants():
@@ -81,6 +76,7 @@ def get_applicants():
             User.dateofbirth,
             User.street,
             User.barangay,
+            User.image,
             User.city,
             User.province,
             User.zipcode,
@@ -110,6 +106,7 @@ def get_applicants():
             "fullname": f"{a.firstname} {a.middlename + ' ' if a.middlename else ''}{a.lastname}",
             "email": a.email,
             "phone": a.phone,
+            "image": a.image,
             "dateofbirth": a.dateofbirth,
             "address": f"{a.street}, {a.barangay}, {a.city}, {a.province}, {a.zipcode}",
             "unit_name": a.unit_name,
@@ -123,9 +120,6 @@ def get_applicants():
         })
 
     return jsonify(result)
-
-
-
 
 @tenant_bp.route("/tenants/approve/<int:application_id>", methods=["PUT"])
 def approve_applicant(application_id):
@@ -157,9 +151,29 @@ def approve_applicant(application_id):
         # Update statuses
         application.status = "Approved"
         contract.status = "Active"
-        db.session.add_all([application, contract])
+        
+        # ✅ Create notification for tenant
+        tenant_notification = Notification(
+            userid=tenant.userid,
+            userrole='tenant',
+            title='Application Approved!',
+            message='Congratulations! Your rental application has been approved. You can now move into your unit.',
+            creationdate=datetime.utcnow()
+        )
+        db.session.add(tenant_notification)
 
-        # Ensure tenant record exists (already fetched above)
+        # ✅ Create notification for ALL landlords
+        all_landlords = User.query.filter_by(role='landlord').all()
+        for landlord in all_landlords:
+            landlord_notification = Notification(
+                userid=landlord.userid,
+                userrole='landlord',
+                title='Tenant Application Approved',
+                message=f'Tenant application #{application_id} has been approved and is now active.',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(landlord_notification)
+
         db.session.commit()
 
         return jsonify({
@@ -173,11 +187,6 @@ def approve_applicant(application_id):
         import traceback; traceback.print_exc()
         return jsonify({"success": False, "message": f"Failed to approve application: {str(e)}"}), 500
 
-
-
-
-
-
 # Reject an applicant
 @tenant_bp.route("/tenants/reject/<int:application_id>", methods=["PUT"])
 def reject_applicant(application_id):
@@ -190,6 +199,31 @@ def reject_applicant(application_id):
         # Update status to Rejected
         application.status = "Rejected"
 
+        # ✅ Get tenant info for notification
+        tenant = Tenant.query.filter_by(applicationid=application_id).first()
+        if tenant:
+            # ✅ Create notification for tenant
+            tenant_notification = Notification(
+                userid=tenant.userid,
+                userrole='tenant',
+                title='Application Status Update',
+                message='Your rental application has been reviewed. Unfortunately, it was not approved at this time.',
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(tenant_notification)
+
+            # ✅ Create notification for ALL landlords
+            all_landlords = User.query.filter_by(role='landlord').all()
+            for landlord in all_landlords:
+                landlord_notification = Notification(
+                    userid=landlord.userid,
+                    userrole='landlord',
+                    title='Tenant Application Rejected',
+                    message=f'Tenant application #{application_id} has been rejected.',
+                    creationdate=datetime.utcnow()
+                )
+                db.session.add(landlord_notification)
+
         db.session.commit()
         return jsonify({
             "success": True,
@@ -199,6 +233,4 @@ def reject_applicant(application_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "message": f"Failed to reject application: {str(e)}"}), 500
-
-
 
