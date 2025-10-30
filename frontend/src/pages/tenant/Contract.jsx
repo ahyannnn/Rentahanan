@@ -29,24 +29,45 @@ const Contract = () => {
   const [modalMessage, setModalMessage] = useState("");
   const sigCanvas = useRef();
 
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  const tenantId = storedUser?.tenantid;
+  // ✅ Get tenantid from both possible locations
+  const getTenantId = () => {
+    // First try to get from localStorage directly
+    const directTenantId = localStorage.getItem("tenantid");
+    if (directTenantId) return directTenantId;
+
+    // Then try to get from user object
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    return storedUser?.tenantid;
+  };
+
+  const tenantId = getTenantId();
 
   useEffect(() => {
     const fetchContract = async () => {
       try {
         setLoading(true);
+        
+        // ✅ Better error handling for missing tenant ID
         if (!tenantId) {
           console.error("No tenant ID found in localStorage.");
+          console.log("Available localStorage items:", {
+            user: localStorage.getItem("user"),
+            tenantid: localStorage.getItem("tenantid"),
+            allItems: { ...localStorage }
+          });
           setLoading(false);
           return;
         }
+
+        
 
         const response = await axios.get(
           `http://localhost:5000/api/contracts/tenant/${tenantId}`
         );
 
         const data = response.data;
+        
+
         if (Array.isArray(data) && data.length > 0) {
           setContract(data[0]);
         } else if (data && data.contractid) {
@@ -56,10 +77,15 @@ const Contract = () => {
         }
       } catch (error) {
         console.error("Error fetching contract:", error);
+        if (error.response) {
+          console.error("API Error Response:", error.response.data);
+          console.error("API Error Status:", error.response.status);
+        }
       } finally {
         setLoading(false);
       }
     };
+    
     fetchContract();
   }, [tenantId]);
 
@@ -133,6 +159,35 @@ const Contract = () => {
     return icons[status?.toLowerCase()] || <FileText className="status-icon default" />;
   };
 
+  // ✅ Add debug information
+  if (!tenantId) {
+    return (
+      <div className="no-contract-container-Contract">
+        <div className="no-contract-icon-Contract">
+          <FileText size={64} />
+        </div>
+        <h2 className="no-contract-title-Contract">Tenant ID Not Found</h2>
+        <p className="no-contract-description-Contract">
+          Unable to find your tenant information. Please try logging out and logging back in.
+        </p>
+        <div className="debug-info-Contract" style={{ marginTop: '20px', padding: '15px', background: '#f5f5f5', borderRadius: '5px' }}>
+          <p><strong>Debug Information:</strong></p>
+          <p>User in localStorage: {localStorage.getItem("user") ? "Exists" : "Missing"}</p>
+          <p>TenantID in localStorage: {localStorage.getItem("tenantid") || "Missing"}</p>
+          <button 
+            onClick={() => {
+              console.log("LocalStorage contents:");
+              alert("Check console for localStorage contents");
+            }}
+            style={{ marginTop: '10px', padding: '5px 10px' }}
+          >
+            Show LocalStorage Details
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="loading-container-Contract">
@@ -153,6 +208,9 @@ const Contract = () => {
         <h2 className="no-contract-title-Contract">No Contract Found</h2>
         <p className="no-contract-description-Contract">
           You don't have an active contract yet. Please contact the administrator for more information.
+        </p>
+        <p style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
+          Tenant ID: {tenantId}
         </p>
       </div>
     );

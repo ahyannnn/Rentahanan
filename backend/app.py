@@ -14,6 +14,7 @@ from routes.forgot_route import forgot_bp
 from routes.units_route import houses_bp
 from routes.transaction_route import transaction_bp
 from routes.concern_route import concern_bp
+from routes.profile_route import profile_bp
 
 load_dotenv()
 
@@ -41,7 +42,8 @@ for sub in [
     "signed_contracts",
     "receipts",
     "gcash_receipts",
-    "concern_image"
+    "concern_image",
+    "profile_images"
 ]:
     os.makedirs(os.path.join(app.config["UPLOAD_FOLDER"], sub), exist_ok=True)
 
@@ -57,6 +59,7 @@ app.register_blueprint(forgot_bp, url_prefix="/api")
 app.register_blueprint(houses_bp, url_prefix="/api")
 app.register_blueprint(transaction_bp, url_prefix="/api")
 app.register_blueprint(concern_bp, url_prefix ="/api")
+app.register_blueprint(profile_bp, url_prefix ="/api")
 
 # Example routes
 @app.route("/api/houses", methods=["GET"])

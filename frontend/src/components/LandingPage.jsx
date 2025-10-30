@@ -43,7 +43,7 @@ function LandingPage() {
 
       {/* Houses Section */}
       <section className="houses-section-Layout">
-        <h2 className="section-title-Layout">Available Houses</h2>
+        <h2 className="section-title-Layout">Houses</h2>
         <div className="houses-container-Layout">
           {houses.map((house) => (
             <div

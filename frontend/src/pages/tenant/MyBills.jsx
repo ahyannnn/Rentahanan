@@ -16,7 +16,7 @@ const MyBills = () => {
 
   const storedUser = JSON.parse(localStorage.getItem("user")) || {};
   const tenantId = storedUser.tenantid || storedUser.userid || null;
-
+  
   useEffect(() => {
     if (!tenantId) {
       console.warn("Tenant ID is missing!");

@@ -57,6 +57,7 @@ def register():
             province=province,
             zipcode=zipcode,
             role="Tenant",
+            image=None,
             datecreated=datetime.utcnow()
         )
 
@@ -123,7 +124,18 @@ def login():
         return jsonify({"message": "Incorrect password"}), 401
 
     application = Application.query.filter_by(userid=user.userid).first()
-    tenant = Tenant.query.filter_by(userid=str(user.userid)).first()
+    
+    # ✅ Debug: Check what's happening with tenant lookup
+    print(f"Looking for tenant with userid: {user.userid} (type: {type(user.userid)})")
+    
+    tenant = Tenant.query.filter_by(userid=user.userid).first()
+    
+    print(f"Tenant found: {tenant}")
+    if tenant:
+        print(f"Tenant ID: {tenant.tenantid}")
+        print(f"Tenant UserID: {tenant.userid} (type: {type(tenant.userid)})")
+    else:
+        print("❌ NO TENANT RECORD FOUND!")
 
     # ✅ Generate JWT token
     access_token = create_access_token(
@@ -132,7 +144,7 @@ def login():
             "role": user.role,
             "tenantid": tenant.tenantid if tenant else None
         },
-        expires_delta=timedelta(hours=1)  # token expires after 1 hour
+        expires_delta=timedelta(hours=1)
     )
 
     return jsonify({
@@ -140,7 +152,6 @@ def login():
         "token": access_token,
         "user": {
             "userid": user.userid,
-            "tenantid": tenant.tenantid if tenant else None,
             "firstname": user.firstname,
             "lastname": user.lastname,
             "middlename": user.middlename,
@@ -149,7 +160,6 @@ def login():
             "application_status": application.status if application else "No Application"
         }
     }), 200
-
 
 
     

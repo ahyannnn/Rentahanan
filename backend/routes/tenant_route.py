@@ -154,24 +154,17 @@ def approve_applicant(application_id):
         if not paid_bill:
             return jsonify({"success": False, "message": "Initial payment not completed"}), 400
 
-        # Fetch the unit linked to the contract
-        unit = Unit.query.get(contract.unitid)
-        if not unit:
-            return jsonify({"success": False, "message": "Unit not found"}), 404
-
         # Update statuses
         application.status = "Approved"
         contract.status = "Active"
-        unit.status = "Occupied"  # Update unit status to Occupied
-        
-        db.session.add_all([application, contract, unit])
+        db.session.add_all([application, contract])
 
         # Ensure tenant record exists (already fetched above)
         db.session.commit()
 
         return jsonify({
             "success": True,
-            "message": f"Application {application_id} approved, contract activated, and unit status updated to Occupied successfully."
+            "message": f"Application {application_id} approved and contract activated successfully."
         })
 
     except Exception as e:
@@ -206,3 +199,6 @@ def reject_applicant(application_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "message": f"Failed to reject application: {str(e)}"}), 500
+
+
+

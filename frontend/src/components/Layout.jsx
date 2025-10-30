@@ -30,6 +30,9 @@ const Layout = () => {
   const [applicationStatus, setApplicationStatus] = useState(null);
   const [userRole, setUserRole] = useState("tenant");
   const [profilePictureUrl, setProfilePictureUrl] = useState("/default-profile.png");
+  const [headerProfilePictureUrl, setHeaderProfilePictureUrl] = useState("/default-profile.png");
+  const [loading, setLoading] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
 
   // ✅ Notifications
   const [showNotifications, setShowNotifications] = useState(false);
@@ -57,29 +60,70 @@ const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
+  // Fetch user profile data from API
+  const fetchUserProfile = async (userId) => {
     try {
-      const storedUserRaw = localStorage.getItem("user");
-      if (!storedUserRaw) {
-        console.warn("No user found in localStorage — redirecting to login");
-        navigate("/");
-        return;
+      setLoading(true);
+      const response = await fetch(`http://127.0.0.1:5000/api/profile/${userId}`);
+      const data = await response.json();
+
+      if (data.success && data.profile) {
+        setUserData(data.profile);
+        setApplicationStatus(data.profile.application_status || "Registered");
+        setUserRole(data.profile.role?.toLowerCase() || "tenant");
+        
+        // Set profile picture URL for both modal and header
+        if (data.profile.image) {
+          const imageUrl = `http://127.0.0.1:5000/uploads/profile_images/${data.profile.image}`;
+          setProfilePictureUrl(imageUrl);
+          setHeaderProfilePictureUrl(imageUrl);
+        } else {
+          setProfilePictureUrl("/default-profile.png");
+          setHeaderProfilePictureUrl("/default-profile.png");
+        }
+        
+        localStorage.setItem("user", JSON.stringify(data.profile));
+      } else {
+        console.error("Failed to fetch profile:", data.message);
       }
-
-      const storedUser = JSON.parse(storedUserRaw);
-      const storedRole = localStorage.getItem("userRole") || storedUser.role || "tenant";
-      const storedStatus =
-        localStorage.getItem("applicationStatus") ||
-        storedUser.application_status ||
-        "Pending";
-
-      setUserData(storedUser);
-      setUserRole(storedRole.toLowerCase());
-      setApplicationStatus(storedStatus);
     } catch (error) {
-      console.error("Error loading user from localStorage:", error);
-      navigate("/");
+      console.error("Error fetching user profile:", error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    const initializeUser = async () => {
+      try {
+        const storedUserRaw = localStorage.getItem("user");
+        if (!storedUserRaw) {
+          console.warn("No user found in localStorage — redirecting to login");
+          navigate("/");
+          return;
+        }
+
+        const storedUser = JSON.parse(storedUserRaw);
+        const userId = storedUser.userid;
+
+        if (userId) {
+          await fetchUserProfile(userId);
+        } else {
+          setUserData(storedUser);
+          setUserRole(localStorage.getItem("userRole") || storedUser.role || "tenant");
+          setApplicationStatus(
+            localStorage.getItem("applicationStatus") ||
+            storedUser.application_status ||
+            "Registered"
+          );
+        }
+      } catch (error) {
+        console.error("Error loading user:", error);
+        navigate("/");
+      }
+    };
+
+    initializeUser();
   }, [navigate]);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -88,9 +132,14 @@ const Layout = () => {
   const openProfileModal = () => {
     setIsProfileModalOpen(true);
     setIsEditing(false);
+    setSelectedImageFile(null); // Reset selected image when opening modal
   };
 
-  const closeProfileModal = () => setIsProfileModalOpen(false);
+  const closeProfileModal = () => {
+    setIsProfileModalOpen(false);
+    setIsEditing(false);
+    setSelectedImageFile(null); // Reset selected image when closing modal
+  };
 
   const handleLogout = () => {
     localStorage.clear();
@@ -102,23 +151,77 @@ const Layout = () => {
     setUserData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSaveEdit = () => {
-    localStorage.setItem("user", JSON.stringify(userData));
-    setIsEditing(false);
-  };
+  const handleSaveEdit = async () => {
+    try {
+      const formData = new FormData();
+      
+      // Append ONLY editable fields
+      formData.append("email", userData.email);
+      formData.append("phone", userData.phone);
+      
+      // Append image file if a new one was selected
+      if (selectedImageFile) {
+        formData.append("image", selectedImageFile);
+      }
 
-  const handleCancelEdit = () => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    setUserData(storedUser);
-    setIsEditing(false);
+      const response = await fetch(`http://127.0.0.1:5000/api/profile/${userData.userid}`, {
+        method: "PUT",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update local state with new data
+        setUserData(data.user);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        
+        // Update profile picture URL if image was uploaded
+        if (data.user.image) {
+          const imageUrl = `http://127.0.0.1:5000/api/profile/image/${data.user.image}`;
+          setProfilePictureUrl(imageUrl);
+          setHeaderProfilePictureUrl(imageUrl);
+        }
+        
+        setIsEditing(false);
+        setSelectedImageFile(null);
+      } else {
+        alert(data.message || "Failed to update profile");
+      }
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      alert("Network error. Please try again.");
+    }
   };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
+      // Create temporary URL for preview
       const tempUrl = URL.createObjectURL(file);
       setProfilePictureUrl(tempUrl);
+      // Store the file for upload
+      setSelectedImageFile(file);
     }
+  };
+
+  const handleCancelEdit = () => {
+    // Reset to original image and data
+    if (userData?.image) {
+      const imageUrl = `http://localhost:5000/uploads/profile_images/${userData.image}`;
+      setProfilePictureUrl(imageUrl);
+      setHeaderProfilePictureUrl(imageUrl);
+    } else {
+      setProfilePictureUrl("/default-profile.png");
+      setHeaderProfilePictureUrl("/default-profile.png");
+    }
+    setSelectedImageFile(null);
+    
+    // Reload fresh data from API to discard any changes
+    if (userData?.userid) {
+      fetchUserProfile(userData.userid);
+    }
+    setIsEditing(false);
   };
 
   const handleViewAllNotifications = () => {
@@ -133,7 +236,6 @@ const Layout = () => {
   const tenantLinksByStatus = {
     Registered: [{ name: "Browse Units", to: "/tenant/browse-units", icon: Building2 }],
     Pending: [
-      { name: "Dashboard", to: "/tenant", icon: Home },
       { name: "Browse Units", to: "/tenant/browse-units", icon: Building2 },
       { name: "My Bills", to: "/tenant/bills", icon: CreditCard },
       { name: "Contract", to: "/tenant/contract", icon: ClipboardList },
@@ -160,10 +262,9 @@ const Layout = () => {
     { name: "Billing", to: "/owner/billing", icon: CreditCard },
     { name: "Contract", to: "/owner/contract", icon: ClipboardList },
     { name: "Concern Center", to: "/owner/notifications", icon: Bell },
-    // { name: "User Management", to: "/owner/user", icon: UserCog },
   ];
 
-  if (!userData) {
+  if (loading) {
     return (
       <div style={{ textAlign: "center", marginTop: "20vh", color: "#555" }}>
         <h2>Loading user data...</h2>
@@ -171,20 +272,39 @@ const Layout = () => {
     );
   }
 
+  if (!userData) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "20vh", color: "#555" }}>
+        <h2>No user data found</h2>
+        <button onClick={() => navigate("/")}>Go to Login</button>
+      </div>
+    );
+  }
+
   const links =
     userRole === "owner"
       ? ownerLinks
-      : tenantLinksByStatus[applicationStatus || "Pending"] || [];
+      : tenantLinksByStatus[applicationStatus || "Registered"] || [];
 
   const pageTitle =
     links.find((link) => link.to === location.pathname)?.name || "Dashboard";
 
   const ProfileModal = () => {
     if (!isProfileModalOpen || !userData) return null;
+    
     const formatDate = (dateString) => {
-      if (!dateString) return "N/A";
-      const parts = dateString.split(" ")[0].split("-");
-      return `${parts[1]}/${parts[2]}/${parts[0]}`;
+      if (!dateString || dateString === "N/A") return "N/A";
+      try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "N/A";
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+      } catch (error) {
+        return "N/A";
+      }
     };
 
     return (
@@ -206,15 +326,18 @@ const Layout = () => {
                 height="120"
                 style={{ borderRadius: "50%", background: "#eee", objectFit: "cover" }}
               />
-              <label className="upload-btn-icon-label-Layout">
-                <Camera size={18} />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  style={{ display: "none" }}
-                />
-              </label>
+              {/* Show camera icon ONLY when editing */}
+              {isEditing && (
+                <label className="upload-btn-icon-label-Layout">
+                  <Camera size={18} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              )}
             </div>
 
             <h3 className="user-full-name-Layout">
@@ -225,6 +348,7 @@ const Layout = () => {
             </p>
 
             <div className="user-details-list-Layout">
+              {/* Email - Editable */}
               <div className="detail-item-Layout">
                 <Mail size={18} className="detail-icon-Layout" />
                 {isEditing ? (
@@ -240,6 +364,7 @@ const Layout = () => {
                 )}
               </div>
 
+              {/* Phone - Editable */}
               <div className="detail-item-Layout">
                 <Phone size={18} className="detail-icon-Layout" />
                 {isEditing ? (
@@ -255,10 +380,13 @@ const Layout = () => {
                 )}
               </div>
 
+              {/* Joined Date - Read Only */}
               <div className="detail-item-Layout detail-view-only-Layout">
                 <Calendar size={18} className="detail-icon-Layout" />
                 <span>Joined: {formatDate(userData.datecreated || "")}</span>
               </div>
+
+              
             </div>
 
             <div className="modal-actions-Layout">
@@ -357,8 +485,16 @@ const Layout = () => {
             )}
           </div>
 
-          <button className="notif-btn-Layout" onClick={openProfileModal}>
-            <User size={20} color="white" />
+          {/* Show profile image instead of user icon */}
+          <button className="profile-image-btn-Layout" onClick={openProfileModal}>
+            <img 
+              src={headerProfilePictureUrl} 
+              alt="Profile" 
+              className="header-profile-image-Layout"
+              onError={(e) => {
+                e.target.src = "/default-profile.png";
+              }}
+            />
           </button>
         </div>
       </div>

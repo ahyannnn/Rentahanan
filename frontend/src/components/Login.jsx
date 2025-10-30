@@ -16,96 +16,101 @@ const Login = () => {
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        // Reset errors
-        setEmailError("");
-        setPasswordError("");
+    // Reset errors
+    setEmailError("");
+    setPasswordError("");
+    setGeneralError("");
 
-        let isValid = true;
+    let isValid = true;
 
-        // Validation
-        if (!email) {
-            setEmailError("Email address is required.");
+    // Validation
+    if (!email) {
+        setEmailError("Email address is required.");
+        isValid = false;
+    } else {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setEmailError("Please enter a valid email address.");
             isValid = false;
+        }
+    }
+
+    if (!password) {
+        setPasswordError("Password is required.");
+        isValid = false;
+    }
+
+    if (!isValid) return;
+
+    try {
+        const response = await fetch("http://127.0.0.1:5000/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            setGeneralError(data.message || "Login failed! Please check your credentials.");
+            return;
+        }
+
+        if (!data.user) {
+            setEmailError("Unexpected response. Please try again.");
+            return;
+        }
+
+        // ✅ Extract user data from backend
+        const {
+            role,
+            application_status,
+            userid,
+            tenantid,
+            firstname,
+            middlename,
+            lastname,
+            email: userEmail,
+            phone,
+        } = data.user;
+
+        const fullName = [firstname, middlename, lastname].filter(Boolean).join(" ");
+
+        // ✅ Store everything in ONE object (so Layout.jsx can read it easily)
+        const userData = {
+            userid,
+            tenantid,
+            fullName,
+            email: userEmail,
+            phone,
+            role,
+            applicationStatus: application_status || "Registered",
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+        
+        // ✅ ALSO store tenantid separately for easy access
+        if (tenantid) {
+            localStorage.setItem("tenantid", tenantid);
+        }
+
+        // ✅ Navigate based on role and status
+        if (role.toLowerCase() === "owner") {
+            navigate("/owner");
+        } else if (role.toLowerCase() === "tenant") {
+            navigate(
+                application_status === "Registered" ? "/tenant/browse-units" : "/tenant"
+            );
         } else {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                setEmailError("Please enter a valid email address.");
-                isValid = false;
-            }
+            navigate("/landing");
         }
 
-        if (!password) {
-            setPasswordError("Password is required.");
-            isValid = false;
-        }
-
-        if (!isValid) return;
-
-        try {
-            const response = await fetch("http://127.0.0.1:5000/api/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                setGeneralError(data.message || "Login failed! Please check your credentials.");
-                return;
-            }
-
-            if (!data.user) {
-                setEmailError("Unexpected response. Please try again.");
-                return;
-            }
-
-            // ✅ Extract user data from backend
-            const {
-                role,
-                application_status,
-                userid,
-                tenantid,
-                firstname,
-                middlename,
-                lastname,
-                email: userEmail,
-                phone,
-            } = data.user;
-
-            const fullName = [firstname, middlename, lastname].filter(Boolean).join(" ");
-
-            // ✅ Store everything in ONE object (so Layout.jsx can read it easily)
-            const userData = {
-                userid,
-                tenantid,
-                fullName,
-                email: userEmail,
-                phone,
-                role,
-                applicationStatus: application_status || "Registered",
-            };
-
-            localStorage.setItem("user", JSON.stringify(userData));
-
-            // ✅ Navigate based on role and status
-            if (role.toLowerCase() === "owner") {
-                navigate("/owner");
-            } else if (role.toLowerCase() === "tenant") {
-                navigate(
-                    application_status === "Registered" ? "/tenant/browse-units" : "/tenant"
-                );
-            } else {
-                navigate("/landing");
-            }
-
-        } catch (error) {
-            console.error("Login error:", error);
-            setEmailError("Network error. Please check your connection.");
-        }
-    };
+    } catch (error) {
+        console.error("Login error:", error);
+        setGeneralError("Network error. Please check your connection.");
+    }
+};
 
 
     const errorStyle = {
