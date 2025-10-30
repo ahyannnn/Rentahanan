@@ -1,12 +1,32 @@
 import React, { useEffect, useState, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import axios from "axios";
+import { 
+  FileText, 
+  Home, 
+  DollarSign, 
+  Calendar, 
+  CheckCircle, 
+  Clock, 
+  XCircle, 
+  PlayCircle,
+  Eye,
+  Pen,
+  Trash2,
+  Save,
+  X,
+  Download,
+  Loader
+} from "lucide-react";
 import "../../styles/tenant/Contract.css";
 
 const Contract = () => {
   const [contract, setContract] = useState(null);
   const [isSigning, setIsSigning] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
   const sigCanvas = useRef();
 
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -44,11 +64,26 @@ const Contract = () => {
   }, [tenantId]);
 
   const handleSignClick = () => setIsSigning(true);
-  const handleCancelSign = () => setIsSigning(false);
+  
+  const handleCancelSign = () => {
+    setIsSigning(false);
+    if (sigCanvas.current) {
+      sigCanvas.current.clear();
+    }
+  };
+
+  const showMessage = (message, isError = false) => {
+    setModalMessage(message);
+    if (isError) {
+      setShowErrorModal(true);
+    } else {
+      setShowSuccessModal(true);
+    }
+  };
 
   const handleSaveSignature = async () => {
     if (sigCanvas.current.isEmpty()) {
-      alert("Please provide your signature before saving.");
+      showMessage("Please provide your signature before saving.", true);
       return;
     }
 
@@ -68,28 +103,42 @@ const Contract = () => {
       );
 
       if (response.data.message) {
-        alert("✅ Contract signed successfully!");
+        showMessage("Contract signed successfully!");
         setContract((prev) => ({
           ...prev,
           signed_contract: response.data.filename,
           status: "Signed"
         }));
         setIsSigning(false);
+        sigCanvas.current.clear();
       } else {
-        alert("❌ Error saving signed contract.");
+        showMessage("Error saving signed contract.", true);
       }
     } catch (error) {
       console.error("Error signing contract:", error);
-      alert("Failed to upload signed contract.");
+      showMessage("Failed to upload signed contract.", true);
     }
   };
 
   const handleClear = () => sigCanvas.current.clear();
 
+  const getStatusIcon = (status) => {
+    const icons = {
+      "signed": <CheckCircle className="status-icon signed" />,
+      "pending": <Clock className="status-icon pending" />,
+      "rejected": <XCircle className="status-icon rejected" />,
+      "active": <PlayCircle className="status-icon active" />,
+      "expired": <XCircle className="status-icon expired" />
+    };
+    return icons[status?.toLowerCase()] || <FileText className="status-icon default" />;
+  };
+
   if (loading) {
     return (
       <div className="loading-container-Contract">
-        <div className="loading-spinner-Contract"></div>
+        <div className="loading-spinner-Contract">
+          <Loader className="spinner-icon" />
+        </div>
         <p className="loading-text-Contract">Loading your contract...</p>
       </div>
     );
@@ -98,7 +147,9 @@ const Contract = () => {
   if (!contract) {
     return (
       <div className="no-contract-container-Contract">
-        <div className="no-contract-icon-Contract">📝</div>
+        <div className="no-contract-icon-Contract">
+          <FileText size={64} />
+        </div>
         <h2 className="no-contract-title-Contract">No Contract Found</h2>
         <p className="no-contract-description-Contract">
           You don't have an active contract yet. Please contact the administrator for more information.
@@ -111,29 +162,23 @@ const Contract = () => {
     ? `http://localhost:5000/uploads/signed_contracts/${contract.signed_contract}`
     : `http://localhost:5000/uploads/contracts/${contract.generated_contract}`;
 
-  const getStatusIcon = (status) => {
-    const icons = {
-      "signed": "✅",
-      "pending": "⏳",
-      "rejected": "❌",
-      "active": "🟢",
-      "expired": "🔴"
-    };
-    return icons[status?.toLowerCase()] || "📄";
-  };
-
   return (
     <div className="contract-container-Contract">
       {/* Header Section */}
       <div className="contract-header-Contract">
-        <h1 className="contract-title-Contract">My Contract 📄</h1>
+        <h1 className="contract-title-Contract">
+          <FileText className="header-icon" />
+          My Contract
+        </h1>
         <p className="contract-subtitle-Contract">Review and manage your rental agreement</p>
       </div>
 
       {/* Contract Summary Cards */}
       <div className="contract-summary-Contract">
         <div className="summary-card-Contract summary-card-unit-Contract">
-          <div className="summary-icon-Contract">🏠</div>
+          <div className="summary-icon-Contract">
+            <Home className="icon" />
+          </div>
           <div className="summary-content-Contract">
             <p className="summary-label-Contract">Unit</p>
             <p className="summary-value-Contract">{contract.unit_name || "N/A"}</p>
@@ -141,7 +186,9 @@ const Contract = () => {
         </div>
         
         <div className="summary-card-Contract summary-card-price-Contract">
-          <div className="summary-icon-Contract">💰</div>
+          <div className="summary-icon-Contract">
+            <DollarSign className="icon" />
+          </div>
           <div className="summary-content-Contract">
             <p className="summary-label-Contract">Monthly Price</p>
             <p className="summary-value-Contract">₱{contract.unit_price?.toLocaleString() || "0"}</p>
@@ -149,7 +196,9 @@ const Contract = () => {
         </div>
         
         <div className="summary-card-Contract summary-card-dates-Contract">
-          <div className="summary-icon-Contract">📅</div>
+          <div className="summary-icon-Contract">
+            <Calendar className="icon" />
+          </div>
           <div className="summary-content-Contract">
             <p className="summary-label-Contract">Lease Period</p>
             <p className="summary-value-Contract">
@@ -159,7 +208,9 @@ const Contract = () => {
         </div>
         
         <div className="summary-card-Contract summary-card-status-Contract">
-          <div className="summary-icon-Contract">{getStatusIcon(contract.status)}</div>
+          <div className="summary-icon-Contract">
+            {getStatusIcon(contract.status)}
+          </div>
           <div className="summary-content-Contract">
             <p className="summary-label-Contract">Status</p>
             <p className={`summary-value-Contract status-value-Contract status-${contract.status ? contract.status.toLowerCase() : "unknown"}-Contract`}>
@@ -175,7 +226,9 @@ const Contract = () => {
         <div className="contract-preview-Contract">
           <div className="preview-header-Contract">
             <div className="contract-file-info-Contract">
-              <div className="pdf-icon-Contract">📄</div>
+              <div className="pdf-icon-Contract">
+                <FileText className="file-icon" />
+              </div>
               <div className="file-details-Contract">
                 <p className="file-label-Contract">Contract Document</p>
                 <p className="file-size-Contract">PDF Document</p>
@@ -185,7 +238,7 @@ const Contract = () => {
               className="open-btn-Contract" 
               onClick={() => window.open(contractURL, "_blank")}
             >
-              <span className="btn-icon-Contract">👁️</span>
+              <Eye className="btn-icon" size={18} />
               View Contract
             </button>
           </div>
@@ -195,7 +248,9 @@ const Contract = () => {
         {!contract.signed_contract && !isSigning && (
           <div className="signature-prompt-Contract">
             <div className="prompt-content-Contract">
-              <div className="prompt-icon-Contract">✍️</div>
+              <div className="prompt-icon-Contract">
+                <Pen className="icon" />
+              </div>
               <div className="prompt-text-Contract">
                 <h3 className="prompt-title-Contract">Ready to Sign?</h3>
                 <p className="prompt-description-Contract">
@@ -204,7 +259,7 @@ const Contract = () => {
               </div>
             </div>
             <button className="sign-btn-Contract" onClick={handleSignClick}>
-              <span className="btn-icon-Contract">🖊️</span>
+              <Pen className="btn-icon" size={18} />
               Sign Contract
             </button>
           </div>
@@ -232,15 +287,16 @@ const Contract = () => {
             
             <div className="signature-buttons-Contract">
               <button className="clear-btn-Contract" onClick={handleClear}>
-                <span className="btn-icon-Contract">🗑️</span>
+                <Trash2 className="btn-icon" size={18} />
                 Clear
               </button>
               <div className="signature-action-buttons-Contract">
                 <button className="cancel-btn-Contract" onClick={handleCancelSign}>
+                  <X className="btn-icon" size={18} />
                   Cancel
                 </button>
                 <button className="save-signature-btn-Contract" onClick={handleSaveSignature}>
-                  <span className="btn-icon-Contract">💾</span>
+                  <Save className="btn-icon" size={18} />
                   Save Signature
                 </button>
               </div>
@@ -251,7 +307,9 @@ const Contract = () => {
         {contract.signed_contract && (
           <div className="signed-message-Contract">
             <div className="signed-header-Contract">
-              <div className="signed-icon-Contract">✅</div>
+              <div className="signed-icon-Contract">
+                <CheckCircle className="icon" />
+              </div>
               <div className="signed-content-Contract">
                 <h3 className="signed-title-Contract">Contract Signed</h3>
                 <p className="signed-text-Contract">
@@ -272,7 +330,7 @@ const Contract = () => {
                   )
                 }
               >
-                <span className="btn-icon-Contract">👁️</span>
+                <Eye className="btn-icon" size={18} />
                 View Signed Copy
               </button>
             </div>
@@ -298,6 +356,44 @@ const Contract = () => {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="modal-overlay-Contract" onClick={() => setShowSuccessModal(false)}>
+          <div className="modal-content-Contract success" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-icon-Contract">
+              <CheckCircle className="icon" />
+            </div>
+            <h3 className="modal-title-Contract">Success</h3>
+            <p className="modal-message-Contract">{modalMessage}</p>
+            <button 
+              className="modal-button-Contract success"
+              onClick={() => setShowSuccessModal(false)}
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Error Modal */}
+      {showErrorModal && (
+        <div className="modal-overlay-Contract" onClick={() => setShowErrorModal(false)}>
+          <div className="modal-content-Contract error" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-icon-Contract">
+              <XCircle className="icon" />
+            </div>
+            <h3 className="modal-title-Contract">Error</h3>
+            <p className="modal-message-Contract">{modalMessage}</p>
+            <button 
+              className="modal-button-Contract error"
+              onClick={() => setShowErrorModal(false)}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

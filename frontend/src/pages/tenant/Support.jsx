@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Search, Plus, FileText, Clock, CheckCircle, AlertCircle, Home, DollarSign, Settings, HelpCircle, X, Upload, Image } from "lucide-react";
 import "../../styles/tenant/Support.css";
 
 const Support = () => {
@@ -13,6 +14,8 @@ const Support = () => {
         description: "",
         tenantimage: null,
     });
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const userData = localStorage.getItem("user");
@@ -20,16 +23,29 @@ const Support = () => {
             const parsedUser = JSON.parse(userData);
             if (parsedUser.tenantid) {
                 setFormData((prev) => ({ ...prev, tenantid: parsedUser.tenantid }));
-                fetch(`http://localhost:5000/api/get-concerns/${parsedUser.tenantid}`)
-                    .then((res) => res.json())
-                    .then((data) => setConcerns(data))
-                    .catch((err) => console.error("Error fetching concerns:", err));
+                fetchConcerns(parsedUser.tenantid);
             }
         }
     }, []);
 
+    const fetchConcerns = (tenantId) => {
+        fetch(`http://localhost:5000/api/get-concerns/${tenantId}`)
+            .then((res) => res.json())
+            .then((data) => setConcerns(data))
+            .catch((err) => console.error("Error fetching concerns:", err));
+    };
+
     const handleOpenNewConcernModal = () => setIsNewConcernModalOpen(true);
-    const handleCloseNewConcernModal = () => setIsNewConcernModalOpen(false);
+    const handleCloseNewConcernModal = () => {
+        setIsNewConcernModalOpen(false);
+        setFormData({
+            ...formData,
+            concerntype: "",
+            subject: "",
+            description: "",
+            tenantimage: null,
+        });
+    };
 
     const handleInputChange = (e) => {
         const { id, value } = e.target;
@@ -42,9 +58,11 @@ const Support = () => {
 
     const handleSubmitConcern = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
 
         if (!formData.tenantid || !formData.concerntype || !formData.subject || !formData.description || !formData.tenantimage) {
             alert("⚠️ All fields including an image are required!");
+            setIsSubmitting(false);
             return;
         }
 
@@ -62,80 +80,94 @@ const Support = () => {
             const data = await res.json();
 
             if (res.ok) {
-                alert("✅ Concern submitted successfully!");
-                setConcerns([data.concern, ...concerns]);
-                setIsNewConcernModalOpen(false);
-                setFormData({
-                    tenantid: formData.tenantid,
-                    concerntype: "",
-                    subject: "",
-                    description: "",
-                    tenantimage: null,
-                });
+                setShowSuccessModal(true);
+                fetchConcerns(formData.tenantid);
+                handleCloseNewConcernModal();
             } else {
                 alert(data.error || "❌ Failed to submit concern");
             }
         } catch (error) {
             console.error("Error submitting concern:", error);
             alert("❌ Something went wrong. Please try again.");
+        } finally {
+            setIsSubmitting(false);
         }
+    };
+
+    const handleCloseSuccessModal = () => {
+        setShowSuccessModal(false);
     };
 
     const filteredConcerns = concerns.filter((concern) => {
         const matchesSearch =
             concern.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            concern.concerntype?.toLowerCase().includes(searchTerm.toLowerCase());
+            concern.concerntype?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            concern.concernid?.toString().includes(searchTerm);
+        
         if (activeFilter === "all") return matchesSearch;
         if (activeFilter === "pending") return concern.status === "Pending" && matchesSearch;
         if (activeFilter === "completed") return concern.status === "Resolved" && matchesSearch;
         return matchesSearch;
     });
 
-    const getStatusIcon = (status) => (status === "Pending" ? "⏳" : "✅");
+    const getStatusIcon = (status) => {
+        return status === "Pending" ? <Clock size={16} /> : <CheckCircle size={16} />;
+    };
+
     const getCategoryIcon = (category) => {
         const icons = {
-            Maintenance: "🔧",
-            Billing: "💰",
-            Contract: "📝",
-            Other: "❓",
+            Maintenance: <Settings size={18} />,
+            Billing: <DollarSign size={18} />,
+            Contract: <FileText size={18} />,
+            Other: <HelpCircle size={18} />,
         };
-        return icons[category] || "📄";
+        return icons[category] || <HelpCircle size={18} />;
+    };
+
+    const statsData = {
+        total: concerns.length,
+        pending: concerns.filter((c) => c.status === "Pending").length,
+        resolved: concerns.filter((c) => c.status === "Resolved").length
     };
 
     return (
         <div className="support-container-Tenant-Support">
             {/* Header */}
             <div className="page-header-Tenant-Support">
-                <h2 className="page-title-Tenant-Support">Support & Concerns 🛠️</h2>
-                <p className="page-description-Tenant-Support">
-                    Track the status of your reported issues and create new concerns.
-                </p>
+                <div className="header-content-Tenant-Support">
+                    <h2 className="page-title-Tenant-Support">Support & Concerns</h2>
+                    <p className="page-description-Tenant-Support">
+                        Track the status of your reported issues and create new concerns
+                    </p>
+                </div>
             </div>
 
-            {/* Stats */}
+            {/* Stats Overview */}
             <div className="stats-overview-Tenant-Support">
                 <div className="stat-card-Tenant-Support">
-                    <div className="stat-icon-Tenant-Support">📋</div>
+                    <div className="stat-icon-Tenant-Support total">
+                        <FileText size={24} />
+                    </div>
                     <div className="stat-content-Tenant-Support">
-                        <div className="stat-number-Tenant-Support">{concerns.length}</div>
+                        <div className="stat-number-Tenant-Support">{statsData.total}</div>
                         <div className="stat-label-Tenant-Support">Total Concerns</div>
                     </div>
                 </div>
                 <div className="stat-card-Tenant-Support">
-                    <div className="stat-icon-Tenant-Support">⏳</div>
+                    <div className="stat-icon-Tenant-Support pending">
+                        <Clock size={24} />
+                    </div>
                     <div className="stat-content-Tenant-Support">
-                        <div className="stat-number-Tenant-Support">
-                            {concerns.filter((c) => c.status === "Pending").length}
-                        </div>
+                        <div className="stat-number-Tenant-Support">{statsData.pending}</div>
                         <div className="stat-label-Tenant-Support">Pending</div>
                     </div>
                 </div>
                 <div className="stat-card-Tenant-Support">
-                    <div className="stat-icon-Tenant-Support">✅</div>
+                    <div className="stat-icon-Tenant-Support resolved">
+                        <CheckCircle size={24} />
+                    </div>
                     <div className="stat-content-Tenant-Support">
-                        <div className="stat-number-Tenant-Support">
-                            {concerns.filter((c) => c.status === "Resolved").length}
-                        </div>
+                        <div className="stat-number-Tenant-Support">{statsData.resolved}</div>
                         <div className="stat-label-Tenant-Support">Resolved</div>
                     </div>
                 </div>
@@ -145,10 +177,10 @@ const Support = () => {
             <div className="support-top-controls-Tenant-Support">
                 <div className="search-container-Tenant-Support">
                     <div className="search-box-Tenant-Support">
-                        <span className="search-icon-Tenant-Support">🔍</span>
+                        <Search size={20} className="search-icon-Tenant-Support" />
                         <input
                             type="text"
-                            placeholder="Search Concern ID or Title..."
+                            placeholder="Search concerns by ID, subject, or type..."
                             className="search-input-Tenant-Support"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -165,6 +197,7 @@ const Support = () => {
                             onClick={() => setActiveFilter("all")}
                         >
                             All
+                            <span className="filter-count-Tenant-Support">{concerns.length}</span>
                         </button>
                         <button
                             className={`filter-btn-Tenant-Support ${
@@ -173,6 +206,7 @@ const Support = () => {
                             onClick={() => setActiveFilter("pending")}
                         >
                             Pending
+                            <span className="filter-count-Tenant-Support">{statsData.pending}</span>
                         </button>
                         <button
                             className={`filter-btn-Tenant-Support ${
@@ -181,11 +215,12 @@ const Support = () => {
                             onClick={() => setActiveFilter("completed")}
                         >
                             Resolved
+                            <span className="filter-count-Tenant-Support">{statsData.resolved}</span>
                         </button>
                     </div>
 
                     <button className="new-concern-btn-Tenant-Support" onClick={handleOpenNewConcernModal}>
-                        <span className="btn-icon-Tenant-Support">+</span>
+                        <Plus size={20} />
                         New Concern
                     </button>
                 </div>
@@ -222,36 +257,38 @@ const Support = () => {
                                 <div className="concern-meta-Tenant-Support">
                                     <div className="meta-item-Tenant-Support">
                                         <span className="meta-label-Tenant-Support">Concern ID</span>
-                                        <span className="meta-value-Tenant-Support">{concern.concernid}</span>
+                                        <span className="meta-value-Tenant-Support">#{concern.concernid}</span>
                                     </div>
                                     <div className="meta-item-Tenant-Support">
                                         <span className="meta-label-Tenant-Support">Date Reported</span>
                                         <span className="meta-value-Tenant-Support date-value-Tenant-Support">
-                                            📅 {concern.creationdate}
+                                            <Clock size={14} />
+                                            {concern.creationdate}
                                         </span>
                                     </div>
                                 </div>
 
-                                {/* 🔹 View Image Buttons */}
-                                <div className="view-image-btn-Tenant-Support">
+                                <div className="image-actions-Tenant-Support">
                                     {concern.tenantimage && (
                                         <button
-                                            className="view-details-btn-Tenant-Support"
+                                            className="view-image-btn-Tenant-Support"
                                             onClick={() =>
                                                 window.open(`http://localhost:5000${concern.tenantimage}`, "_blank")
                                             }
                                         >
+                                            <Image size={16} />
                                             View Image
                                         </button>
                                     )}
                                     {concern.landlordimage && (
                                         <button
-                                            className="view-details-btn-Tenant-Support"
+                                            className="view-image-btn-Tenant-Support landlord"
                                             onClick={() =>
                                                 window.open(`http://localhost:5000${concern.landlordimage}`, "_blank")
                                             }
                                         >
-                                            View Image
+                                            <Image size={16} />
+                                            Owner's Response
                                         </button>
                                     )}
                                 </div>
@@ -260,7 +297,9 @@ const Support = () => {
                     ))
                 ) : (
                     <div className="no-concerns-Tenant-Support">
-                        <div className="no-concerns-icon-Tenant-Support">📝</div>
+                        <div className="no-concerns-icon-Tenant-Support">
+                            <FileText size={64} />
+                        </div>
                         <h3 className="no-concerns-title-Tenant-Support">No concerns found</h3>
                         <p className="no-concerns-description-Tenant-Support">
                             {searchTerm
@@ -269,6 +308,7 @@ const Support = () => {
                         </p>
                         {!searchTerm && (
                             <button className="no-concerns-btn-Tenant-Support" onClick={handleOpenNewConcernModal}>
+                                <Plus size={20} />
                                 Report Your First Concern
                             </button>
                         )}
@@ -276,15 +316,15 @@ const Support = () => {
                 )}
             </div>
 
-            {/* Modal (unchanged) */}
+            {/* New Concern Modal */}
             {isNewConcernModalOpen && (
                 <div className="modal-overlay-Tenant-Support" onClick={handleCloseNewConcernModal}>
                     <div className="concern-modal-Tenant-Support" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header-Tenant-Support">
                             <button className="back-btn-Tenant-Support" onClick={handleCloseNewConcernModal}>
-                                ← Back
+                                <X size={20} />
                             </button>
-                            <h3 className="modal-title-Tenant-Support">Create New Concern 🆕</h3>
+                            <h3 className="modal-title-Tenant-Support">Create New Concern</h3>
                             <div className="modal-header-spacer-Tenant-Support"></div>
                         </div>
 
@@ -292,9 +332,16 @@ const Support = () => {
                             <form className="concern-form-Tenant-Support" onSubmit={handleSubmitConcern}>
                                 <div className="form-group-Tenant-Support">
                                     <label htmlFor="concerntype" className="form-label-Tenant-Support">
-                                        📋 Concern Type *
+                                        <Settings size={18} />
+                                        Concern Type *
                                     </label>
-                                    <select id="concerntype" className="form-input-Tenant-Support" required onChange={handleInputChange}>
+                                    <select 
+                                        id="concerntype" 
+                                        className="form-input-Tenant-Support" 
+                                        required 
+                                        onChange={handleInputChange}
+                                        value={formData.concerntype}
+                                    >
                                         <option value="">Select Category</option>
                                         <option value="Maintenance">Maintenance</option>
                                         <option value="Billing">Billing</option>
@@ -305,7 +352,8 @@ const Support = () => {
 
                                 <div className="form-group-Tenant-Support">
                                     <label htmlFor="subject" className="form-label-Tenant-Support">
-                                        💬 Subject / Title *
+                                        <FileText size={18} />
+                                        Subject / Title *
                                     </label>
                                     <input
                                         type="text"
@@ -314,32 +362,40 @@ const Support = () => {
                                         placeholder="e.g., Water Leakage in Unit 1"
                                         required
                                         onChange={handleInputChange}
+                                        value={formData.subject}
                                     />
                                 </div>
 
                                 <div className="form-group-Tenant-Support">
                                     <label htmlFor="description" className="form-label-Tenant-Support">
-                                        📝 Details / Description *
+                                        <HelpCircle size={18} />
+                                        Details / Description *
                                     </label>
                                     <textarea
                                         id="description"
                                         className="form-input-Tenant-Support textarea-Tenant-Support"
                                         rows="4"
-                                        placeholder="Please provide details..."
+                                        placeholder="Please provide detailed information about your concern..."
                                         required
                                         onChange={handleInputChange}
+                                        value={formData.description}
                                     ></textarea>
                                 </div>
 
                                 <div className="form-group-Tenant-Support">
-                                    <label className="form-label-Tenant-Support">📎 Attachment *</label>
+                                    <label className="form-label-Tenant-Support">
+                                        <Upload size={18} />
+                                        Attachment *
+                                    </label>
                                     <div className="upload-container-Tenant-Support">
                                         <div className="upload-box-Tenant-Support">
-                                            <div className="upload-icon-Tenant-Support">📁</div>
+                                            <div className="upload-icon-Tenant-Support">
+                                                <Image size={32} />
+                                            </div>
                                             <div className="upload-text-Tenant-Support">
-                                                <p className="upload-title-Tenant-Support">Upload supporting documents</p>
+                                                <p className="upload-title-Tenant-Support">Upload supporting image</p>
                                                 <p className="upload-subtitle-Tenant-Support">
-                                                    Supports JPG, PNG, PDF up to 10MB
+                                                    Supports JPG, PNG up to 10MB
                                                 </p>
                                             </div>
                                             <label className="upload-btn-Tenant-Support">
@@ -349,8 +405,14 @@ const Support = () => {
                                                     className="file-input-Tenant-Support"
                                                     onChange={handleFileChange}
                                                     required
+                                                    accept="image/*"
                                                 />
                                             </label>
+                                            {formData.tenantimage && (
+                                                <div className="file-preview-Tenant-Support">
+                                                    Selected: {formData.tenantimage.name}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -364,12 +426,74 @@ const Support = () => {
                                         >
                                             Cancel
                                         </button>
-                                        <button type="submit" className="submit-btn-Tenant-Support">
-                                            🚀 Submit Concern
+                                        <button 
+                                            type="submit" 
+                                            className="submit-btn-Tenant-Support"
+                                            disabled={isSubmitting}
+                                        >
+                                            {isSubmitting ? (
+                                                <>
+                                                    <div className="loading-spinner-Tenant-Support"></div>
+                                                    Submitting...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    Submit Concern
+                                                </>
+                                            )}
                                         </button>
                                     </div>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Success Modal */}
+            {showSuccessModal && (
+                <div className="modal-overlay-Tenant-Support success-modal-overlay">
+                    <div className="success-modal-Tenant-Support">
+                        <div className="success-modal-content-Tenant-Support">
+                            <div className="success-animation-container-Tenant-Support">
+                                <div className="success-checkmark-Tenant-Support">
+                                    <CheckCircle size={80} className="check-icon-Tenant-Support" />
+                                </div>
+                                <div className="success-confetti-Tenant-Support">
+                                    {[...Array(12)].map((_, i) => (
+                                        <div key={i} className="confetti-piece-Tenant-Support"></div>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <h2 className="success-title-Tenant-Support">Concern Submitted Successfully!</h2>
+                            
+                            <p className="success-message-Tenant-Support">
+                                Your concern has been submitted and is now under review. We'll get back to you within 24-48 hours.
+                            </p>
+
+                            <div className="success-details-Tenant-Support">
+                                <div className="success-detail-item-Tenant-Support">
+                                    <span className="detail-label-Tenant-Support">Status:</span>
+                                    <span className="detail-value-Tenant-Support">
+                                        <span className="status-badge-pending-Tenant-Support">
+                                            <Clock size={14} />
+                                            Pending Review
+                                        </span>
+                                    </span>
+                                </div>
+                                <div className="success-detail-item-Tenant-Support">
+                                    <span className="detail-label-Tenant-Support">Submitted:</span>
+                                    <span className="detail-value-Tenant-Support">{new Date().toLocaleDateString()}</span>
+                                </div>
+                            </div>
+
+                            <button 
+                                className="success-close-btn-Tenant-Support"
+                                onClick={handleCloseSuccessModal}
+                            >
+                                Continue
+                            </button>
                         </div>
                     </div>
                 </div>
