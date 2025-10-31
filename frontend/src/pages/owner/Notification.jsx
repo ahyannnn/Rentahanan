@@ -8,6 +8,7 @@ import "../../styles/owners/Notification.css";
 function Notification() {
   const [showProblemModal, setShowProblemModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false); // NEW: Success modal for deletion
   const [problemToDelete, setProblemToDelete] = useState(null);
   const [selectedProblem, setSelectedProblem] = useState(null);
   const [activeFilter, setActiveFilter] = useState("All");
@@ -79,11 +80,9 @@ function Notification() {
         setProblemToDelete(null);
         if (showProblemModal) setShowProblemModal(false);
         
-        if (data.permanent_delete) {
-          alert("✅ Concern permanently deleted (both you and tenant deleted it)");
-        } else {
-          alert("✅ Concern removed from your view!");
-        }
+        // Show success modal instead of alert
+        setShowDeleteSuccessModal(true);
+        
       } else {
         alert(data.error || "❌ Failed to delete concern");
       }
@@ -98,6 +97,10 @@ function Notification() {
   const cancelDelete = () => {
     setShowDeleteModal(false);
     setProblemToDelete(null);
+  };
+
+  const handleCloseDeleteSuccessModal = () => {
+    setShowDeleteSuccessModal(false);
   };
 
   const handleUpdateStatus = async (newStatus) => {
@@ -449,6 +452,55 @@ function Notification() {
                 disabled={isDeleting}
               >
                 {isDeleting ? "Deleting..." : "Yes, Remove From My View"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ DELETE SUCCESS MODAL - Same as Tenant */}
+      {showDeleteSuccessModal && (
+        <div className="owner-delete-success-modal-overlay">
+          <div className="owner-delete-success-modal">
+            <div className="owner-delete-success-modal-content">
+              <div className="owner-delete-success-animation-container">
+                <div className="owner-delete-success-checkmark">
+                  <CheckCircle size={80} className="owner-delete-check-icon" />
+                </div>
+                <div className="owner-delete-success-confetti">
+                  {[...Array(12)].map((_, i) => (
+                    <div key={i} className="owner-delete-confetti-piece"></div>
+                  ))}
+                </div>
+              </div>
+              
+              <h2 className="owner-delete-success-title">Concern Deleted Successfully!</h2>
+              
+              <p className="owner-delete-success-message">
+                The concern has been removed from your view. The tenant can still see it in their records.
+              </p>
+
+              <div className="owner-delete-success-details">
+                <div className="owner-delete-success-detail-item">
+                  <span className="owner-delete-detail-label">Action:</span>
+                  <span className="owner-delete-detail-value">
+                    <span className="owner-delete-status-badge">
+                      <CheckCircle size={14} />
+                      Removed From View
+                    </span>
+                  </span>
+                </div>
+                <div className="owner-delete-success-detail-item">
+                  <span className="owner-delete-detail-label">Removed:</span>
+                  <span className="owner-delete-detail-value">{new Date().toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              <button 
+                className="owner-delete-success-close-btn"
+                onClick={handleCloseDeleteSuccessModal}
+              >
+                Continue
               </button>
             </div>
           </div>

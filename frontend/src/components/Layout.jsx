@@ -19,6 +19,9 @@ import {
   Save,
   RotateCcw,
   User,
+  Trash2,
+  Eye,
+  MoreHorizontal,
 } from "lucide-react";
 import "../styles/tenant/Layout.css";
 
@@ -36,10 +39,13 @@ const Layout = () => {
   const [profileImageError, setProfileImageError] = useState(false);
   const [headerImageError, setHeaderImageError] = useState(false);
 
-  // ✅ Notifications State
+  // ✅ Enhanced Notifications State
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [showAllNotifications, setShowAllNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [activeNotificationMenu, setActiveNotificationMenu] = useState(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -96,13 +102,18 @@ const Layout = () => {
 
       if (data.success) {
         setNotifications(data.notifications || []);
+        // Calculate unread count
+        const unread = data.notifications.filter(notif => !notif.is_read).length;
+        setUnreadCount(unread);
       } else {
         console.error("Failed to fetch notifications:", data.message);
         setNotifications([]);
+        setUnreadCount(0);
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);
       setNotifications([]);
+      setUnreadCount(0);
     } finally {
       setNotificationsLoading(false);
     }
@@ -112,9 +123,136 @@ const Layout = () => {
   const handleNotificationsToggle = () => {
     const newShowState = !showNotifications;
     setShowNotifications(newShowState);
+    setShowAllNotifications(false); // Reset to collapsed view
+    setActiveNotificationMenu(null); // Close any open menus
 
     if (newShowState) {
       fetchNotifications();
+    }
+  };
+
+  // Handle three dots menu toggle
+  const handleThreeDotsClick = (notificationId, e) => {
+    e.stopPropagation();
+    setActiveNotificationMenu(activeNotificationMenu === notificationId ? null : notificationId);
+  };
+
+  // Handle view notification - FUNCTIONAL NA!
+  const handleViewNotification = (notification, e) => {
+    e.stopPropagation();
+    setActiveNotificationMenu(null);
+    setShowNotifications(false);
+    setShowAllNotifications(false);
+    
+    // Mark as read
+    markNotificationAsRead(notification.notificationid);
+    
+    console.log("Viewing notification:", notification);
+    
+    // Navigate to relevant page based on notification type - FUNCTIONAL NA!
+    if (notification.type?.includes('bill') || notification.title?.toLowerCase().includes('bill')) {
+      console.log("Navigating to billing page");
+      navigate(userRole === 'owner' ? '/owner/billing' : '/tenant/bills');
+    } else if (notification.type?.includes('concern') || notification.title?.toLowerCase().includes('concern')) {
+      console.log("Navigating to support page");
+      navigate(userRole === 'owner' ? '/owner/notifications' : '/tenant/support');
+    } else if (notification.type?.includes('contract') || notification.title?.toLowerCase().includes('contract')) {
+      console.log("Navigating to contract page");
+      navigate(userRole === 'owner' ? '/owner/contract' : '/tenant/contract');
+    } else if (notification.type?.includes('payment') || notification.title?.toLowerCase().includes('payment')) {
+      console.log("Navigating to payment page");
+      navigate(userRole === 'owner' ? '/owner/transactions' : '/tenant/payment');
+    } else {
+      console.log("No specific page for this notification type");
+      // Default action if no specific type
+    }
+  };
+
+  // Handle delete notification - FUNCTIONAL NA!
+  const handleDeleteNotification = async (notificationId, e) => {
+    e.stopPropagation();
+    setActiveNotificationMenu(null);
+    
+    try {
+      console.log("Deleting notification:", notificationId);
+      
+      const response = await fetch(`http://127.0.0.1:5000/api/notifications/${notificationId}`, {
+        method: 'DELETE',
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log("Successfully deleted notification");
+        // Remove from local state
+        setNotifications(prev => prev.filter(notif => notif.notificationid !== notificationId));
+        // Update unread count
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      } else {
+        console.error('Failed to delete notification:', data.message);
+        alert('Failed to delete notification');
+      }
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      alert('Error deleting notification. Please try again.');
+    }
+  };
+
+  // Mark notification as read - FUNCTIONAL NA!
+  const markNotificationAsRead = async (notificationId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/api/notifications/${notificationId}/read`, {
+        method: 'PUT',
+      });
+      
+      if (response.ok) {
+        // Update local state
+        setNotifications(prev => 
+          prev.map(notif => 
+            notif.notificationid === notificationId 
+              ? { ...notif, is_read: true }
+              : notif
+          )
+        );
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  // Handle view all notifications - EXPAND ONLY, NO NAVIGATION
+  const handleViewAllNotifications = () => {
+    setShowAllNotifications(!showAllNotifications);
+  };
+
+  // Handle notification card click - FUNCTIONAL NA!
+  const handleNotificationCardClick = (notification) => {
+    setShowNotifications(false);
+    setShowAllNotifications(false);
+    setActiveNotificationMenu(null);
+    
+    // Mark as read
+    markNotificationAsRead(notification.notificationid);
+    
+    console.log("Card clicked - notification:", notification);
+    
+    // Navigate based on notification type - FUNCTIONAL NA!
+    if (notification.type?.includes('bill') || notification.title?.toLowerCase().includes('bill')) {
+      console.log("Navigating to billing page");
+      navigate(userRole === 'owner' ? '/owner/billing' : '/tenant/bills');
+    } else if (notification.type?.includes('concern') || notification.title?.toLowerCase().includes('concern')) {
+      console.log("Navigating to support page");
+      navigate(userRole === 'owner' ? '/owner/notifications' : '/tenant/support');
+    } else if (notification.type?.includes('contract') || notification.title?.toLowerCase().includes('contract')) {
+      console.log("Navigating to contract page");
+      navigate(userRole === 'owner' ? '/owner/contract' : '/tenant/contract');
+    } else if (notification.type?.includes('payment') || notification.title?.toLowerCase().includes('payment')) {
+      console.log("Navigating to payment page");
+      navigate(userRole === 'owner' ? '/owner/transactions' : '/tenant/payment');
+    } else {
+      console.log("No specific page for this notification type");
+      // Default action if no specific type
     }
   };
 
@@ -246,15 +384,6 @@ const Layout = () => {
     setIsEditing(false);
   };
 
-  const handleViewAllNotifications = () => {
-    setShowNotifications(false);
-    if (userRole === "owner") {
-      navigate("/owner/notifications");
-    } else {
-      navigate("/tenant/notifications");
-    }
-  };
-
   const handleProfileImageError = () => {
     setProfileImageError(true);
   };
@@ -281,6 +410,11 @@ const Layout = () => {
 
     return date.toLocaleDateString();
   };
+
+  // Get notifications to display (3 by default, 10 when expanded)
+  const displayedNotifications = showAllNotifications 
+    ? notifications.slice(0, 10) 
+    : notifications.slice(0, 3);
 
   const tenantLinksByStatus = {
     Registered: [{ name: "Browse Units", to: "/tenant/browse-units", icon: Building2 }],
@@ -324,7 +458,6 @@ const Layout = () => {
           />
           <div className="loading-brand-text">RenTahanan</div>
         </div>
-        {/* Optional: Add a loading spinner below the logo */}
         <div className="loading-spinner"></div>
       </div>
     );
@@ -520,32 +653,88 @@ const Layout = () => {
               onClick={handleNotificationsToggle}
             >
               <Bell size={20} color="white" />
+              {/* Three dots indicator for desktop hover */}
+              <div className="notif-dots-indicator-Layout">
+                {unreadCount > 0 && (
+                  <>
+                    <span className="dot-Layout"></span>
+                    <span className="dot-Layout"></span>
+                    <span className="dot-Layout"></span>
+                  </>
+                )}
+              </div>
+              {/* Badge for mobile */}
+              {unreadCount > 0 && (
+                <div className="notif-badge-Layout">{unreadCount}</div>
+              )}
             </button>
 
             {showNotifications && (
               <div className="notif-dropdown-Layout">
-                <h4>Notifications</h4>
+                <h4>Notifications {unreadCount > 0 && `(${unreadCount} new)`}</h4>
                 {notificationsLoading ? (
                   <div className="notif-loading-Layout">Loading notifications...</div>
                 ) : notifications.length === 0 ? (
                   <div className="no-notifications-Layout">No notifications</div>
                 ) : (
                   <>
-                    {notifications.slice(0, 5).map((notif) => (
-                      <div key={notif.notificationid} className="notif-card-Layout">
-                        <h5>{notif.title}</h5>
-                        <p>{notif.message}</p>
-                        <span className="notif-time-Layout">
-                          {formatNotificationTime(notif.creationdate)}
-                        </span>
-                      </div>
-                    ))}
-                    <button
-                      className="view-all-btn-Layout"
-                      onClick={handleViewAllNotifications}
-                    >
-                      View All Notifications →
-                    </button>
+                    <div className={`notif-list-container-Layout ${showAllNotifications ? 'expanded-Layout' : ''}`}>
+                      {displayedNotifications.map((notif) => (
+                        <div 
+                          key={notif.notificationid} 
+                          className={`notif-card-Layout ${!notif.is_read ? 'unread-Layout' : ''}`}
+                          onClick={() => handleNotificationCardClick(notif)}
+                        >
+                          <div className="notif-content-Layout">
+                            <h5>{notif.title}</h5>
+                            <p>{notif.message}</p>
+                            <span className="notif-time-Layout">
+                              {formatNotificationTime(notif.creationdate)}
+                            </span>
+                          </div>
+                          
+                          {/* Three dots menu */}
+                          <div className="notif-menu-container-Layout">
+                            <button 
+                              className="three-dots-btn-Layout"
+                              onClick={(e) => handleThreeDotsClick(notif.notificationid, e)}
+                            >
+                              <MoreHorizontal size={16} />
+                            </button>
+                            
+                            {/* Dropdown menu */}
+                            {activeNotificationMenu === notif.notificationid && (
+                              <div className="notif-action-menu-Layout">
+                                <button 
+                                  className="notif-menu-item-Layout view-menu-item-Layout"
+                                  onClick={(e) => handleViewNotification(notif, e)}
+                                >
+                                  <Eye size={14} />
+                                  View
+                                </button>
+                                <button 
+                                  className="notif-menu-item-Layout delete-menu-item-Layout"
+                                  onClick={(e) => handleDeleteNotification(notif.notificationid, e)}
+                                >
+                                  <Trash2 size={14} />
+                                  Delete
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Show View All button only if more than 3 notifications */}
+                    {notifications.length > 3 && (
+                      <button
+                        className="view-all-btn-Layout"
+                        onClick={handleViewAllNotifications}
+                      >
+                        {showAllNotifications ? 'Show Less' : `View All (${notifications.length})`}
+                      </button>
+                    )}
                   </>
                 )}
               </div>

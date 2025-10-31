@@ -867,3 +867,92 @@
     height: 150px;
   }
 }
+
+/* ===== SUCCESS MODAL STYLES ===== */
+.success-details-Contract {
+  width: 100%;
+  text-align: left;
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 15px 0;
+}
+
+.success-detail-item-Contract {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.success-detail-item-Contract:last-child {
+  border-bottom: none;
+}
+
+.success-detail-label-Contract {
+  font-weight: 600;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.success-detail-value-Contract {
+  font-weight: 700;
+  color: #1e1e2f;
+  font-size: 0.95rem;
+}
+
+.success-modal-actions-Contract {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.success-modal-button-Contract {
+  background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+}
+
+.success-modal-button-Contract:hover {
+  background: linear-gradient(135deg, #072d6d 0%, #0a2d8d 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(10, 45, 141, 0.3);
+}
+
+/* Update existing modal styles for better consistency */
+.modal-content-Contract.success {
+  border: 2px solid #10b981;
+  max-width: 500px;
+  width: 90%;
+}
+
+.modal-content-Contract.success .modal-icon-Contract .icon {
+  color: #10b981;
+  width: 64px;
+  height: 64px;
+}
+
+.modal-title-Contract {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #1e1e2f;
+}
+
+.modal-message-Contract {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { useLocation } from "react-router-dom";
-import { FileText, X, Download, User, Mail, Phone, Home, Calendar, DollarSign, Clock } from "lucide-react";
+import { FileText, X, Download, User, Mail, Phone, Home, Calendar, DollarSign, Clock, CheckCircle } from "lucide-react";
 import "../../styles/owners/Contract.css";
 
 const OwnerContract = () => {
@@ -10,6 +10,8 @@ const OwnerContract = () => {
     const [contracts, setContracts] = useState([]);
     const [applicants, setApplicants] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successModalData, setSuccessModalData] = useState(null);
     const [selectedApplicant, setSelectedApplicant] = useState(null);
     const [highlightedApplicantId, setHighlightedApplicantId] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -33,32 +35,33 @@ const OwnerContract = () => {
         }
     }, [location.state]);
 
-    
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const [contractsRes, applicantsRes] = await Promise.all([
-                    fetch("http://localhost:5000/api/contracts/tenants"),
-                    fetch("http://localhost:5000/api/contracts/applicants"),
-                ]);
-                const contractsData = await contractsRes.json();
-                const applicantsData = await applicantsRes.json();
-                setContracts(contractsData);
-                setApplicants(applicantsData);
+    // Function to fetch data
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const [contractsRes, applicantsRes] = await Promise.all([
+                fetch("http://localhost:5000/api/contracts/tenants"),
+                fetch("http://localhost:5000/api/contracts/applicants"),
+            ]);
+            const contractsData = await contractsRes.json();
+            const applicantsData = await applicantsRes.json();
+            setContracts(contractsData);
+            setApplicants(applicantsData);
 
-                if (location.state?.selectedApplicantId) {
-                    const foundApplicant = applicantsData.find(
-                        (a) => a.applicationid === location.state.selectedApplicantId
-                    );
-                    if (foundApplicant) openIssueModal(foundApplicant);
-                }
-            } catch (error) {
-                console.error("Error loading contracts:", error);
-            } finally {
-                setLoading(false);
+            if (location.state?.selectedApplicantId) {
+                const foundApplicant = applicantsData.find(
+                    (a) => a.applicationid === location.state.selectedApplicantId
+                );
+                if (foundApplicant) openIssueModal(foundApplicant);
             }
-        };
+        } catch (error) {
+            console.error("Error loading contracts:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchData();
     }, []);
 
@@ -132,8 +135,7 @@ const OwnerContract = () => {
             const pdfData = await pdfResponse.json();
             if (!pdfResponse.ok) throw new Error(pdfData.error || "Failed to generate contract");
 
-            window.open(pdfData.pdf_url, "_blank");
-
+            // Save to backend
             const issueResponse = await fetch("http://localhost:5000/api/contracts/issuecontract", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -147,20 +149,72 @@ const OwnerContract = () => {
 
             if (!issueResponse.ok) throw new Error("Failed to issue contract record");
 
-            alert("✅ Contract successfully generated and issued!");
+            // Show success modal instead of opening PDF immediately
+            setSuccessModalData({
+                applicantName: selectedApplicant.fullname,
+                unitName: selectedApplicant.unit_name,
+                startDate: formData.startdate,
+                monthlyRent: formData.monthlyrent,
+                issuedDate: new Date().toLocaleDateString(),
+                contractId: pdfData.contract_id || `CONTRACT-${Date.now()}`,
+                pdfUrl: pdfData.pdf_url || `http://localhost:5000/uploads/contracts/${pdfData.filename}`
+            });
+
+            // Close add modal and show success modal
             setShowAddModal(false);
-            window.location.reload();
+            setShowSuccessModal(true);
+
+            // ✅ IMPORTANT: Remove the issued applicant from the applicants list
+            setApplicants(prevApplicants => 
+                prevApplicants.filter(app => app.tenantid !== formData.tenantid)
+            );
+
         } catch (error) {
             console.error("Error issuing contract:", error);
             alert("❌ Failed to issue contract. Please try again.");
         }
     };
 
-    // Calculate statistics
+    const handleViewContract = () => {
+        // Use the correct PDF URL from successModalData
+        if (successModalData?.pdfUrl) {
+            window.open(successModalData.pdfUrl, "_blank");
+        } else {
+            console.error("PDF URL not available");
+            alert("Contract PDF is not available. Please try generating again.");
+        }
+        setShowSuccessModal(false);
+    };
+
+    const handleCloseSuccessModal = () => {
+        setShowSuccessModal(false);
+        // Refresh data to get the updated contracts list
+        fetchData();
+    };
+
+    // Function to view existing contracts
+    const handleViewExistingContract = (contract) => {
+        let contractUrl = '';
+        
+        if (contract.signed_contract) {
+            contractUrl = `http://localhost:5000/uploads/signed_contracts/${contract.signed_contract}`;
+        } else if (contract.generated_contract) {
+            contractUrl = `http://localhost:5000/uploads/contracts/${contract.generated_contract}`;
+        } else {
+            console.error("No contract file found for:", contract);
+            alert("Contract file not found. Please contact administrator.");
+            return;
+        }
+        
+        console.log("Opening contract URL:", contractUrl);
+        window.open(contractUrl, "_blank");
+    };
+
+    // Calculate statistics - UPDATED to use current state
     const stats = {
         total: contracts.length,
         active: contracts.filter(c => c.status === 'Active').length,
-        pending: applicants.length
+        pending: applicants.length // This will now update in real-time
     };
 
     return (
@@ -172,7 +226,7 @@ const OwnerContract = () => {
                     <p className="Owner-Contract-subtitle">Manage tenant contracts and issue new agreements</p>
                 </div>
                 
-                {/* Statistics Cards */}
+                {/* Statistics Cards - NOW UPDATES IN REAL-TIME */}
                 <div className="Owner-Contract-stats">
                     <div className="Owner-Contract-stat-card">
                         <div className="Owner-Contract-stat-icon total">
@@ -204,7 +258,7 @@ const OwnerContract = () => {
                 </div>
             </div>
 
-            {/* Tabs */}
+            {/* Tabs - BADGES UPDATE IN REAL-TIME */}
             <div className="Owner-Contract-control-bar">
                 <div className="Owner-Contract-tab-group">
                     <button
@@ -295,7 +349,7 @@ const OwnerContract = () => {
 
                                             <button
                                                 className="Owner-Contract-view-btn"
-                                                onClick={() => window.open(`http://localhost:5000/uploads/signed_contracts/${contract.signed_contract}`, "_blank")}
+                                                onClick={() => handleViewExistingContract(contract)}
                                             >
                                                 <Download size={16} />
                                                 View Contract
@@ -309,7 +363,7 @@ const OwnerContract = () => {
                 </div>
             )}
 
-            {/* Issue Contracts Tab */}
+            {/* Issue Contracts Tab - NOW UPDATES IN REAL-TIME */}
             {activeTab === "issue" && (
                 <div className="Owner-Contract-content-card">
                     <div className="Owner-Contract-table-header">
@@ -522,6 +576,75 @@ const OwnerContract = () => {
                                 <FileText size={16} />
                                 Generate Contract PDF
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ✅ SUCCESS MODAL */}
+            {showSuccessModal && successModalData && (
+                <div className="Owner-Contract-success-modal-overlay">
+                    <div className="Owner-Contract-success-modal">
+                        <div className="Owner-Contract-success-modal-content">
+                            <div className="Owner-Contract-success-animation-container">
+                                <div className="Owner-Contract-success-checkmark">
+                                    <CheckCircle size={80} className="Owner-Contract-check-icon" />
+                                </div>
+                                <div className="Owner-Contract-success-confetti">
+                                    {[...Array(12)].map((_, i) => (
+                                        <div key={i} className="Owner-Contract-confetti-piece"></div>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <h2 className="Owner-Contract-success-title">Contract Created Successfully!</h2>
+                            
+                            <p className="Owner-Contract-success-message">
+                                The rental contract has been generated and issued to the tenant.
+                            </p>
+
+                            <div className="Owner-Contract-success-details">
+                                <div className="Owner-Contract-success-detail-item">
+                                    <span className="Owner-Contract-detail-label">Applicant Name:</span>
+                                    <span className="Owner-Contract-detail-value">
+                                        {successModalData.applicantName}
+                                    </span>
+                                </div>
+                                <div className="Owner-Contract-success-detail-item">
+                                    <span className="Owner-Contract-detail-label">Unit:</span>
+                                    <span className="Owner-Contract-detail-value">
+                                        {successModalData.unitName}
+                                    </span>
+                                </div>
+                                <div className="Owner-Contract-success-detail-item">
+                                    <span className="Owner-Contract-detail-label">Start Date:</span>
+                                    <span className="Owner-Contract-detail-value">
+                                        {new Date(successModalData.startDate).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                <div className="Owner-Contract-success-detail-item">
+                                    <span className="Owner-Contract-detail-label">Monthly Rent:</span>
+                                    <span className="Owner-Contract-detail-value">
+                                        ₱{parseFloat(successModalData.monthlyRent || 0).toLocaleString()}
+                                    </span>
+                                </div>
+                                <div className="Owner-Contract-success-detail-item">
+                                    <span className="Owner-Contract-detail-label">Issued On:</span>
+                                    <span className="Owner-Contract-detail-value">
+                                        {successModalData.issuedDate}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="Owner-Contract-success-modal-actions">
+                                <button 
+                                    className="Owner-Contract-view-contract-btn"
+                                    onClick={handleViewContract}
+                                >
+                                    <FileText size={16} />
+                                    View Contract
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

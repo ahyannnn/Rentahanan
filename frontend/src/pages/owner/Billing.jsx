@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Search, Plus, X, FileText, Download, Eye, Calendar, DollarSign, User, Mail, Phone, Home } from "lucide-react";
+import { Search, Plus, X, FileText, Download, Eye, Calendar, DollarSign, User, Mail, Phone, Home, CheckCircle } from "lucide-react";
 import "../../styles/owners/Billing.css";
 
 function Billing() {
@@ -14,6 +14,8 @@ function Billing() {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
     const [showTenantInvoiceModal, setShowTenantInvoiceModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successModalData, setSuccessModalData] = useState(null); // NEW: Store success data
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [selectedTenant, setSelectedTenant] = useState(null);
     const [tenants, setTenants] = useState([]);
@@ -149,8 +151,16 @@ function Billing() {
             });
 
             if (response.ok) {
-                alert("Initial payment invoice issued successfully!");
+                // Store data for success modal
+                setSuccessModalData({
+                    tenantName: selectedApplicant?.fullname,
+                    amount: formData.amount,
+                    issuedDate: formData.issuedDate,
+                    dueDate: formData.dueDate
+                });
+                
                 setShowAddModal(false);
+                setShowSuccessModal(true);
                 setFormData({
                     tenantId: "",
                     invoiceNo: "",
@@ -191,8 +201,17 @@ function Billing() {
             });
 
             if (response.ok) {
-                alert("Invoice created successfully!");
+                // Store data for success modal
+                const selectedContract = tenantContracts.find(contract => contract.tenantid === parseInt(tenantFormData.tenantId));
+                setSuccessModalData({
+                    tenantName: selectedContract?.fullname,
+                    amount: tenantFormData.amount,
+                    issuedDate: tenantFormData.issuedDate,
+                    dueDate: tenantFormData.dueDate
+                });
+                
                 setShowTenantInvoiceModal(false);
+                setShowSuccessModal(true);
                 setTenantFormData({
                     tenantId: "",
                     invoiceNo: "",
@@ -214,6 +233,11 @@ function Billing() {
             console.error("Error creating invoice:", error);
             alert("An error occurred while creating the invoice.");
         }
+    };
+
+    const handleCloseSuccessModal = () => {
+        setShowSuccessModal(false);
+        setSuccessModalData(null);
     };
 
     const handleMarkAsPaid = async (invoiceId) => {
@@ -381,7 +405,6 @@ function Billing() {
                                             </td>
                                             <td>
                                                 <div className="Owner-Billing-tenant-info">
-                                                    {/* If field name is different, adjust here */}
                                                     <span className="Owner-Billing-tenant-name">{tenant.tenant_name}</span>
                                                     <span className="Owner-Billing-tenant-email">{tenant.email}</span>
                                                 </div>
@@ -393,7 +416,6 @@ function Billing() {
                                             <td>{new Date(tenant.issueddate).toLocaleDateString()}</td>
                                             <td>{tenant.duedate ? new Date(tenant.duedate).toLocaleDateString() : 'N/A'}</td>
                                             <td>
-                                                {/* If status field name is different, adjust here */}
                                                 <span className={`Owner-Billing-status-badge ${(tenant.bill_status || tenant.status)?.toLowerCase()}`}>
                                                     {tenant.bill_status || tenant.status}
                                                 </span>
@@ -784,6 +806,66 @@ function Billing() {
                         <div className="Owner-Billing-modal-footer">
                             <button className="Owner-Billing-close-detail-btn" onClick={() => setShowViewModal(false)}>
                                 Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ✅ SUCCESS MODAL */}
+            {showSuccessModal && successModalData && (
+                <div className="Owner-Billing-success-modal-overlay">
+                    <div className="Owner-Billing-success-modal">
+                        <div className="Owner-Billing-success-modal-content">
+                            <div className="Owner-Billing-success-animation-container">
+                                <div className="Owner-Billing-success-checkmark">
+                                    <CheckCircle size={80} className="Owner-Billing-check-icon" />
+                                </div>
+                                <div className="Owner-Billing-success-confetti">
+                                    {[...Array(12)].map((_, i) => (
+                                        <div key={i} className="Owner-Billing-confetti-piece"></div>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <h2 className="Owner-Billing-success-title">Invoice Created Successfully!</h2>
+                            
+                            <p className="Owner-Billing-success-message">
+                                The invoice has been created and sent to the tenant. You can track its status in the invoices tab.
+                            </p>
+
+                            <div className="Owner-Billing-success-details">
+                                <div className="Owner-Billing-success-detail-item">
+                                    <span className="Owner-Billing-detail-label">Tenant Name:</span>
+                                    <span className="Owner-Billing-detail-value">
+                                        {successModalData.tenantName || 'N/A'}
+                                    </span>
+                                </div>
+                                <div className="Owner-Billing-success-detail-item">
+                                    <span className="Owner-Billing-detail-label">Amount:</span>
+                                    <span className="Owner-Billing-detail-value">
+                                        ₱{parseFloat(successModalData.amount || 0).toLocaleString()}
+                                    </span>
+                                </div>
+                                <div className="Owner-Billing-success-detail-item">
+                                    <span className="Owner-Billing-detail-label">Issued Date:</span>
+                                    <span className="Owner-Billing-detail-value">
+                                        {successModalData.issuedDate ? new Date(successModalData.issuedDate).toLocaleDateString() : 'N/A'}
+                                    </span>
+                                </div>
+                                <div className="Owner-Billing-success-detail-item">
+                                    <span className="Owner-Billing-detail-label">Due Date:</span>
+                                    <span className="Owner-Billing-detail-value">
+                                        {successModalData.dueDate ? new Date(successModalData.dueDate).toLocaleDateString() : 'N/A'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <button 
+                                className="Owner-Billing-success-close-btn"
+                                onClick={handleCloseSuccessModal}
+                            >
+                                Continue
                             </button>
                         </div>
                     </div>
