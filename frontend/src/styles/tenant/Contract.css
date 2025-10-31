@@ -12,7 +12,247 @@
   text-align: center;
   animation: slideDown-Contract 0.6s ease-out;
 }
+/* Preview Actions */
+.preview-actions-Contract {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
 
+/* Terminate Button */
+.terminate-btn-Contract {
+  background: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #fed7d7;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.terminate-btn-Contract:hover {
+  background: #fed7d7;
+  color: #c53030;
+}
+
+/* Termination Modal Styles */
+.modal-content-Contract.terminate,
+.modal-content-Contract.confirm {
+  max-width: 500px;
+  background: white;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.modal-header-Contract {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-close-btn-Contract {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.modal-close-btn-Contract:hover {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.modal-body-Contract {
+  padding: 24px;
+}
+
+.modal-footer-Contract {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 20px 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Termination Warning */
+.terminate-warning-Contract {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.warning-icon-Contract {
+  color: #e53e3e;
+  flex-shrink: 0;
+}
+
+.warning-content-Contract h4 {
+  margin: 0 0 4px 0;
+  color: #c53030;
+  font-size: 14px;
+}
+
+.warning-content-Contract p {
+  margin: 0;
+  color: #742a2a;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Termination Details */
+.terminate-details-Contract {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.detail-row-Contract {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.detail-row-Contract:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label-Contract {
+  font-weight: 500;
+  color: #495057;
+}
+
+.detail-value-Contract {
+  color: #1a202c;
+  font-weight: 600;
+}
+
+/* Form Styles */
+.form-group-Contract {
+  margin-bottom: 0;
+}
+
+.form-label-Contract {
+  display: block;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.date-note-Contract {
+  font-size: 12px;
+  color: #718096;
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+.form-input-Contract {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.date-info-Contract {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #4a5568;
+}
+
+/* Buttons */
+.proceed-btn-Contract {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.proceed-btn-Contract:hover:not(:disabled) {
+  background: #c53030;
+}
+
+.proceed-btn-Contract:disabled {
+  background: #a0aec0;
+  cursor: not-allowed;
+}
+
+.terminate-final-btn-Contract {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terminate-final-btn-Contract:hover {
+  background: #c53030;
+}
+
+/* Confirmation Modal */
+.confirm-warning-Contract {
+  text-align: center;
+  padding: 20px;
+}
+
+.confirm-icon-Contract {
+  color: #e53e3e;
+  margin-bottom: 20px;
+}
+
+.confirm-content-Contract h4 {
+  color: #c53030;
+  margin-bottom: 16px;
+  font-size: 18px;
+}
+
+.confirm-content-Contract p {
+  color: #4a5568;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.confirm-list-Contract {
+  text-align: left;
+  margin: 16px 0;
+  padding-left: 20px;
+}
+
+.confirm-list-Contract li {
+  margin-bottom: 8px;
+  color: #4a5568;
+  line-height: 1.4;
+}
+
+.confirm-list-Contract strong {
+  color: #2d3748;
+}
 .contract-title-Contract {
   font-size: 2.5rem;
   font-weight: 800;

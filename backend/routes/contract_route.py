@@ -700,3 +700,297 @@ def update_contract_status(contract_id):
         db.session.rollback()
         print(f"❌ Error updating contract status: {e}")
         return jsonify({"error": f"Failed to update contract status: {str(e)}"}), 500
+
+
+@contract_bp.route('/contracts/terminate', methods=['POST'])
+def terminate_contract():
+    try:
+        data = request.get_json()
+        
+        contract_id = data.get('contractid')
+        tenant_id = data.get('tenantid')
+        termination_date = data.get('termination_date')
+        terminated_by = data.get('terminated_by')
+        
+        # Validate required fields
+        if not all([contract_id, tenant_id, termination_date]):
+            return jsonify({
+                'success': False,
+                'message': 'Missing required fields: contractid, tenantid, termination_date'
+            }), 400
+        
+        # Update contract status and end date
+        contract = Contract.query.filter_by(contractid=contract_id).first()
+        if not contract:
+            return jsonify({
+                'success': False,
+                'message': 'Contract not found'
+            }), 404
+        
+        contract.status = 'Terminated'
+        contract.enddate = termination_date
+        contract.updatedat = datetime.utcnow()
+        
+        # Update tenant status
+        tenant = Tenant.query.filter_by(tenantid=tenant_id).first()
+        if tenant:
+            tenant.status = 'Terminated'
+            tenant.updatedat = datetime.utcnow()
+        
+        # Get current user ID from session or request
+        current_user_id = data.get('createdbyuserid', 1)
+        
+        # Create notification for tenant
+        tenant_user = User.query.filter_by(userid=tenant.userid).first()
+        if tenant_user:
+            # Get unit name - FIXED: Use Unit.name instead of unit_name
+            unit_name = "the unit"  # Default fallback
+            
+            # Query the unit table using unitid from contract
+            if hasattr(contract, 'unitid') and contract.unitid:
+                unit = Unit.query.filter_by(unitid=contract.unitid).first()
+                if unit:
+                    unit_name = unit.name  # FIXED: Use .name instead of .unit_name
+            
+            notification = Notification(
+                title="Tenancy Ended",
+                message=f"Your tenancy at {unit_name} has been terminated effective {termination_date}.",
+                targetuserid=tenant_user.userid,
+                targetuserrole=current_user_id,
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=current_user_id,
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(notification)
+        
+        # Create notification for owner
+        owner_notification = Notification(
+            title="Contract Terminated",
+            message=f"Tenancy for {tenant_user.firstname if tenant_user else 'Tenant'} at {unit_name} has been terminated.",
+            targetuserrole='Owner',
+            isgroupnotification=True,
+            recipientcount=1,
+            createdbyuserid=current_user_id,
+            creationdate=datetime.utcnow()
+        )
+        db.session.add(owner_notification)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Contract terminated successfully'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error terminating contract: {str(e)}")  # For debugging
+        return jsonify({
+            'success': False,
+            'message': f'Error terminating contract: {str(e)}'
+        }), 500
+        
+@contract_bp.route('/contracts/terminate-tenant', methods=['POST'])
+def terminate_tenant_contract():
+    try:
+        data = request.get_json()
+        
+        contract_id = data.get('contractid')
+        tenant_id = data.get('tenantid')
+        termination_date = data.get('termination_date')
+        terminated_by = data.get('terminated_by')
+        
+        # Validate required fields
+        if not all([contract_id, tenant_id, termination_date]):
+            return jsonify({
+                'success': False,
+                'message': 'Missing required fields'
+            }), 400
+        
+        # Update contract - set status to "Termination Requested" instead of immediate termination
+        contract = Contract.query.filter_by(contractid=contract_id).first()
+        if not contract:
+            return jsonify({
+                'success': False,
+                'message': 'Contract not found'
+            }), 404
+        
+        contract.status = 'Termination Requested'
+        contract.enddate = termination_date
+        contract.updatedat = datetime.utcnow()
+        
+        # Get current user ID from session or request
+        current_user_id = data.get('createdbyuserid', 1)
+        
+        # Create notification for landlord
+        owner_notification = Notification(
+            title="Tenancy Termination Requested",
+            message=f"Tenant has requested to terminate their tenancy effective {termination_date}. Please review and approve.",
+            targetuserrole='Owner',
+            isgroupnotification=True,
+            recipientcount=1,
+            createdbyuserid=current_user_id,
+            creationdate=datetime.utcnow()
+        )
+        db.session.add(owner_notification)
+        
+        # Create notification for tenant
+        tenant = Tenant.query.filter_by(tenantid=tenant_id).first()
+        if tenant:
+            tenant_user = User.query.filter_by(userid=tenant.userid).first()
+            if tenant_user:
+                notification = Notification(
+                    title="Termination Request Sent",
+                    message=f"Your tenancy termination request has been sent to the landlord. They will review and respond.",
+                    targetuserid=tenant_user.userid,
+                    targetuserrole=None,
+                    isgroupnotification=False,
+                    recipientcount=1,
+                    createdbyuserid=current_user_id,
+                    creationdate=datetime.utcnow()
+                )
+                db.session.add(notification)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Termination request sent successfully'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'message': f'Error processing termination request: {str(e)}'
+        }), 500
+
+# Approve tenant termination request
+@contract_bp.route('/contracts/approve-termination', methods=['POST'])
+def approve_termination():
+    try:
+        data = request.get_json()
+        
+        contract_id = data.get('contractid')
+        tenant_id = data.get('tenantid')
+        approved_by = data.get('approved_by')
+        
+        # Validate required fields
+        if not all([contract_id, tenant_id]):
+            return jsonify({
+                'success': False,
+                'message': 'Missing required fields'
+            }), 400
+        
+        # Update contract status to Terminated
+        contract = Contract.query.filter_by(contractid=contract_id).first()
+        if not contract:
+            return jsonify({
+                'success': False,
+                'message': 'Contract not found'
+            }), 404
+        
+        contract.status = 'Terminated'
+        contract.updatedat = datetime.utcnow()
+        
+        # Update tenant status
+        tenant = Tenant.query.filter_by(tenantid=tenant_id).first()
+        if tenant:
+            tenant.status = 'Terminated'
+            tenant.updatedat = datetime.utcnow()
+        
+        # Get current user ID
+        current_user_id = data.get('createdbyuserid', 1)
+        
+        # Create notification for tenant
+        tenant_user = User.query.filter_by(userid=tenant.userid).first()
+        if tenant_user:
+            notification = Notification(
+                title="Termination Approved",
+                message=f"Your tenancy termination request has been approved. Your contract will end on {contract.enddate}.",
+                targetuserid=tenant_user.userid,
+                targetuserrole=None,
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=current_user_id,
+                creationdate=datetime.utcnow()
+            )
+            db.session.add(notification)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Termination request approved successfully'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'message': f'Error approving termination: {str(e)}'
+        }), 500
+
+# Reject tenant termination request
+@contract_bp.route('/contracts/reject-termination', methods=['POST'])
+def reject_termination():
+    try:
+        data = request.get_json()
+        
+        contract_id = data.get('contractid')
+        tenant_id = data.get('tenantid')
+        rejected_by = data.get('rejected_by')
+        
+        # Validate required fields
+        if not all([contract_id, tenant_id]):
+            return jsonify({
+                'success': False,
+                'message': 'Missing required fields'
+            }), 400
+        
+        # Update contract status back to Active
+        contract = Contract.query.filter_by(contractid=contract_id).first()
+        if not contract:
+            return jsonify({
+                'success': False,
+                'message': 'Contract not found'
+            }), 404
+        
+        contract.status = 'Active'
+        contract.enddate = None  # Remove the termination date
+        contract.updatedat = datetime.utcnow()
+        
+        # Get current user ID
+        current_user_id = data.get('createdbyuserid', 1)
+        
+        # Create notification for tenant
+        tenant = Tenant.query.filter_by(tenantid=tenant_id).first()
+        if tenant:
+            tenant_user = User.query.filter_by(userid=tenant.userid).first()
+            if tenant_user:
+                notification = Notification(
+                    title="Termination Rejected",
+                    message="Your tenancy termination request has been rejected. Please contact the landlord for more information.",
+                    targetuserid=tenant_user.userid,
+                    targetuserrole=None,
+                    isgroupnotification=False,
+                    recipientcount=1,
+                    createdbyuserid=current_user_id,
+                    creationdate=datetime.utcnow()
+                )
+                db.session.add(notification)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Termination request rejected successfully'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'message': f'Error rejecting termination: {str(e)}'
+        }), 500

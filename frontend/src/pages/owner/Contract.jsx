@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { useLocation } from "react-router-dom";
-import { FileText, X, Download, User, Mail, Phone, Home, Calendar, DollarSign, Clock, CheckCircle } from "lucide-react";
+import { FileText, X, Download, User, Mail, Phone, Home, Calendar, DollarSign, Clock, CheckCircle, AlertTriangle, Check, Eye } from "lucide-react";
 import "../../styles/owners/Contract.css";
 
 const OwnerContract = () => {
@@ -11,8 +11,13 @@ const OwnerContract = () => {
     const [applicants, setApplicants] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showTerminateModal, setShowTerminateModal] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showApproveModal, setShowApproveModal] = useState(false);
     const [successModalData, setSuccessModalData] = useState(null);
     const [selectedApplicant, setSelectedApplicant] = useState(null);
+    const [selectedContract, setSelectedContract] = useState(null);
+    const [terminationDate, setTerminationDate] = useState('');
     const [highlightedApplicantId, setHighlightedApplicantId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
@@ -106,6 +111,138 @@ const OwnerContract = () => {
         setShowAddModal(true);
     };
 
+    // Function to open terminate modal
+    const openTerminateModal = (contract) => {
+        setSelectedContract(contract);
+        
+        // Calculate default termination date (2 weeks from now)
+        const defaultDate = new Date();
+        defaultDate.setDate(defaultDate.getDate() + 30);
+        const formattedDate = defaultDate.toISOString().split('T')[0];
+        
+        setTerminationDate(formattedDate);
+        setShowTerminateModal(true);
+    };
+
+    // Function to open approve modal for termination requests
+    const openApproveModal = (contract) => {
+        setSelectedContract(contract);
+        setShowApproveModal(true);
+    };
+
+    // Function to show confirmation modal
+    const showConfirmation = () => {
+        if (!terminationDate) {
+            alert("❌ Please select a termination date first.");
+            return;
+        }
+        setShowConfirmModal(true);
+    };
+
+    // Function to handle termination
+    const handleTerminateContract = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/api/contracts/terminate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contractid: selectedContract.contractid,
+                    tenantid: selectedContract.tenantid,
+                    termination_date: terminationDate,
+                    terminated_by: "Owner"
+                }),
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) throw new Error(result.message || "Failed to terminate contract");
+
+            // Refresh data to show updated status
+            await fetchData();
+            
+            // Show success message
+            alert("✅ Contract terminated successfully!");
+            setShowTerminateModal(false);
+            setShowConfirmModal(false);
+            
+        } catch (error) {
+            console.error("Error terminating contract:", error);
+            alert("❌ Failed to terminate contract. Please try again.");
+            setShowConfirmModal(false);
+        }
+    };
+
+    // Function to handle approval of tenant termination request
+    const handleApproveTermination = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/api/contracts/approve-termination", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contractid: selectedContract.contractid,
+                    tenantid: selectedContract.tenantid,
+                    approved_by: "Owner"
+                }),
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) throw new Error(result.message || "Failed to approve termination");
+
+            // Refresh data to show updated status
+            await fetchData();
+            
+            // Show success message
+            alert("✅ Termination request approved successfully!");
+            setShowApproveModal(false);
+            
+        } catch (error) {
+            console.error("Error approving termination:", error);
+            alert("❌ Failed to approve termination request. Please try again.");
+        }
+    };
+
+    // Function to handle rejection of tenant termination request
+    const handleRejectTermination = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/api/contracts/reject-termination", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contractid: selectedContract.contractid,
+                    tenantid: selectedContract.tenantid,
+                    rejected_by: "Owner"
+                }),
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) throw new Error(result.message || "Failed to reject termination");
+
+            // Refresh data to show updated status
+            await fetchData();
+            
+            // Show success message
+            alert("✅ Termination request rejected successfully!");
+            setShowApproveModal(false);
+            
+        } catch (error) {
+            console.error("Error rejecting termination:", error);
+            alert("❌ Failed to reject termination request. Please try again.");
+        }
+    };
+
+    // Calculate min and max dates for termination
+    const today = new Date();
+    const minDate = new Date(today);
+    minDate.setDate(today.getDate() + 14); // 2 weeks from now
+
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + 30); // 30 days from now
+
+    const minDateString = minDate.toISOString().split('T')[0];
+    const maxDateString = maxDate.toISOString().split('T')[0];
+
     const clearSignature = () => {
         sigPadRef.current.clear();
     };
@@ -157,7 +294,7 @@ const OwnerContract = () => {
                 monthlyRent: formData.monthlyrent,
                 issuedDate: new Date().toLocaleDateString(),
                 contractId: pdfData.contract_id || `CONTRACT-${Date.now()}`,
-                pdfUrl: pdfData.pdf_url || `http://localhost:5000/uploads/contracts/${pdfData.filename}`
+                pdfUrl: pdfData.pdf_url || `http://localhost:5000/api/contracts/download/${pdfData.filename}`
             });
 
             // Close add modal and show success modal
@@ -214,7 +351,8 @@ const OwnerContract = () => {
     const stats = {
         total: contracts.length,
         active: contracts.filter(c => c.status === 'Active').length,
-        pending: applicants.length // This will now update in real-time
+        pending: applicants.length, // This will now update in real-time
+        terminationRequests: contracts.filter(c => c.status === 'Termination Requested').length
     };
 
     return (
@@ -253,6 +391,15 @@ const OwnerContract = () => {
                         <div className="Owner-Contract-stat-info">
                             <span className="Owner-Contract-stat-number">{stats.pending}</span>
                             <span className="Owner-Contract-stat-label">Pending</span>
+                        </div>
+                    </div>
+                    <div className="Owner-Contract-stat-card">
+                        <div className="Owner-Contract-stat-icon termination">
+                            <AlertTriangle size={20} />
+                        </div>
+                        <div className="Owner-Contract-stat-info">
+                            <span className="Owner-Contract-stat-number">{stats.terminationRequests}</span>
+                            <span className="Owner-Contract-stat-label">Termination Requests</span>
                         </div>
                     </div>
                 </div>
@@ -304,6 +451,9 @@ const OwnerContract = () => {
                             ) : (
                                 contracts.map((contract, index) => {
                                     const profileImage = getProfileImage(contract);
+                                    const isActiveContract = contract.status === 'Active';
+                                    const isTerminationRequested = contract.status === 'Termination Requested';
+                                    
                                     return (
                                         <div className="Owner-Contract-card" key={index}>
                                             <div className="Owner-Contract-card-header">
@@ -329,6 +479,9 @@ const OwnerContract = () => {
                                                 <div className="Owner-Contract-tenant-info">
                                                     <h3>{contract.fullname}</h3>
                                                     <span className="Owner-Contract-tenant-email">{contract.email}</span>
+                                                    <div className={`Owner-Contract-status-badge ${contract.status.toLowerCase().replace(' ', '-')}`}>
+                                                        {contract.status}
+                                                    </div>
                                                 </div>
                                             </div>
                                             
@@ -345,15 +498,47 @@ const OwnerContract = () => {
                                                     <Calendar size={16} />
                                                     <span>Started {new Date(contract.start_date).toLocaleDateString()}</span>
                                                 </div>
+                                                {contract.end_date && (
+                                                    <div className="Owner-Contract-detail-item">
+                                                        <Calendar size={16} />
+                                                        <span>Ends {new Date(contract.end_date).toLocaleDateString()}</span>
+                                                    </div>
+                                                )}
                                             </div>
 
-                                            <button
-                                                className="Owner-Contract-view-btn"
-                                                onClick={() => handleViewExistingContract(contract)}
-                                            >
-                                                <Download size={16} />
-                                                View Contract
-                                            </button>
+                                            <div className="Owner-Contract-card-actions">
+                                                <button
+                                                    className="Owner-Contract-view-btn"
+                                                    onClick={() => handleViewExistingContract(contract)}
+                                                >
+                                                    <Eye size={16} />
+                                                    View
+                                                </button>
+                                                
+                                                {/* Show End Tenancy button for Active contracts */}
+                                                {isActiveContract && (
+                                                    <button
+                                                        className="Owner-Contract-terminate-btn"
+                                                        onClick={() => openTerminateModal(contract)}
+                                                    >
+                                                        <X size={16} />
+                                                        End Tenancy
+                                                    </button>
+                                                )}
+                                                
+                                                {/* Show Approve/Reject buttons for Termination Requested contracts */}
+                                                {isTerminationRequested && (
+                                                    <div className="Owner-Contract-approval-actions">
+                                                        <button
+                                                            className="Owner-Contract-approve-btn"
+                                                            onClick={() => openApproveModal(contract)}
+                                                        >
+                                                            <Check size={16} />
+                                                            Review Request
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     );
                                 })
@@ -581,6 +766,136 @@ const OwnerContract = () => {
                 </div>
             )}
 
+            {/* Termination Modal */}
+            {showTerminateModal && selectedContract && (
+                <div className="Owner-Contract-modal-overlay">
+                    <div className="Owner-Contract-modal Owner-Contract-terminate-modal">
+                        <div className="Owner-Contract-modal-header">
+                            <h3>End Tenancy</h3>
+                            <button className="Owner-Contract-close-btn" onClick={() => setShowTerminateModal(false)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="Owner-Contract-modal-body">
+                            <div className="Owner-Contract-terminate-warning">
+                                <div className="Owner-Contract-warning-icon">
+                                    <X size={24} />
+                                </div>
+                                <div className="Owner-Contract-warning-content">
+                                    <h4>You are about to end this tenancy</h4>
+                                    <p>This action cannot be undone. The tenant will be notified and the contract status will be updated to "Terminated".</p>
+                                </div>
+                            </div>
+
+                            <div className="Owner-Contract-terminate-details">
+                                <div className="Owner-Contract-detail-row">
+                                    <span className="Owner-Contract-detail-label">Tenant:</span>
+                                    <span className="Owner-Contract-detail-value">{selectedContract.fullname}</span>
+                                </div>
+                                <div className="Owner-Contract-detail-row">
+                                    <span className="Owner-Contract-detail-label">Unit:</span>
+                                    <span className="Owner-Contract-detail-value">{selectedContract.unit_name}</span>
+                                </div>
+                                <div className="Owner-Contract-detail-row">
+                                    <span className="Owner-Contract-detail-label">Current Rent:</span>
+                                    <span className="Owner-Contract-detail-value">₱{parseFloat(selectedContract.unit_price || 0).toLocaleString()}</span>
+                                </div>
+                                <div className="Owner-Contract-detail-row">
+                                    <span className="Owner-Contract-detail-label">Current Status:</span>
+                                    <span className="Owner-Contract-detail-value">{selectedContract.status}</span>
+                                </div>
+                            </div>
+
+                            <div className="Owner-Contract-form-group">
+                                <label className="Owner-Contract-form-label">
+                                    Termination Date *
+                                    <span className="Owner-Contract-date-note">(Must be between 2 weeks and 30 days from today)</span>
+                                </label>
+                                <input
+                                    type="date"
+                                    value={terminationDate}
+                                    onChange={(e) => setTerminationDate(e.target.value)}
+                                    className="Owner-Contract-form-input"
+                                    min={minDateString}
+                                    max={maxDateString}
+                                />
+                                <div className="Owner-Contract-date-info">
+                                    <Calendar size={14} />
+                                    <span>Tenancy will end on: {new Date(terminationDate).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="Owner-Contract-modal-footer">
+                            <button 
+                                className="Owner-Contract-cancel-btn" 
+                                onClick={() => setShowTerminateModal(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                className="Owner-Contract-terminate-confirm-btn"
+                                onClick={showConfirmation}
+                                disabled={!terminationDate}
+                            >
+                                <X size={16} />
+                                Proceed to Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Confirmation Modal */}
+            {showConfirmModal && selectedContract && (
+                <div className="Owner-Contract-modal-overlay">
+                    <div className="Owner-Contract-modal Owner-Contract-confirm-modal">
+                        <div className="Owner-Contract-modal-header">
+                            <h3>Confirm Termination</h3>
+                            <button className="Owner-Contract-close-btn" onClick={() => setShowConfirmModal(false)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="Owner-Contract-modal-body">
+                            <div className="Owner-Contract-confirm-warning">
+                                <div className="Owner-Contract-confirm-icon">
+                                    <AlertTriangle size={48} />
+                                </div>
+                                <div className="Owner-Contract-confirm-content">
+                                    <h4>Are you sure you want to terminate this contract?</h4>
+                                    <p>This action will:</p>
+                                    <ul className="Owner-Contract-confirm-list">
+                                        <li>End the tenancy for <strong>{selectedContract.fullname}</strong></li>
+                                        <li>Terminate the contract for <strong>{selectedContract.unit_name}</strong></li>
+                                        <li>Set the termination date to <strong>{new Date(terminationDate).toLocaleDateString()}</strong></li>
+                                        <li>Send notifications to both tenant and landlord</li>
+                                        <li><strong>This action cannot be undone</strong></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="Owner-Contract-modal-footer">
+                            <button 
+                                className="Owner-Contract-cancel-btn" 
+                                onClick={() => setShowConfirmModal(false)}
+                            >
+                                No, Go Back
+                            </button>
+                            <button 
+                                className="Owner-Contract-terminate-final-btn"
+                                onClick={handleTerminateContract}
+                            >
+                                <X size={16} />
+                                Yes, Terminate Contract
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* ✅ SUCCESS MODAL */}
             {showSuccessModal && successModalData && (
                 <div className="Owner-Contract-success-modal-overlay">
@@ -649,6 +964,78 @@ const OwnerContract = () => {
                     </div>
                 </div>
             )}
+
+            {/* Approve Termination Modal */}
+            {showApproveModal && selectedContract && (
+                <div className="Owner-Contract-modal-overlay">
+                    <div className="Owner-Contract-modal Owner-Contract-approve-modal">
+                        <div className="Owner-Contract-modal-header">
+                            <h3>Review Termination Request</h3>
+                            <button className="Owner-Contract-close-btn" onClick={() => setShowApproveModal(false)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="Owner-Contract-modal-body">
+                            <div className="Owner-Contract-approve-warning">
+                                <div className="Owner-Contract-warning-icon">
+                                    <AlertTriangle size={24} />
+                                </div>
+                                <div className="Owner-Contract-warning-content">
+                                    <h4>Tenant Termination Request</h4>
+                                    <p>{selectedContract.fullname} has requested to terminate their tenancy.</p>
+                                </div>
+                            </div>
+
+                            <div className="Owner-Contract-terminate-details">
+                                <div className="Owner-Contract-detail-row">
+                                    <span className="Owner-Contract-detail-label">Tenant:</span>
+                                    <span className="Owner-Contract-detail-value">{selectedContract.fullname}</span>
+                                </div>
+                                <div className="Owner-Contract-detail-row">
+                                    <span className="Owner-Contract-detail-label">Unit:</span>
+                                    <span className="Owner-Contract-detail-value">{selectedContract.unit_name}</span>
+                                </div>
+                                <div className="Owner-Contract-detail-row">
+                                    <span className="Owner-Contract-detail-label">Current Rent:</span>
+                                    <span className="Owner-Contract-detail-value">₱{parseFloat(selectedContract.unit_price || 0).toLocaleString()}</span>
+                                </div>
+                                <div className="Owner-Contract-detail-row">
+                                    <span className="Owner-Contract-detail-label">Requested Move-out:</span>
+                                    <span className="Owner-Contract-detail-value">
+                                        {selectedContract.end_date ? new Date(selectedContract.end_date).toLocaleDateString() : 'Not specified'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="Owner-Contract-approval-options">
+                                <h4>What would you like to do?</h4>
+                                <p>You can either approve the termination request or reject it.</p>
+                            </div>
+                        </div>
+
+                        <div className="Owner-Contract-modal-footer">
+                            <button 
+                                className="Owner-Contract-reject-btn" 
+                                onClick={handleRejectTermination}
+                            >
+                                <X size={16} />
+                                Reject Request
+                            </button>
+                            <button 
+                                className="Owner-Contract-approve-final-btn"
+                                onClick={handleApproveTermination}
+                            >
+                                <Check size={16} />
+                                Approve Termination
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* All other existing modals remain the same */}
+            {/* ... */}
         </div>
     );
 };
