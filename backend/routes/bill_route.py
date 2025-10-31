@@ -6,7 +6,7 @@ from models.users_model import User
 from models.units_model import House as Unit
 from models.contracts_model import Contract
 from models.bills_model import Bill
-from models.notifications_model import Notification  # Add this import
+from models.notifications_model import Notification
 from werkzeug.utils import secure_filename
 import os
 
@@ -106,15 +106,16 @@ def create_bill():
         if contract:
             new_bill.contractid = contract.contractid
 
-        # ✅ Create notification for tenant
+        # ✅ Create UNIFIED notification for tenant
         tenant = Tenant.query.filter_by(tenantid=tenantid).first()
         if tenant:
             tenant_notification = Notification(
-                userid=tenant.userid,
-                userrole='tenant',
                 title='New Bill Issued',
                 message=f'New {billtype} bill for ₱{amount:,.2f} has been issued. Due date: {duedate}',
-                creationdate=datetime.utcnow()
+                targetuserid=tenant.userid,  # Specific to this tenant
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=tenant.userid  # Assuming system-generated
             )
             db.session.add(tenant_notification)
 
@@ -220,15 +221,16 @@ def create_tenant_bill():
         db.session.add(new_bill)
         db.session.flush()  # Get bill ID without committing
 
-        # ✅ Create notification for tenant
+        # ✅ Create UNIFIED notification for tenant
         tenant = Tenant.query.filter_by(tenantid=tenantid).first()
         if tenant:
             tenant_notification = Notification(
-                userid=tenant.userid,
-                userrole='tenant',
                 title='New Invoice Created',
                 message=f'New {billtype} invoice for ₱{amount:,.2f} has been created. Due date: {duedate}',
-                creationdate=datetime.utcnow()
+                targetuserid=tenant.userid,  # Specific to this tenant
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=tenant.userid
             )
             db.session.add(tenant_notification)
 
@@ -332,27 +334,29 @@ def pay_bill(bill_id):
         # ✅ Update bill status
         bill.status = "For Validation"
         
-        # ✅ Create notification for tenant
+        # ✅ Create UNIFIED notification for tenant
         tenant = Tenant.query.filter_by(tenantid=bill.tenantid).first()
         if tenant:
             tenant_notification = Notification(
-                userid=tenant.userid,
-                userrole='tenant',
                 title='Payment Submitted',
                 message=f'Your payment for bill #{bill_id} has been submitted and is awaiting validation.',
-                creationdate=datetime.utcnow()
+                targetuserid=tenant.userid,  # Specific to this tenant
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=tenant.userid
             )
             db.session.add(tenant_notification)
 
-        # ✅ Create notification for ALL landlords
+        # ✅ Create UNIFIED notification for ALL landlords
         all_landlords = User.query.filter_by(role='Owner').all()
-        for landlord in all_landlords:
+        if all_landlords:
             landlord_notification = Notification(
-                userid=landlord.userid,
-                userrole='landlord',
                 title='New Payment Submitted',
                 message=f'Tenant has submitted a payment for bill #{bill_id}. Status: For Validation',
-                creationdate=datetime.utcnow()
+                targetuserrole='Owner',  # Target all landlords
+                isgroupnotification=True,
+                recipientcount=len(all_landlords),
+                createdbyuserid=tenant.userid if tenant else None
             )
             db.session.add(landlord_notification)
 
@@ -377,17 +381,18 @@ def approve_bill_payment(bill_id):
             return jsonify({"error": "Bill not found"}), 404
 
         # Update bill status to PAID
-        bill.status = "PAID"
         
-        # ✅ Create notification for tenant
+        # ✅ Create UNIFIED notification for tenant
         tenant = Tenant.query.filter_by(tenantid=bill.tenantid).first()
         if tenant:
+            bill.status = "PAID"
             tenant_notification = Notification(
-                userid=tenant.userid,
-                userrole='tenant',
                 title='Payment Approved',
                 message=f'Your payment for bill #{bill_id} has been approved. Thank you!',
-                creationdate=datetime.utcnow()
+                targetuserid=tenant.userid,  # Specific to this tenant
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=tenant.userid
             )
             db.session.add(tenant_notification)
 
@@ -419,15 +424,16 @@ def reject_bill_payment(bill_id):
         bill.paymenttype = None
         bill.gcash_ref = None
         
-        # ✅ Create notification for tenant
+        # ✅ Create UNIFIED notification for tenant
         tenant = Tenant.query.filter_by(tenantid=bill.tenantid).first()
         if tenant:
             tenant_notification = Notification(
-                userid=tenant.userid,
-                userrole='tenant',
                 title='Payment Rejected',
                 message=f'Your payment for bill #{bill_id} was rejected. Reason: {reason}. Please try again.',
-                creationdate=datetime.utcnow()
+                targetuserid=tenant.userid,  # Specific to this tenant
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=tenant.userid
             )
             db.session.add(tenant_notification)
 

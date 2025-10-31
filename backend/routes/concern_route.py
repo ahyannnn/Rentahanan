@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from extensions import db
 from models.concerns_model import Concern
-from models.notifications_model import Notification  # Add this import
+from models.notifications_model import Notification
 from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
@@ -63,25 +63,27 @@ def add_concern():
         # ✅ Get tenant info for notification
         tenant = Tenant.query.filter_by(tenantid=tenantid).first()
         if tenant:
-            # ✅ Create notification for tenant
+            # ✅ Create UNIFIED notification for tenant
             tenant_notification = Notification(
-                userid=tenant.userid,
-                userrole='tenant',
                 title='Concern Submitted',
                 message=f'Your {concerntype} concern "{subject}" has been submitted successfully. We will review it soon.',
-                creationdate=datetime.utcnow()
+                targetuserid=tenant.userid,  # Specific to this tenant
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=tenant.userid
             )
             db.session.add(tenant_notification)
 
-            # ✅ Create notification for ALL landlords
+            # ✅ Create UNIFIED notification for ALL landlords
             all_landlords = User.query.filter_by(role='Owner').all()
-            for landlord in all_landlords:
+            if all_landlords:
                 landlord_notification = Notification(
-                    userid=landlord.userid,
-                    userrole='landlord',
                     title='New Concern Reported',
                     message=f'New {concerntype} concern reported by tenant: "{subject}"',
-                    creationdate=datetime.utcnow()
+                    targetuserrole='Owner',  # Target all landlords
+                    isgroupnotification=True,
+                    recipientcount=len(all_landlords),
+                    createdbyuserid=tenant.userid
                 )
                 db.session.add(landlord_notification)
 
@@ -210,26 +212,28 @@ def update_concern(concernid):
 
             message = status_messages.get(status, f'Your concern status has been updated to {status}.')
 
-            # ✅ Create notification for tenant
+            # ✅ Create UNIFIED notification for tenant
             tenant_notification = Notification(
-                userid=tenant.userid,
-                userrole='tenant',
                 title=f'Concern {status}',
                 message=message,
-                creationdate=datetime.utcnow()
+                targetuserid=tenant.userid,  # Specific to this tenant
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=tenant.userid
             )
             db.session.add(tenant_notification)
 
-            # ✅ Create notification for ALL landlords for important status changes
+            # ✅ Create UNIFIED notification for ALL landlords for important status changes
             if status in ["Resolved", "In Progress"]:
                 all_landlords = User.query.filter_by(role='Owner').all()
-                for landlord in all_landlords:
+                if all_landlords:
                     landlord_notification = Notification(
-                        userid=landlord.userid,
-                        userrole='landlord',
                         title=f'Concern {status}',
                         message=f'Concern "{concern.subject}" has been marked as {status}.',
-                        creationdate=datetime.utcnow()
+                        targetuserrole='Owner',  # Target all landlords
+                        isgroupnotification=True,
+                        recipientcount=len(all_landlords),
+                        createdbyuserid=tenant.userid
                     )
                     db.session.add(landlord_notification)
 
@@ -359,13 +363,14 @@ def add_concern_comment(concernid):
         # ✅ Get tenant info for notification
         tenant = Tenant.query.filter_by(tenantid=concern.tenantid).first()
         if tenant:
-            # ✅ Create notification for tenant
+            # ✅ Create UNIFIED notification for tenant
             tenant_notification = Notification(
-                userid=tenant.userid,
-                userrole='tenant',
                 title='Update on Your Concern',
                 message=f'New update on your concern "{concern.subject}": {comment}',
-                creationdate=datetime.utcnow()
+                targetuserid=tenant.userid,  # Specific to this tenant
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=tenant.userid
             )
             db.session.add(tenant_notification)
 

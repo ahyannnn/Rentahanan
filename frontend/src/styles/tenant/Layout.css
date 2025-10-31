@@ -31,24 +31,15 @@ body {
 
 /* ===== Sidebar ===== */
 .sidebar-Layout {
-    /* Tanggalin ang grid-area: sidebar; */
-    /* grid-area: sidebar; <-- REMOVE THIS */
     background: linear-gradient(180deg, #071b63 0%, #0a2d8d 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    /* ***** ITONG TATLONG LINYA ANG IMPORTANTE ***** */
     position: fixed;
-    /* Gawing fixed sa viewport */
     top: 0;
     left: 0;
-    /* ********************************************* */
-
     width: 260px;
-    /* Ibalik ang fixed width na tinanggal sa grid */
     height: 100vh;
-    /* Siguraduhin na buong taas ng viewport */
     padding-top: 25px;
     transition: transform 0.3s ease-in-out;
     box-shadow: 3px 0 8px rgba(0, 0, 0, 0.15);
@@ -132,9 +123,7 @@ body {
 /* ===== Super Transparent Active Link Style ===== */
 .linkholder-Layout.active-Layout {
     background: rgba(255, 255, 255, 0.08);
-    /* lighter transparent white */
     box-shadow: 0 0 6px rgba(255, 255, 255, 0.15);
-    /* softer glow */
     backdrop-filter: blur(4px);
     opacity: 1;
     transform: translateX(3px);
@@ -201,7 +190,7 @@ body {
     gap: 14px;
 }
 
-/* ===== Notification Button - UPDATED TO MATCH DESIGN ===== */
+/* ===== Notification Button - ALWAYS VISIBLE ===== */
 .notif-btn-Layout {
     width: 45px;
     height: 45px;
@@ -331,8 +320,6 @@ body {
 }
 
 /* Modal Overlay */
-/* --- PROFILE MODAL BASE STYLES --- */
-
 .modal-overlay-Layout {
     position: fixed;
     top: 0;
@@ -340,7 +327,6 @@ body {
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.6);
-    /* Adjusted opacity for better background visibility */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -351,11 +337,9 @@ body {
     background: white;
     padding: 25px;
     border-radius: 12px;
-    /* Adjusted radius for modern look */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     width: 90%;
     max-width: 350px;
-    /* Adjusted max width */
     position: relative;
     animation: fadeInScale-Layout 0.3s ease-out;
 }
@@ -365,7 +349,6 @@ body {
         opacity: 0;
         transform: scale(0.95);
     }
-
     to {
         opacity: 1;
         transform: scale(1);
@@ -383,7 +366,6 @@ body {
 
 .modal-header-Layout h2 {
     font-size: 1.3rem;
-    /* Adjusted font size */
     margin: 0;
     color: #333;
 }
@@ -425,7 +407,6 @@ body {
 .current-pic-holder-Layout img {
     border: 4px solid #f0f0f0;
     border-radius: 50%;
-    /* Ensures it's circular */
     background: #ccc;
     object-fit: cover;
     transition: transform 0.2s;
@@ -595,13 +576,14 @@ body {
     width: 100%;
 }
 
-/* 🔔 Notification Dropdown Styles */
+/* 🔔 Notification Dropdown Styles - ALWAYS VISIBLE */
 
 .notif-wrapper-Layout {
   position: relative;
   display: inline-block;
 }
 
+/* CHANGED: Remove conditional display, always show */
 .notif-dropdown-Layout {
   position: absolute;
   top: 50px;
@@ -613,10 +595,11 @@ body {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   padding: 15px;
   z-index: 999;
-  animation: fadeIn-Layout 0.2s ease-in-out;
   border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  /* REMOVED: No conditional display properties */
 }
-/* Add this to your ../styles/tenant/Layout.css file */
 
 .loading-logo-container {
   display: flex;
@@ -635,18 +618,17 @@ body {
 }
 
 .loading-logo {
-  width: 200px; /* Increased from original size */
-  height: 200px; /* Increased from original size */
+  width: 200px;
+  height: 200px;
   object-fit: contain;
 }
 
 .loading-brand-text {
-  font-size: 4rem; /* Larger text */
+  font-size: 4rem;
   font-weight: bold;
   color: #333;
 }
 
-/* Optional: Add a subtle loading animation */
 .loading-spinner {
   width: 70px;
   height: 70px;
@@ -660,6 +642,7 @@ body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
 .notif-dropdown-Layout h4 {
   margin: 0 0 15px;
   font-size: 16px;
@@ -691,6 +674,26 @@ body {
   font-weight: 600;
 }
 
+.notif-target-info-Layout {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #666;
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* Style for group notifications */
+.notif-card-Layout.group-notification-Layout {
+  border-left: 4px solid #3b82f6;
+}
+
+/* Style for personal notifications */
+.notif-card-Layout.personal-notification-Layout {
+  border-left: 4px solid #10b981;
+}
+
 .notif-card-Layout p {
   margin: 0;
   font-size: 13px;
@@ -712,17 +715,6 @@ body {
   color: #999;
   font-size: 14px;
   padding: 20px 0;
-}
-
-@keyframes fadeIn-Layout {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .view-all-btn-Layout {
@@ -814,7 +806,6 @@ body {
     }
 }
 
-
 /* 🔔 Enhanced Notification Styles */
 
 /* Three dots indicator for desktop */
@@ -880,7 +871,6 @@ body {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   padding: 15px;
   z-index: 999;
-  animation: fadeIn-Layout 0.2s ease-in-out;
   border: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
@@ -1019,26 +1009,6 @@ body {
   color: white;
 }
 
-/* View all button */
-.view-all-btn-Layout {
-  width: 100%;
-  background: #0a2d8d;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 0;
-  margin-top: 10px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.view-all-btn-Layout:hover {
-  background: #071b63;
-  transform: translateY(-1px);
-}
-
 /* Loading and empty states */
 .notif-loading-Layout {
   text-align: center;
@@ -1071,17 +1041,6 @@ body {
 
 .notif-list-container-Layout::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
-}
-
-@keyframes fadeIn-Layout {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* ===== Mobile & Tablet ===== */
@@ -1181,15 +1140,4 @@ body {
 
 .delete-menu-item-Layout:hover {
   background: #f8d7da;
-}
-
-@keyframes fadeInScale-Layout {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
 }

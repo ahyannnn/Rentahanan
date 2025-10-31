@@ -13,7 +13,10 @@ import {
   MessageCircle,
   Home,
   Users,
-  Building
+  Building,
+  Plus,
+  Send,
+  User
 } from "lucide-react";
 import "../../styles/owners/OwnerNotification.css";
 
@@ -22,6 +25,18 @@ const OwnerNotifications = () => {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  
+  // New state for sending notifications
+  const [showSendNotification, setShowSendNotification] = useState(false);
+  const [newNotification, setNewNotification] = useState({
+    title: "",
+    message: "",
+    targetType: "all", // "all" or "specific"
+    targetTenantId: "",
+    priority: "medium"
+  });
+  const [tenants, setTenants] = useState([]);
+  const [sending, setSending] = useState(false);
 
   // Fetch notifications from API
   const fetchNotifications = async () => {
@@ -47,6 +62,24 @@ const OwnerNotifications = () => {
       setNotifications([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Fetch tenants for sending specific notifications
+  const fetchTenants = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/tenants/active");
+      const data = await response.json();
+
+      if (Array.isArray(data)) {
+        setTenants(data);
+      } else {
+        console.error("Failed to fetch tenants:", data);
+        setTenants([]);
+      }
+    } catch (error) {
+      console.error("Error fetching tenants:", error);
+      setTenants([]);
     }
   };
 
@@ -118,6 +151,96 @@ const OwnerNotifications = () => {
     } catch (error) {
       console.error("Error deleting notification:", error);
     }
+  };
+
+  // Send new notification
+  const sendNotification = async () => {
+    if (!newNotification.title.trim() || !newNotification.message.trim()) {
+      alert("Please fill in both title and message");
+      return;
+    }
+
+    if (newNotification.targetType === "specific" && !newNotification.targetTenantId) {
+      alert("Please select a tenant");
+      return;
+    }
+
+    try {
+      setSending(true);
+      const storedUserRaw = localStorage.getItem("user");
+      if (!storedUserRaw) return;
+
+      const storedUser = JSON.parse(storedUserRaw);
+
+      const notificationData = {
+        title: newNotification.title,
+        message: newNotification.message,
+        priority: newNotification.priority,
+        createdbyuserid: storedUser.userid
+      };
+
+      // Add target information based on selection
+      if (newNotification.targetType === "all") {
+        notificationData.targetuserrole = "Tenant";
+        notificationData.isgroupnotification = true;
+      } else {
+        // Find the selected tenant to get their userid
+        const selectedTenant = tenants.find(t => t.applicationid == newNotification.targetTenantId);
+        if (selectedTenant) {
+          notificationData.targetuserid = selectedTenant.userid;
+          notificationData.isgroupnotification = false;
+        }
+      }
+
+      const response = await fetch("http://127.0.0.1:5000/api/notifications/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(notificationData),
+      });
+      
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Notification sent successfully!");
+        setNewNotification({
+          title: "",
+          message: "",
+          targetType: "all",
+          targetTenantId: "",
+          priority: "medium"
+        });
+        setShowSendNotification(false);
+        // Refresh notifications
+        fetchNotifications();
+      } else {
+        alert("Failed to send notification: " + data.message);
+      }
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      alert("Error sending notification. Please try again.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  // Open send notification modal
+  const openSendNotification = () => {
+    setShowSendNotification(true);
+    fetchTenants(); // Load tenants when opening the modal
+  };
+
+  // Close send notification modal
+  const closeSendNotification = () => {
+    setShowSendNotification(false);
+    setNewNotification({
+      title: "",
+      message: "",
+      targetType: "all",
+      targetTenantId: "",
+      priority: "medium"
+    });
   };
 
   useEffect(() => {
@@ -234,7 +357,127 @@ const OwnerNotifications = () => {
   }
 
   return (
-    <div className="Owner-Notifications-container">
+    <div className="notifications-container-Owner-Notifications">
+      {/* ===== Send Notification Modal ===== */}
+      {showSendNotification && (
+        <div className="modal-overlay-Owner-Notifications" onClick={closeSendNotification}>
+          <div className="send-notification-modal-Owner-Notifications" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header-Owner-Notifications">
+              <h2>Send Notification</h2>
+              <button className="close-modal-btn-Owner-Notifications" onClick={closeSendNotification}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="modal-body-Owner-Notifications">
+              <div className="form-group-Owner-Notifications">
+                <label>Title *</label>
+                <input
+                  type="text"
+                  placeholder="Enter notification title"
+                  value={newNotification.title}
+                  onChange={(e) => setNewNotification(prev => ({ ...prev, title: e.target.value }))}
+                  className="form-input-Owner-Notifications"
+                />
+              </div>
+
+              <div className="form-group-Owner-Notifications">
+                <label>Message *</label>
+                <textarea
+                  placeholder="Enter notification message"
+                  value={newNotification.message}
+                  onChange={(e) => setNewNotification(prev => ({ ...prev, message: e.target.value }))}
+                  className="form-textarea-Owner-Notifications"
+                  rows="4"
+                />
+              </div>
+
+              <div className="form-group-Owner-Notifications">
+                <label>Send To</label>
+                <div className="target-options-Owner-Notifications">
+                  <label className="radio-option-Owner-Notifications">
+                    <input
+                      type="radio"
+                      value="all"
+                      checked={newNotification.targetType === "all"}
+                      onChange={(e) => setNewNotification(prev => ({ ...prev, targetType: e.target.value }))}
+                    />
+                    <span>All Tenants</span>
+                  </label>
+                  <label className="radio-option-Owner-Notifications">
+                    <input
+                      type="radio"
+                      value="specific"
+                      checked={newNotification.targetType === "specific"}
+                      onChange={(e) => setNewNotification(prev => ({ ...prev, targetType: e.target.value }))}
+                    />
+                    <span>Specific Tenant</span>
+                  </label>
+                </div>
+              </div>
+
+              {newNotification.targetType === "specific" && (
+                <div className="form-group-Owner-Notifications">
+                  <label>Select Tenant</label>
+                  <select
+                    value={newNotification.targetTenantId}
+                    onChange={(e) => setNewNotification(prev => ({ ...prev, targetTenantId: e.target.value }))}
+                    className="form-select-Owner-Notifications"
+                  >
+                    <option value="">Select a tenant</option>
+                    {tenants.map(tenant => (
+                      <option key={tenant.applicationid} value={tenant.applicationid}>
+                        {tenant.fullname} - {tenant.unit_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div className="form-group-Owner-Notifications">
+                <label>Priority</label>
+                <select
+                  value={newNotification.priority}
+                  onChange={(e) => setNewNotification(prev => ({ ...prev, priority: e.target.value }))}
+                  className="form-select-Owner-Notifications"
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="modal-footer-Owner-Notifications">
+              <button
+                className="cancel-btn-Owner-Notifications"
+                onClick={closeSendNotification}
+                disabled={sending}
+              >
+                Cancel
+              </button>
+              <button
+                className="send-btn-Owner-Notifications"
+                onClick={sendNotification}
+                disabled={sending}
+              >
+                {sending ? (
+                  <>
+                    <div className="sending-spinner-Owner-Notifications"></div>
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send size={16} />
+                    Send Notification
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ===== Page Header ===== */}
       <div className="Owner-Notifications-header">
         <div className="Owner-Notifications-header-content">
@@ -243,6 +486,15 @@ const OwnerNotifications = () => {
             Stay updated with your property management activities and important announcements
           </p>
         </div>
+        
+        {/* Send Notification Button */}
+        <button
+          className="send-notification-btn-Owner-Notifications"
+          onClick={openSendNotification}
+        >
+          <Plus size={20} />
+          Send Notification
+        </button>
       </div>
 
       {/* ===== Control Bar ===== */}

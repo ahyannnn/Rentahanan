@@ -7,7 +7,7 @@ from models.tenants_model import Tenant
 from models.units_model import House as Unit
 from models.applications_model import Application
 from models.users_model import User
-from models.notifications_model import Notification  # Add this import
+from models.notifications_model import Notification
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 import os, traceback
@@ -435,25 +435,27 @@ def issue_contract():
         unit = Unit.query.filter_by(unitid=unit_id).first()
 
         if tenant:
-            # ✅ Create notification for tenant
+            # ✅ Create UNIFIED notification for tenant
             tenant_notification = Notification(
-                userid=tenant.userid,
-                userrole='tenant',
                 title='New Contract Issued',
                 message=f'A new rental contract has been issued for {unit.name if unit else "your unit"}. Please review and sign the contract.',
-                creationdate=datetime.utcnow()
+                targetuserid=tenant.userid,  # Specific to this tenant
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=tenant.userid
             )
             db.session.add(tenant_notification)
 
-            # ✅ Create notification for ALL landlords
+            # ✅ Create UNIFIED notification for ALL landlords
             all_landlords = User.query.filter_by(role='Owner').all()
-            for landlord in all_landlords:
+            if all_landlords:
                 landlord_notification = Notification(
-                    userid=landlord.userid,
-                    userrole='landlord',
                     title='New Contract Created',
                     message=f'New rental contract issued to tenant for {unit.name if unit else "a unit"}. Contract ID: {new_contract.contractid}',
-                    creationdate=datetime.utcnow()
+                    targetuserrole='Owner',  # Target all landlords
+                    isgroupnotification=True,
+                    recipientcount=len(all_landlords),
+                    createdbyuserid=tenant.userid
                 )
                 db.session.add(landlord_notification)
 
@@ -582,25 +584,27 @@ def sign_contract():
         unit = Unit.query.filter_by(unitid=contract.unitid).first()
 
         if tenant:
-            # ✅ Create notification for tenant
+            # ✅ Create UNIFIED notification for tenant
             tenant_notification = Notification(
-                userid=tenant.userid,
-                userrole='tenant',
                 title='Contract Signed',
                 message=f'You have successfully signed the rental contract for {unit.name if unit else "your unit"}.',
-                creationdate=datetime.utcnow()
+                targetuserid=tenant.userid,  # Specific to this tenant
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=tenant.userid
             )
             db.session.add(tenant_notification)
 
-            # ✅ Create notification for ALL landlords
+            # ✅ Create UNIFIED notification for ALL landlords
             all_landlords = User.query.filter_by(role='Owner').all()
-            for landlord in all_landlords:
+            if all_landlords:
                 landlord_notification = Notification(
-                    userid=landlord.userid,
-                    userrole='landlord',
                     title='Contract Signed by Tenant',
                     message=f'Tenant has signed the rental contract for {unit.name if unit else "a unit"}. Contract ID: {contract.contractid}',
-                    creationdate=datetime.utcnow()
+                    targetuserrole='Owner',  # Target all landlords
+                    isgroupnotification=True,
+                    recipientcount=len(all_landlords),
+                    createdbyuserid=tenant.userid
                 )
                 db.session.add(landlord_notification)
 
@@ -677,13 +681,14 @@ def update_contract_status(contract_id):
 
             message = status_messages.get(new_status, f"Contract status updated to {new_status}.")
 
-            # ✅ Create notification for tenant
+            # ✅ Create UNIFIED notification for tenant
             tenant_notification = Notification(
-                userid=tenant.userid,
-                userrole='tenant',
                 title=f'Contract {new_status}',
                 message=message,
-                creationdate=datetime.utcnow()
+                targetuserid=tenant.userid,  # Specific to this tenant
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=tenant.userid
             )
             db.session.add(tenant_notification)
 
