@@ -59,14 +59,11 @@ const Contract = () => {
           return;
         }
 
-        
-
         const response = await axios.get(
           `http://localhost:5000/api/contracts/tenant/${tenantId}`
         );
 
         const data = response.data;
-        
 
         if (Array.isArray(data) && data.length > 0) {
           setContract(data[0]);
@@ -415,7 +412,7 @@ const Contract = () => {
         </div>
       </div>
 
-      {/* Success Modal */}
+      {/* ✅ SUCCESS MODAL (Like Owner Contract) */}
       {showSuccessModal && (
         <div className="modal-overlay-Contract" onClick={() => setShowSuccessModal(false)}>
           <div className="modal-content-Contract success" onClick={(e) => e.stopPropagation()}>
@@ -424,12 +421,33 @@ const Contract = () => {
             </div>
             <h3 className="modal-title-Contract">Success</h3>
             <p className="modal-message-Contract">{modalMessage}</p>
-            <button 
-              className="modal-button-Contract success"
-              onClick={() => setShowSuccessModal(false)}
-            >
-              Continue
-            </button>
+            
+            {/* ✅ Contract Details like Owner Contract */}
+            <div className="success-details-Contract">
+              <div className="success-detail-item-Contract">
+                <span className="success-detail-label-Contract">Unit:</span>
+                <span className="success-detail-value-Contract">{contract.unit_name}</span>
+              </div>
+              <div className="success-detail-item-Contract">
+                <span className="success-detail-label-Contract">Monthly Rent:</span>
+                <span className="success-detail-value-Contract">₱{contract.unit_price?.toLocaleString()}</span>
+              </div>
+              <div className="success-detail-item-Contract">
+                <span className="success-detail-label-Contract">Signed On:</span>
+                <span className="success-detail-value-Contract">{new Date().toLocaleDateString()}</span>
+              </div>
+            </div>
+
+            {/* ✅ Single Button like Owner Contract */}
+            <div className="success-modal-actions-Contract">
+              <button 
+                className="success-modal-button-Contract"
+                onClick={() => setShowSuccessModal(false)}
+              >
+                <Eye className="btn-icon" size={18} />
+                View Signed Contract
+              </button>
+            </div>
           </div>
         </div>
       )}
