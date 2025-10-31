@@ -7,117 +7,115 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    // 1. STATE FOR EMAIL ERROR
+    // Error states
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
-    // State for general login errors (server, missing both)
-    const [generalError, setGeneralError] = useState("");
 
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    // Reset errors
-    setEmailError("");
-    setPasswordError("");
-    setGeneralError("");
+        // Reset errors
+        setEmailError("");
+        setPasswordError("");
 
-    let isValid = true;
+        let isValid = true;
 
-    // Validation
-    if (!email) {
-        setEmailError("Email address is required.");
-        isValid = false;
-    } else {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            setEmailError("Please enter a valid email address.");
+        // Validation
+        if (!email) {
+            setEmailError("Email address is required.");
+            isValid = false;
+        } else {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                setEmailError("Please enter a valid email address.");
+                isValid = false;
+            }
+        }
+
+        if (!password) {
+            setPasswordError("Password is required.");
             isValid = false;
         }
-    }
 
-    if (!password) {
-        setPasswordError("Password is required.");
-        isValid = false;
-    }
+        if (!isValid) return;
 
-    if (!isValid) return;
+        try {
+            const response = await fetch("http://127.0.0.1:5000/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
 
-    try {
-        const response = await fetch("http://127.0.0.1:5000/api/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-        });
+            const data = await response.json();
 
-        const data = await response.json();
+            if (!response.ok) {
+                // Check if it's an email or password error from the server
+                if (data.message?.toLowerCase().includes("user not found") || 
+                    data.message?.toLowerCase().includes("email")) {
+                    setEmailError(data.message);
+                } else if (data.message?.toLowerCase().includes("password") || 
+                           data.message?.toLowerCase().includes("incorrect")) {
+                    setPasswordError(data.message);
+                } else {
+                    setEmailError(data.message || "Login failed. Please check your credentials.");
+                }
+                return;
+            }
 
-        if (!response.ok) {
-            setGeneralError(data.message || "Login failed! Please check your credentials.");
-            return;
+            if (!data.user) {
+                setEmailError("Unexpected response. Please try again.");
+                return;
+            }
+
+            // ✅ Extract user data from backend
+            const {
+                role,
+                application_status,
+                userid,
+                tenantid,
+                firstname,
+                middlename,
+                lastname,
+                email: userEmail,
+                phone,
+            } = data.user;
+
+            const fullName = [firstname, middlename, lastname].filter(Boolean).join(" ");
+
+            // ✅ Store everything in ONE object (so Layout.jsx can read it easily)
+            const userData = {
+                userid,
+                tenantid,
+                fullName,
+                email: userEmail,
+                phone,
+                role,
+                applicationStatus: application_status || "Registered",
+            };
+            localStorage.setItem("user", JSON.stringify(userData));
+            
+            // ✅ ALSO store tenantid separately for easy access
+            if (tenantid) {
+                localStorage.setItem("tenantid", tenantid);
+            }
+
+            // ✅ Navigate based on role and status
+            if (role.toLowerCase() === "owner") {
+                navigate("/owner");
+            } else if (role.toLowerCase() === "tenant") {
+                navigate(
+                    application_status === "Registered" ? "/tenant/browse-units" : "/tenant"
+                );
+            } else {
+                navigate("/landing");
+            }
+
+        } catch (error) {
+            console.error("Login error:", error);
+            setEmailError("Network error. Please check your connection.");
         }
-
-        if (!data.user) {
-            setEmailError("Unexpected response. Please try again.");
-            return;
-        }
-
-        // ✅ Extract user data from backend
-        const {
-            role,
-            application_status,
-            userid,
-            tenantid,
-            firstname,
-            middlename,
-            lastname,
-            email: userEmail,
-            phone,
-        } = data.user;
-
-        const fullName = [firstname, middlename, lastname].filter(Boolean).join(" ");
-
-        // ✅ Store everything in ONE object (so Layout.jsx can read it easily)
-        const userData = {
-            userid,
-            tenantid,
-            fullName,
-            email: userEmail,
-            phone,
-            role,
-            applicationStatus: application_status || "Registered",
-        };
-        localStorage.setItem("user", JSON.stringify(userData));
-        
-        // ✅ ALSO store tenantid separately for easy access
-        if (tenantid) {
-            localStorage.setItem("tenantid", tenantid);
-        }
-
-        // ✅ Navigate based on role and status
-        if (role.toLowerCase() === "owner") {
-            navigate("/owner");
-        } else if (role.toLowerCase() === "tenant") {
-            navigate(
-                application_status === "Registered" ? "/tenant/browse-units" : "/tenant"
-            );
-        } else {
-            navigate("/landing");
-        }
-
-    } catch (error) {
-        console.error("Login error:", error);
-        setGeneralError("Network error. Please check your connection.");
-    }
-};
-
-
-    const errorStyle = {
-        color: 'red',
-        textAlign: 'left',
-        marginTop: '5px',
-        fontSize: '0.875rem' // Standard size for inline error messages
     };
 
     return (
@@ -159,10 +157,17 @@ const Login = () => {
                                     type="email"
                                     placeholder="Enter your email"
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="input-field-Login"
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        setEmailError(""); // Clear error when user types
+                                    }}
+                                    className={`input-field-Login ${emailError ? 'input-error-Login' : ''}`}
                                 />
-                                {emailError && <p style={errorStyle}>{emailError}</p>}
+                                {emailError && (
+                                    <div className="error-message-Login">
+                                        {emailError}
+                                    </div>
+                                )}
                             </div>
 
                             {/* PASSWORD */}
@@ -173,44 +178,31 @@ const Login = () => {
                                         type={showPassword ? "text" : "password"}
                                         placeholder="Enter your password"
                                         value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="input-field-Login"
+                                        onChange={(e) => {
+                                            setPassword(e.target.value);
+                                            setPasswordError(""); // Clear error when user types
+                                        }}
+                                        className={`input-field-Login ${passwordError ? 'input-error-Login' : ''}`}
                                     />
                                     <button
                                         type="button"
-                                        className="show-password-btn-Login" // New specific class
+                                        className="show-password-btn-Login"
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? "Hide" : "Show"}
                                     </button>
                                 </div>
-
-                                {/* 3. PASSWORD ERROR MESSAGE (positioned within the password-group for layout) */}
+                                
                                 {passwordError && (
-                                    <p style={{ ...errorStyle, marginTop: '10px' }}>
+                                    <div className="error-message-Login">
                                         {passwordError}
-                                    </p>
+                                    </div>
                                 )}
 
                                 <div className="forgot-link-Login">
                                     <Link to="/forgot-password">Forgot Password?</Link>
                                 </div>
                             </div>
-
-                            {/* General Error Message (for server/login failure) */}
-                            {generalError && (
-                                <p
-                                    style={{
-                                        color: 'red',
-                                        textAlign: 'center',
-                                        marginBottom: '10px',
-                                        fontWeight: 'bold'
-                                    }}
-                                >
-                                    {generalError}
-                                </p>
-                            )}
-
 
                             {/* BUTTONS */}
                             <button className="main-login-btn-Login" type="submit">
@@ -219,11 +211,8 @@ const Login = () => {
 
                             <span className="or-text-Login">OR</span>
 
-
-
-
                             <div className="bottom-text-Login">
-                                Don’t have an account? <Link to="/register">Register</Link>
+                                Don't have an account? <Link to="/register">Register</Link>
                             </div>
                         </form>
                     </div>

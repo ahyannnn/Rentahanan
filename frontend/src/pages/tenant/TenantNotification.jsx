@@ -236,41 +236,6 @@ const formatDate = (dateString) => {
         </div>
       </div>
 
-      {/* ===== Stats Overview ===== */}
-      <div className="stats-overview-Tenant-Notifications">
-        <div className="stat-card-Tenant-Notifications">
-          <div className="stat-icon-Tenant-Notifications total">
-            <Bell size={24} />
-          </div>
-          <div className="stat-content-Tenant-Notifications">
-            <div className="stat-number-Tenant-Notifications">{totalCount}</div>
-            <div className="stat-label-Tenant-Notifications">Total Notifications</div>
-          </div>
-        </div>
-
-        <div className="stat-card-Tenant-Notifications">
-          <div className="stat-icon-Tenant-Notifications pending">
-            <AlertCircle size={24} />
-          </div>
-          <div className="stat-content-Tenant-Notifications">
-            <div className="stat-number-Tenant-Notifications">{unreadCount}</div>
-            <div className="stat-label-Tenant-Notifications">Unread</div>
-          </div>
-        </div>
-
-        <div className="stat-card-Tenant-Notifications">
-          <div className="stat-icon-Tenant-Notifications resolved">
-            <Check size={24} />
-          </div>
-          <div className="stat-content-Tenant-Notifications">
-            <div className="stat-number-Tenant-Notifications">
-              {totalCount - unreadCount}
-            </div>
-            <div className="stat-label-Tenant-Notifications">Read</div>
-          </div>
-        </div>
-      </div>
-
       {/* ===== Notification Controls ===== */}
       <div className="notifications-top-controls-Tenant-Notifications">
         <div className="search-container-Tenant-Notifications">
