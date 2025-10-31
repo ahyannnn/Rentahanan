@@ -30,7 +30,7 @@ const Layout = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState(null);
-  const [applicationStatus, setApplicationStatus] = useState(null);
+  const [tenantStatus, setTenantStatus] = useState(null);
   const [userRole, setUserRole] = useState("tenant");
   const [profilePictureUrl, setProfilePictureUrl] = useState("/default-profile.png");
   const [headerProfilePictureUrl, setHeaderProfilePictureUrl] = useState("/default-profile.png");
@@ -59,7 +59,17 @@ const Layout = () => {
 
       if (data.success && data.profile) {
         setUserData(data.profile);
-        setApplicationStatus(data.profile.application_status || "Registered");
+
+        // Map application_status to tenant status - UPDATED: 'Registered' now maps to 'Registered'
+        const statusMapping = {
+          'Registered': 'Registered',  // Changed from 'Pending' to 'Registered'
+          'Pending': 'Registered',     // Changed from 'Pending' to 'Registered'
+          'Approved': 'Active',
+          'Rejected': 'Terminated'
+        };
+
+        const mappedStatus = statusMapping[data.profile.application_status] || 'Registered'; // Changed default from 'Pending' to 'Registered'
+        setTenantStatus(mappedStatus);
         setUserRole(data.profile.role?.toLowerCase() || "tenant");
 
         // Reset error states when fetching new data
@@ -77,6 +87,7 @@ const Layout = () => {
         }
 
         localStorage.setItem("user", JSON.stringify(data.profile));
+        localStorage.setItem("tenantStatus", mappedStatus);
       } else {
         console.error("Failed to fetch profile:", data.message);
       }
@@ -143,12 +154,12 @@ const Layout = () => {
     setActiveNotificationMenu(null);
     setShowNotifications(false);
     setShowAllNotifications(false);
-    
+
     // Mark as read
     markNotificationAsRead(notification.notificationid);
-    
+
     console.log("Viewing notification:", notification);
-    
+
     // Navigate to relevant page based on notification type - FUNCTIONAL NA!
     if (notification.type?.includes('bill') || notification.title?.toLowerCase().includes('bill')) {
       console.log("Navigating to billing page");
@@ -172,16 +183,16 @@ const Layout = () => {
   const handleDeleteNotification = async (notificationId, e) => {
     e.stopPropagation();
     setActiveNotificationMenu(null);
-    
+
     try {
       console.log("Deleting notification:", notificationId);
-      
+
       const response = await fetch(`http://127.0.0.1:5000/api/notifications/${notificationId}`, {
         method: 'DELETE',
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         console.log("Successfully deleted notification");
         // Remove from local state
@@ -204,12 +215,12 @@ const Layout = () => {
       const response = await fetch(`http://127.0.0.1:5000/api/notifications/${notificationId}/read`, {
         method: 'PUT',
       });
-      
+
       if (response.ok) {
         // Update local state
-        setNotifications(prev => 
-          prev.map(notif => 
-            notif.notificationid === notificationId 
+        setNotifications(prev =>
+          prev.map(notif =>
+            notif.notificationid === notificationId
               ? { ...notif, is_read: true }
               : notif
           )
@@ -231,12 +242,12 @@ const Layout = () => {
     setShowNotifications(false);
     setShowAllNotifications(false);
     setActiveNotificationMenu(null);
-    
+
     // Mark as read
     markNotificationAsRead(notification.notificationid);
-    
+
     console.log("Card clicked - notification:", notification);
-    
+
     // Navigate based on notification type - FUNCTIONAL NA!
     if (notification.type?.includes('bill') || notification.title?.toLowerCase().includes('bill')) {
       console.log("Navigating to billing page");
@@ -274,11 +285,22 @@ const Layout = () => {
         } else {
           setUserData(storedUser);
           setUserRole(localStorage.getItem("userRole") || storedUser.role || "tenant");
-          setApplicationStatus(
-            localStorage.getItem("applicationStatus") ||
-            storedUser.application_status ||
-            "Registered"
-          );
+
+          // Use tenantStatus from localStorage or fallback to mapping
+          const storedStatus = localStorage.getItem("tenantStatus");
+          if (storedStatus) {
+            setTenantStatus(storedStatus);
+          } else {
+            // Map application_status to tenant status - UPDATED
+            const statusMapping = {
+              'Registered': 'Registered',  // Changed from 'Pending' to 'Registered'
+              'Pending': 'Registered',     // Changed from 'Pending' to 'Registered'
+              'Approved': 'Active',
+              'Rejected': 'Terminated'
+            };
+            const mappedStatus = statusMapping[storedUser.application_status] || 'Registered'; // Changed default from 'Pending' to 'Registered'
+            setTenantStatus(mappedStatus);
+          }
         }
       } catch (error) {
         console.error("Error loading user:", error);
@@ -392,13 +414,19 @@ const Layout = () => {
     setHeaderImageError(true);
   };
 
-  // Format time for notifications
+  // Format time for notifications - FIXED TIMEZONE ISSUE
   const formatNotificationTime = (dateString) => {
     if (!dateString) return "Recently";
 
-    const date = new Date(dateString);
+    // Parse the database timestamp (UTC time)
+    const dbDate = new Date(dateString);
+    
+    // Get current time in UTC to match the database timezone
     const now = new Date();
-    const diffInMs = now - date;
+    const nowUtc = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
+    
+    // Calculate difference in milliseconds
+    const diffInMs = nowUtc - dbDate;
     const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
@@ -408,31 +436,37 @@ const Layout = () => {
     if (diffInHours < 24) return `${diffInHours}h ago`;
     if (diffInDays < 7) return `${diffInDays}d ago`;
 
-    return date.toLocaleDateString();
+    // For older dates, use a formatted date string
+    return dbDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   // Get notifications to display (3 by default, 10 when expanded)
-  const displayedNotifications = showAllNotifications 
-    ? notifications.slice(0, 10) 
+  const displayedNotifications = showAllNotifications
+    ? notifications.slice(0, 10)
     : notifications.slice(0, 3);
 
+  // Updated tenant links by tenant status - UPDATED: Changed 'Pending' to 'Registered'
   const tenantLinksByStatus = {
-    Registered: [{ name: "Browse Units", to: "/tenant/browse-units", icon: Building2 }],
-    Pending: [
+    Registered: [  // Changed from 'Pending' to 'Registered'
       { name: "Browse Units", to: "/tenant/browse-units", icon: Building2 },
       { name: "My Bills", to: "/tenant/bills", icon: CreditCard },
       { name: "Contract", to: "/tenant/contract", icon: ClipboardList },
       { name: "Concern", to: "/tenant/support", icon: HelpCircle },
+      { name: "Notifications", to: "/tenant/notification", icon: Bell },
     ],
-    Approved: [
+    Active: [
       { name: "Dashboard", to: "/tenant", icon: Home },
       { name: "My Bills", to: "/tenant/bills", icon: CreditCard },
       { name: "Payment History", to: "/tenant/payment", icon: FileText },
       { name: "Contract", to: "/tenant/contract", icon: ClipboardList },
       { name: "Concern", to: "/tenant/support", icon: HelpCircle },
+      { name: "Notifications", to: "/tenant/notification", icon: Bell },
     ],
-    Rejected: [
-      { name: "Dashboard", to: "/tenant", icon: Home },
+    Terminated: [
       { name: "Concern", to: "/tenant/support", icon: HelpCircle },
     ],
   };
@@ -444,7 +478,8 @@ const Layout = () => {
     { name: "Transactions", to: "/owner/transactions", icon: FileText },
     { name: "Billing", to: "/owner/billing", icon: CreditCard },
     { name: "Contract", to: "/owner/contract", icon: ClipboardList },
-    { name: "Concern Center", to: "/owner/notifications", icon: Bell },
+    { name: "Concern Center", to: "/owner/concern", icon: HelpCircle },
+    { name: "Notifications", to: "/owner/notification", icon: Bell },
   ];
 
   if (loading) {
@@ -474,7 +509,7 @@ const Layout = () => {
   const links =
     userRole === "owner"
       ? ownerLinks
-      : tenantLinksByStatus[applicationStatus || "Registered"] || [];
+      : tenantLinksByStatus[tenantStatus || "Registered"] || []; // Changed default from 'Pending' to 'Registered'
 
   const pageTitle =
     links.find((link) => link.to === location.pathname)?.name || "Dashboard";
@@ -541,6 +576,11 @@ const Layout = () => {
             </h3>
             <p className="user-role-label-Layout">
               Role: {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
+            </p>
+            <p className="user-status-label-Layout">
+              Status: <span className={`status-badge status-${tenantStatus?.toLowerCase()}`}>
+                {tenantStatus || "Registered"}  {/* Changed from 'Pending' to 'Registered' */}
+              </span>
             </p>
 
             <div className="user-details-list-Layout">
@@ -680,8 +720,8 @@ const Layout = () => {
                   <>
                     <div className={`notif-list-container-Layout ${showAllNotifications ? 'expanded-Layout' : ''}`}>
                       {displayedNotifications.map((notif) => (
-                        <div 
-                          key={notif.notificationid} 
+                        <div
+                          key={notif.notificationid}
                           className={`notif-card-Layout ${!notif.is_read ? 'unread-Layout' : ''}`}
                           onClick={() => handleNotificationCardClick(notif)}
                         >
@@ -692,27 +732,27 @@ const Layout = () => {
                               {formatNotificationTime(notif.creationdate)}
                             </span>
                           </div>
-                          
+
                           {/* Three dots menu */}
                           <div className="notif-menu-container-Layout">
-                            <button 
+                            <button
                               className="three-dots-btn-Layout"
                               onClick={(e) => handleThreeDotsClick(notif.notificationid, e)}
                             >
                               <MoreHorizontal size={16} />
                             </button>
-                            
+
                             {/* Dropdown menu */}
                             {activeNotificationMenu === notif.notificationid && (
                               <div className="notif-action-menu-Layout">
-                                <button 
+                                <button
                                   className="notif-menu-item-Layout view-menu-item-Layout"
                                   onClick={(e) => handleViewNotification(notif, e)}
                                 >
                                   <Eye size={14} />
                                   View
                                 </button>
-                                <button 
+                                <button
                                   className="notif-menu-item-Layout delete-menu-item-Layout"
                                   onClick={(e) => handleDeleteNotification(notif.notificationid, e)}
                                 >
@@ -725,7 +765,7 @@ const Layout = () => {
                         </div>
                       ))}
                     </div>
-                    
+
                     {/* Show View All button only if more than 3 notifications */}
                     {notifications.length > 3 && (
                       <button

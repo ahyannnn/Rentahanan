@@ -151,7 +151,8 @@ def approve_applicant(application_id):
         # Update statuses
         application.status = "Approved"
         contract.status = "Active"
-        
+        tenant.status = "Active"  # ✅ ADDED: Set tenant status to Active
+
         # ✅ Create notification for tenant
         tenant_notification = Notification(
             userid=tenant.userid,
@@ -163,7 +164,7 @@ def approve_applicant(application_id):
         db.session.add(tenant_notification)
 
         # ✅ Create notification for ALL landlords
-        all_landlords = User.query.filter_by(role='landlord').all()
+        all_landlords = User.query.filter_by(role='Owner').all()
         for landlord in all_landlords:
             landlord_notification = Notification(
                 userid=landlord.userid,
@@ -213,7 +214,7 @@ def reject_applicant(application_id):
             db.session.add(tenant_notification)
 
             # ✅ Create notification for ALL landlords
-            all_landlords = User.query.filter_by(role='landlord').all()
+            all_landlords = User.query.filter_by(role='Owner').all()
             for landlord in all_landlords:
                 landlord_notification = Notification(
                     userid=landlord.userid,

@@ -81,7 +81,8 @@ def register():
         # --- Create Tenant ---
         new_tenant = Tenant(
             userid=new_user.userid,
-            applicationid=new_application.applicationid
+            applicationid=new_application.applicationid,
+            status="Registered"  # ✅ ADDED: Set the status for new tenants
         )
 
         db.session.add(new_tenant)
@@ -134,6 +135,7 @@ def login():
     if tenant:
         print(f"Tenant ID: {tenant.tenantid}")
         print(f"Tenant UserID: {tenant.userid} (type: {type(tenant.userid)})")
+        print(f"Tenant Status: {tenant.status}")  # ✅ Added status debug
     else:
         print("❌ NO TENANT RECORD FOUND!")
 
@@ -157,9 +159,7 @@ def login():
             "middlename": user.middlename,
             "email": user.email,
             "role": user.role,
-            "application_status": application.status if application else "No Application"
+            "application_status": application.status if application else "No Application",
+            "tenant_status": tenant.status if tenant else "No Tenant"  # ✅ Added tenant status
         }
     }), 200
-
-
-    

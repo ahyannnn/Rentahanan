@@ -192,18 +192,18 @@ def generate_contract_pdf():
         )
 
         # Header
-        header = Paragraph("<b>RENTAL AGREEMENT CONTRACT</b>", title_style)
+        header = Paragraph("RENTAL AGREEMENT CONTRACT", title_style)
         story.append(header)
         
-        company_subheader = Paragraph("<b>RenTahanan Property Management</b>", styles['Heading2'])
+        company_subheader = Paragraph("RenTahanan Property Management", styles['Heading2'])
         story.append(company_subheader)
         story.append(Spacer(1, 20))
 
         # Contract Information Table
         contract_info = [
             ['CONTRACT DETAILS', ''],
-            ['Contract Date:', f'<b>{datetime.now().strftime("%B %d, %Y")}</b>'],
-            ['Contract ID:', f'<b>RT-{int(tenant_id):06d}</b>'],
+            ['Contract Date:', datetime.now().strftime("%B %d, %Y")],
+            ['Contract ID:', f'RT-{int(tenant_id):06d}'],
             ['', '']
         ]
         
@@ -216,7 +216,8 @@ def generate_contract_pdf():
             ('FONTSIZE', (0, 0), (-1, 0), 12),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
             ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#F8F9FA')),
-            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTNAME', (0, 1), (0, -1), 'Helvetica-Bold'),  # Labels in bold
+            ('FONTNAME', (1, 1), (1, -1), 'Helvetica'),      # Values in normal
             ('FONTSIZE', (0, 1), (-1, -1), 10),
         ]))
         
@@ -233,8 +234,8 @@ def generate_contract_pdf():
         # Parties Table
         parties_data = [
             ['PARTY', 'INFORMATION'],
-            ['LANDLORD/Owner:', '<b>RenTahanan Property Management</b><br/>Duly represented by its authorized agent'],
-            ['TENANT/Lessee:', f'<b>{tenant_name}</b><br/>Tenant ID: {tenant_id}']
+            ['LANDLORD/Owner:', 'RenTahanan Property Management<br/>Duly represented by its authorized agent'],
+            ['TENANT/Lessee:', f'{tenant_name}<br/>Tenant ID: {tenant_id}']
         ]
         
         parties_table = Table(parties_data, colWidths=[2*inch, 4*inch])
@@ -252,21 +253,27 @@ def generate_contract_pdf():
         story.append(parties_table)
         story.append(Spacer(1, 20))
 
-        # Property Details Section
+        # Property Details Section - FIXED: Replace peso sign with PHP
         story.append(Paragraph("PROPERTY DETAILS", section_style))
         
+        # Format amounts with PHP instead of peso sign
+        rent_formatted = f"PHP {float(rent):,.2f}"
+        deposit_formatted = f"PHP {float(deposit):,.2f}"
+        advance_formatted = f"PHP {float(advance):,.2f}"
+        
         property_data = [
-            ['Unit/Room:', f'<b>{unit_name}</b>'],
-            ['Commencement Date:', f'<b>{start_date}</b>'],
-            ['Monthly Rental:', f'<b>₱{float(rent):,.2f}</b>'],
-            ['Security Deposit:', f'<b>₱{float(deposit):,.2f}</b>'],
-            ['Advance Payment:', f'<b>₱{float(advance):,.2f}</b>']
+            ['Unit/Room:', unit_name],
+            ['Commencement Date:', start_date],
+            ['Monthly Rental:', rent_formatted],
+            ['Security Deposit:', deposit_formatted],
+            ['Advance Payment:', advance_formatted]
         ]
         
         property_table = Table(property_data, colWidths=[2*inch, 4*inch])
         property_table.setStyle(TableStyle([
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),  # Labels in bold
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),       # Values in normal
             ('FONTSIZE', (0, 0), (-1, -1), 10),
             ('TOPPADDING', (0, 0), (-1, -1), 8),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
@@ -302,15 +309,17 @@ def generate_contract_pdf():
 
         story.append(Spacer(1, 30))
 
-        # Signatures Section
+        # Signatures Section - FIXED: Add more space to prevent overlap
         story.append(Paragraph("ACKNOWLEDGED AND AGREED", section_style))
         
-        # Create signature table
+        # Create signature table with proper spacing
         sig_data = [
             ['', 'TENANT', 'LANDLORD'],
-            ['Name:', f'<b>{tenant_name}</b>', '<b>RenTahanan Property Management</b>'],
+            ['Name:', tenant_name, 'RenTahanan Property Management'],
             ['Signature:', '', ''],
-            ['Date:', f'<b>{datetime.now().strftime("%Y-%m-%d")}</b>', f'<b>{datetime.now().strftime("%Y-%m-%d")}</b>']
+            ['', '', ''],  # Extra row for signature space
+            ['', '', ''],
+            ['Date:', datetime.now().strftime("%Y-%m-%d"), datetime.now().strftime("%Y-%m-%d")]
         ]
         
         sig_table = Table(sig_data, colWidths=[1.5*inch, 2.5*inch, 2.5*inch])
@@ -323,11 +332,13 @@ def generate_contract_pdf():
             ('TOPPADDING', (0, 0), (-1, -1), 10),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
             ('LEFTPADDING', (0, 0), (-1, -1), 8),
-            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#DDDDDD'))
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#DDDDDD')),
+            ('SPAN', (2, 3), (2, 4)),  # Span signature rows for landlord
+            ('SPAN', (1, 3), (1, 4)),  # Span signature rows for tenant
         ]))
         
         story.append(sig_table)
-        story.append(Spacer(1, 40))
+        story.append(Spacer(1, 60))  # Increased space after signatures
 
         # Build the PDF
         doc.build(story)
@@ -354,8 +365,9 @@ def generate_contract_pdf():
                 img_buffer.seek(0)
                 signature_reader = ImageReader(img_buffer)
 
-                # Position for landlord signature (adjust coordinates as needed)
-                can.drawImage(signature_reader, 320, 120, width=120, height=40, mask='auto')
+                # FIXED: Position for landlord signature - moved to avoid overlap
+                # Adjusted coordinates to place signature in the designated area
+                can.drawImage(signature_reader, 320, 100, width=120, height=40, mask='auto')
                 
                 can.save()
 
@@ -434,7 +446,7 @@ def issue_contract():
             db.session.add(tenant_notification)
 
             # ✅ Create notification for ALL landlords
-            all_landlords = User.query.filter_by(role='landlord').all()
+            all_landlords = User.query.filter_by(role='Owner').all()
             for landlord in all_landlords:
                 landlord_notification = Notification(
                     userid=landlord.userid,
@@ -491,7 +503,7 @@ def get_contracts_by_tenant(tenant_id):
     return jsonify(result)
 
 
-# ✅ Tenant sign contract (upload signed PDF)
+# ✅ Tenant sign contract (upload signed PDF) - FIXED: Adjusted signature position
 @contract_bp.route("/contracts/sign", methods=["POST"])
 def sign_contract():
     from io import BytesIO
@@ -539,7 +551,8 @@ def sign_contract():
         # ✅ Create signature overlay PDF
         packet = BytesIO()
         c = canvas.Canvas(packet, pagesize=A4)
-        c.drawImage(sig_temp_path, 110, 160, width=150, height=60, mask='auto')  # adjust placement
+        # FIXED: Adjusted signature position to avoid overlap
+        c.drawImage(sig_temp_path, 110, 140, width=150, height=60, mask='auto')  # moved higher
         c.save()
         packet.seek(0)
 
@@ -580,7 +593,7 @@ def sign_contract():
             db.session.add(tenant_notification)
 
             # ✅ Create notification for ALL landlords
-            all_landlords = User.query.filter_by(role='landlord').all()
+            all_landlords = User.query.filter_by(role='Owner').all()
             for landlord in all_landlords:
                 landlord_notification = Notification(
                     userid=landlord.userid,
