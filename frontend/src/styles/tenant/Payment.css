@@ -1,324 +1,625 @@
-/* ======================================= */
-/* SHARED CONTAINERS (Dating galing MyBills.css) */
-/* ======================================= */
+/* ===== Main Container ===== */
+.payment-history-container-tenant-p {
+    padding: 24px;
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f2ff 100%);
+    min-height: 100vh;
+    font-family: "Inter", sans-serif;
+}
 
-.bills-invoice-container {
-    background: #fff;
-    padding: 30px;
+/* ===== Page Header ===== */
+.page-header-section-tenant-p {
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.page-header-tenant-p {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: #0b3c91;
+    background: linear-gradient(135deg, #0b3c91 0%, #1e6af5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtext-tenant-p {
+    color: #64748b;
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* ===== Controls Container ===== */
+.controls-container-tenant-p {
+    background: white;
+    padding: 20px;
     border-radius: 16px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-    color: #1e1e2f;
-}
-
-.page-header {
-    margin-bottom: 25px;
-}
-
-.page-header h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-}
-
-.page-header p {
-    color: #666;
-    font-size: 0.95rem;
-}
-
-.top-controls {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 24px;
+    border: 1px solid #e8edff;
     display: flex;
-    flex-wrap: wrap;
+    gap: 25px;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
+    flex-wrap: wrap;
 }
 
-.search-input {
+.search-container-tenant-p {
     flex: 1;
-    min-width: 200px;
-    padding: 10px 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 0.95rem;
+    min-width: 300px;
 }
 
-.filter-tabs {
+.search-box-tenant-p {
+    position: relative;
     display: flex;
-    gap: 10px;
+    align-items: center;
 }
 
-.filter-btn {
+.search-icon-tenant-p {
+    position: absolute;
+    left: 16px;
+    color: #64748b;
+    z-index: 2;
+}
+
+.search-input-tenant-p {
+    width: 100%;
+    padding: 14px 20px 14px 48px;
+    border: 2px solid #e8edff;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    font-family: "Inter", sans-serif;
+    background: #f8faff;
+}
+
+.search-input-tenant-p:focus {
+    outline: none;
+    border-color: #0a2d8d;
+    box-shadow: 0 0 0 4px rgba(10, 45, 141, 0.1);
+    background: white;
+}
+
+.time-filters-container-tenant-p {
+    flex-shrink: 0;
+}
+
+/* ===== Filter Tabs - Same as Tenant-Bills ===== */
+.time-filters-tenant-p {
+    display: flex;
+    gap: 8px;
+    background: #f8faff;
+    padding: 8px;
+    border-radius: 16px;
+    border: 1px solid #e8edff;
+}
+
+.time-filter-btn-tenant-p {
     background: transparent;
     border: none;
-    color: #555;
-    padding: 6px 10px;
-    border-radius: 6px;
+    color: #666;
+    padding: 12px 20px;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: 500;
-    transition: 0.3s ease;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.filter-btn:hover {
+.time-filter-btn-tenant-p:hover {
+    background: rgba(10, 45, 141, 0.1);
     color: #0a2d8d;
 }
 
-.filter-btn.active {
-    color: #0a2d8d;
-    border-bottom: 2px solid #0a2d8d;
+.time-filter-btn-active-tenant-p {
+    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
+    color: white;
+    box-shadow: 0 6px 20px rgba(10, 45, 141, 0.3);
 }
 
+/* ===== Payments List Container ===== */
+.payments-list-container-tenant-p {
+    margin-bottom: 32px;
+}
 
-/* ======================================= */
-/* PAYMENT HISTORY CARD STYLES */
-/* ======================================= */
-
-.payment-cards-grid {
-    display: grid;
-    /* Desktop: 3 columns */
-    grid-template-columns: repeat(3, 1fr); 
+/* ===== Payments List - 1 Card Per Row ===== */
+.payments-list-tenant-p {
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    margin-top: 20px;
 }
 
-.payment-card {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s;
-    cursor: pointer;
+/* ===== Payment Card ===== */
+.payment-card-tenant-p {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+    border: 1px solid #f0f4ff;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
 }
 
-.payment-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.payment-card-tenant-p::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
 }
 
-.card-header {
+.payment-card-tenant-p:hover::before {
+    transform: scaleX(1);
+}
+
+.payment-card-tenant-p:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.payment-card-header-tenant-p {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    font-size: 0.9rem;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    gap: 12px;
 }
 
-.card-bill-type {
-    font-weight: 600;
-    color: #0a2d8d;
-    flex-grow: 1;
-}
-
-.card-status {
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-}
-.date-filter-input {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    margin-left: 10px;
-}
-/* Time Filter Tabs */
-.time-filter-tabs {
+.payment-type-badge-tenant-p {
     display: flex;
-    gap: 10px;
-    margin-left: 15px;
-}
-
-.time-filter-btn {
+    align-items: center;
+    gap: 8px;
     padding: 8px 16px;
-    border: 1px solid #ddd;
+    background: #f0f4ff;
+    color: #0a2d8d;
     border-radius: 20px;
-    background: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
-.time-filter-btn:hover {
-    background: #f5f5f5;
+.payment-type-icon-tenant-p {
+    color: #0a2d8d;
 }
 
-.time-filter-btn.active {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
+.payment-type-text-tenant-p {
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
-/* Pagination Controls */
-.pagination-controls {
+.payment-status-tenant-p {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 20px;
-    margin: 30px 0;
-    padding: 20px;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.pagination-btn {
-    padding: 10px 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.payment-status-paid-tenant-p {
+    background: linear-gradient(135deg, #d4ffd4 0%, #a8f5a8 100%);
+    color: #155724;
 }
 
-.pagination-btn:hover:not(:disabled) {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
+.payment-status-pending-tenant-p {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
 }
 
-.pagination-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.payment-status-cancelled-tenant-p {
+    background: linear-gradient(135deg, #ffd4d4 0%, #f5a8a8 100%);
+    color: #721c24;
 }
 
-.pagination-info {
-    font-weight: 500;
-    color: #666;
+.status-icon-tenant-p {
+    flex-shrink: 0;
 }
 
-/* Results Count */
-.results-count {
-    text-align: center;
-    color: #666;
-    font-size: 14px;
+.status-text-tenant-p {
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+/* ===== Payment Card Content ===== */
+.payment-card-content-tenant-p {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: center;
     margin-bottom: 20px;
 }
 
-/* Loading and Error States */
-.loading-message, .error-message {
-    text-align: center;
-    padding: 40px;
-    color: #666;
-}
-
-.retry-button {
-    margin-top: 10px;
-    padding: 8px 16px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.no-payments-message {
-    text-align: center;
-    padding: 40px;
-    color: #666;
-    grid-column: 1 / -1;
-}
-.date-filter-input:focus {
-    outline: none;
-    border-color: #007bff;
-}
-.card-status.status-paid { 
-    background: #28a745; 
-    color: white; 
-}
-.card-status.status-pending { 
-    background: #ffc107; 
-    color: #1e1e2f; 
-}
-.card-status.status-cancelled { 
-    background: #dc3545; 
-    color: white; 
-}
-
-.arrow-icon {
-    font-weight: 700;
-    color: #888;
-    margin-left: 10px;
-}
-
-.card-details {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    font-size: 0.95rem;
-}
-
-.detail-item {
+.payment-main-info-tenant-p {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 12px;
 }
 
-.detail-label {
+.payment-amount-tenant-p {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #0a2d8d;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.payment-description-tenant-p {
+    color: #666;
+    line-height: 1.6;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.payment-details-grid-tenant-p {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.detail-item-tenant-p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-item-tenant-p:last-child {
+    border-bottom: none;
+}
+
+.detail-label-container-tenant-p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-icon-tenant-p {
+    color: #0a2d8d;
+    flex-shrink: 0;
+}
+
+.detail-label-tenant-p {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.detail-value-tenant-p {
+    font-weight: 600;
+    color: #1e1e2f;
+    font-size: 0.95rem;
+    text-align: right;
+}
+
+.payment-method-icon-tenant-p {
+    color: #0a2d8d;
+}
+
+.ref-value-tenant-p {
+    background: #f8faff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #e8edff;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 0.8rem;
+    color: #1e1e2f;
+}
+
+/* ===== Payment Card Footer ===== */
+.payment-card-footer-tenant-p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.payment-id-tenant-p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.id-label-tenant-p {
     font-size: 0.8rem;
     color: #666;
     font-weight: 500;
 }
 
-.detail-value {
-    font-weight: 700;
+.id-value-tenant-p {
+    font-weight: 600;
     color: #1e1e2f;
+    font-size: 0.9rem;
 }
 
-.date-icon {
+.view-receipt-btn-tenant-p {
+    background: transparent;
+    border: 2px solid #0a2d8d;
+    color: #0a2d8d;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-receipt-btn-tenant-p:hover {
+    background: #0a2d8d;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(10, 45, 141, 0.3);
+}
+
+.receipt-icon-tenant-p {
+    flex-shrink: 0;
+}
+
+.receipt-text-tenant-p {
+    font-size: 0.9rem;
     font-weight: 600;
 }
 
-.amount-text {
-    font-size: 1.1rem;
+/* ===== No Payments State ===== */
+.no-payments-tenant-p {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.no-payments-icon-tenant-p {
+    font-size: 4rem;
+    margin-bottom: 20px;
     color: #0a2d8d;
 }
 
+.no-payments-title-tenant-p {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e1e2f;
+    margin-bottom: 10px;
+}
 
-/* ======================================= */
-/* RESPONSIVE STYLES */
-/* ======================================= */
+.no-payments-description-tenant-p {
+    color: #666;
+    font-size: 1.1rem;
+    margin: 0;
+}
 
-@media (max-width: 992px) {
-    .payment-cards-grid {
-        /* Tablet View: 2 columns */
-        grid-template-columns: repeat(2, 1fr);
+/* ===== Pagination ===== */
+.pagination-container-tenant-p {
+    margin: 40px 0;
+}
+
+.pagination-controls-tenant-p {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.pagination-btn-tenant-p {
+    padding: 12px 24px;
+    background: white;
+    border: 2px solid #e8edff;
+    color: #0a2d8d;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.pagination-btn-tenant-p:hover:not(:disabled) {
+    background: #0a2d8d;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(10, 45, 141, 0.3);
+}
+
+.pagination-btn-tenant-p:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.pagination-info-tenant-p {
+    font-weight: 600;
+    color: #666;
+    font-size: 1rem;
+}
+
+/* ===== Results Count ===== */
+.results-count-tenant-p {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.results-text-tenant-p {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* ===== Loading State ===== */
+.loading-container-tenant-p {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.loading-spinner-tenant-p {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0a2d8d;
+    border-radius: 50%;
+    animation: spin-tenant-p 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin-tenant-p {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text-tenant-p {
+    color: #666;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* ===== Error State ===== */
+.error-container-tenant-p {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.error-icon-tenant-p {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: #dc3545;
+}
+
+.error-title-tenant-p {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e1e2f;
+    margin-bottom: 10px;
+}
+
+.error-message-tenant-p {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+}
+
+.retry-btn-tenant-p {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retry-btn-tenant-p:hover {
+    background: linear-gradient(135deg, #072d6d 0%, #0a2d8d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(10, 45, 141, 0.3);
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+    .payment-history-container-tenant-p {
+        padding: 20px 15px;
+    }
+    
+    .page-header-tenant-p {
+        font-size: 1.8rem;
+    }
+    
+    .controls-container-tenant-p {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 20px;
+    }
+    
+    .search-container-tenant-p {
+        min-width: auto;
+    }
+    
+    .time-filters-tenant-p {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .payment-card-content-tenant-p {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .payment-card-tenant-p {
+        padding: 20px;
+    }
+    
+    .payment-amount-tenant-p {
+        font-size: 2rem;
+    }
+    
+    .payment-card-footer-tenant-p {
+        flex-direction: column;
         gap: 15px;
+        align-items: stretch;
+    }
+    
+    .view-receipt-btn-tenant-p {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .pagination-controls-tenant-p {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .pagination-btn-tenant-p {
+        width: 100%;
     }
 }
 
-@media (max-width: 768px) {
-    /* Mobile View General Adjustments */
-    .bills-invoice-container {
-        padding: 15px;
+@media (max-width: 480px) {
+    .payment-history-container-tenant-p {
+        padding: 15px 10px;
     }
-
-    .page-header h2 {
-        font-size: 1.3rem;
+    
+    .page-header-tenant-p {
+        font-size: 1.5rem;
     }
-
-    .top-controls {
+    
+    .payment-card-tenant-p {
+        padding: 20px;
+    }
+    
+    .payment-card-header-tenant-p {
         flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
+        gap: 12px;
+        align-items: flex-start;
     }
-
-    .search-input {
-        width: 100%;
-        min-width: unset;
+    
+    .payment-status-tenant-p {
+        align-self: flex-start;
     }
-
-    .filter-tabs {
-        justify-content: space-around;
-        width: 100%;
+    
+    .detail-item-tenant-p {
+        flex-direction: column;
+        align-items: flex-start;
         gap: 5px;
     }
     
-    .payment-cards-grid {
-        /* Mobile View: 1 column */
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .payment-card {
-        padding: 12px;
+    .detail-value-tenant-p {
+        text-align: left;
     }
 }

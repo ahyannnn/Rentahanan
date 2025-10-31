@@ -347,9 +347,9 @@ const OwnerNotifications = () => {
 
   if (loading) {
     return (
-      <div className="notifications-container-Owner-Notifications">
-        <div className="loading-notifications-Owner-Notifications">
-          <div className="loading-spinner-Owner-Notifications"></div>
+      <div className="Owner-Notifications-container">
+        <div className="Owner-Notifications-loading">
+          <div className="Owner-Notifications-loading-spinner"></div>
           <p>Loading notifications...</p>
         </div>
       </div>
@@ -479,10 +479,10 @@ const OwnerNotifications = () => {
       )}
 
       {/* ===== Page Header ===== */}
-      <div className="page-header-Owner-Notifications">
-        <div className="header-content-Owner-Notifications">
-          <h1 className="page-title-Owner-Notifications">Notifications</h1>
-          <p className="page-description-Owner-Notifications">
+      <div className="Owner-Notifications-header">
+        <div className="Owner-Notifications-header-content">
+          <h1 className="Owner-Notifications-title">Notifications</h1>
+          <p className="Owner-Notifications-subtitle">
             Stay updated with your property management activities and important announcements
           </p>
         </div>
@@ -497,95 +497,57 @@ const OwnerNotifications = () => {
         </button>
       </div>
 
-      {/* ===== Stats Overview ===== */}
-      <div className="stats-overview-Owner-Notifications">
-        <div className="stat-card-Owner-Notifications">
-          <div className="stat-icon-Owner-Notifications total">
-            <Bell size={24} />
-          </div>
-          <div className="stat-content-Owner-Notifications">
-            <div className="stat-number-Owner-Notifications">{totalCount}</div>
-            <div className="stat-label-Owner-Notifications">Total Notifications</div>
-          </div>
+      {/* ===== Control Bar ===== */}
+      <div className="Owner-Notifications-control-bar">
+        <div className="Owner-Notifications-tab-group">
+          <button
+            className={`Owner-Notifications-tab-btn ${filter === "all" ? "Owner-Notifications-tab-active" : ""}`}
+            onClick={() => setFilter("all")}
+          >
+            All
+            <span className="Owner-Notifications-tab-badge">{totalCount}</span>
+          </button>
+          <button
+            className={`Owner-Notifications-tab-btn ${filter === "unread" ? "Owner-Notifications-tab-active" : ""}`}
+            onClick={() => setFilter("unread")}
+          >
+            Unread
+            <span className="Owner-Notifications-tab-badge">{unreadCount}</span>
+          </button>
+          <button
+            className={`Owner-Notifications-tab-btn ${filter === "payment" ? "Owner-Notifications-tab-active" : ""}`}
+            onClick={() => setFilter("payment")}
+          >
+            Payments
+          </button>
+          <button
+            className={`Owner-Notifications-tab-btn ${filter === "maintenance" ? "Owner-Notifications-tab-active" : ""}`}
+            onClick={() => setFilter("maintenance")}
+          >
+            Maintenance
+          </button>
+          <button
+            className={`Owner-Notifications-tab-btn ${filter === "tenant" ? "Owner-Notifications-tab-active" : ""}`}
+            onClick={() => setFilter("tenant")}
+          >
+            Tenants
+          </button>
         </div>
 
-        <div className="stat-card-Owner-Notifications">
-          <div className="stat-icon-Owner-Notifications pending">
-            <AlertCircle size={24} />
-          </div>
-          <div className="stat-content-Owner-Notifications">
-            <div className="stat-number-Owner-Notifications">{unreadCount}</div>
-            <div className="stat-label-Owner-Notifications">Unread</div>
-          </div>
-        </div>
-
-        <div className="stat-card-Owner-Notifications">
-          <div className="stat-icon-Owner-Notifications resolved">
-            <Check size={24} />
-          </div>
-          <div className="stat-content-Owner-Notifications">
-            <div className="stat-number-Owner-Notifications">
-              {totalCount - unreadCount}
-            </div>
-            <div className="stat-label-Owner-Notifications">Read</div>
-          </div>
-        </div>
-      </div>
-
-      {/* ===== Notification Controls ===== */}
-      <div className="notifications-top-controls-Owner-Notifications">
-        <div className="search-container-Owner-Notifications">
-          <div className="search-box-Owner-Notifications">
-            <Search className="search-icon-Owner-Notifications" size={20} />
+        <div className="Owner-Notifications-search-container">
+          <div className="Owner-Notifications-search-box">
+            <Search className="Owner-Notifications-search-icon" size={20} />
             <input
               type="text"
               placeholder="Search notifications..."
-              className="search-input-Owner-Notifications"
+              className="Owner-Notifications-search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-        </div>
-
-        <div className="controls-right-Owner-Notifications">
-          <div className="filter-tabs-Owner-Notifications">
-            <button
-              className={`filter-btn-Owner-Notifications ${filter === "all" ? "filter-btn-active-Owner-Notifications" : ""}`}
-              onClick={() => setFilter("all")}
-            >
-              All
-              <span className="filter-count-Owner-Notifications">{totalCount}</span>
-            </button>
-            <button
-              className={`filter-btn-Owner-Notifications ${filter === "unread" ? "filter-btn-active-Owner-Notifications" : ""}`}
-              onClick={() => setFilter("unread")}
-            >
-              Unread
-              <span className="filter-count-Owner-Notifications">{unreadCount}</span>
-            </button>
-            <button
-              className={`filter-btn-Owner-Notifications ${filter === "payment" ? "filter-btn-active-Owner-Notifications" : ""}`}
-              onClick={() => setFilter("payment")}
-            >
-              Payments
-            </button>
-            <button
-              className={`filter-btn-Owner-Notifications ${filter === "maintenance" ? "filter-btn-active-Owner-Notifications" : ""}`}
-              onClick={() => setFilter("maintenance")}
-            >
-              Maintenance
-            </button>
-            <button
-              className={`filter-btn-Owner-Notifications ${filter === "tenant" ? "filter-btn-active-Owner-Notifications" : ""}`}
-              onClick={() => setFilter("tenant")}
-            >
-              Tenants
-            </button>
-          </div>
-
           {unreadCount > 0 && (
             <button
-              className="mark-all-read-btn-Owner-Notifications"
+              className="Owner-Notifications-mark-all-btn"
               onClick={markAllAsRead}
             >
               <Check size={16} />
@@ -595,17 +557,15 @@ const OwnerNotifications = () => {
         </div>
       </div>
 
-      {/* ===== Notifications List ===== */}
-      <div className="notifications-list-Owner-Notifications">
+      {/* ===== Notifications Grid ===== */}
+      <div className="Owner-Notifications-grid">
         {filteredNotifications.length === 0 ? (
-          <div className="no-notifications-Owner-Notifications">
-            <div className="no-notifications-icon-Owner-Notifications">
+          <div className="Owner-Notifications-empty">
+            <div className="Owner-Notifications-empty-icon">
               <Bell size={64} />
             </div>
-            <h3 className="no-notifications-title-Owner-Notifications">
-              No notifications found
-            </h3>
-            <p className="no-notifications-description-Owner-Notifications">
+            <h3>No notifications found</h3>
+            <p>
               {searchTerm || filter !== "all"
                 ? "Try adjusting your search or filter criteria"
                 : "You're all caught up! New notifications will appear here."
@@ -616,54 +576,54 @@ const OwnerNotifications = () => {
           filteredNotifications.map((notification) => (
             <div
               key={notification.notificationid}
-              className={`notification-card-Owner-Notifications ${notification.status === "unread" ? "unread-Owner-Notifications" : ""}`}
+              className={`Owner-Notifications-card ${notification.status === "unread" ? "Owner-Notifications-unread" : ""}`}
             >
-              <div className="card-header-Owner-Notifications">
-                <div className="notification-type-Owner-Notifications">
-                  <span className="type-icon-Owner-Notifications">
+              <div className="Owner-Notifications-card-header">
+                <div className="Owner-Notifications-type-badge">
+                  <span className="Owner-Notifications-type-icon">
                     {getTypeIcon(notification)}
                   </span>
-                  <span className="type-label-Owner-Notifications">
+                  <span className="Owner-Notifications-type-label">
                     {getTypeLabel(notification)}
                   </span>
                 </div>
                 <div
-                  className="notification-priority-Owner-Notifications"
+                  className="Owner-Notifications-priority"
                   style={{ backgroundColor: getPriorityColor(notification.priority || 'medium') }}
                   title={`${notification.priority || 'medium'} priority`}
                 />
               </div>
 
-              <div className="notification-content-Owner-Notifications">
-                <h3 className="notification-title-Owner-Notifications">
+              <div className="Owner-Notifications-card-content">
+                <h3 className="Owner-Notifications-card-title">
                   {notification.title}
                 </h3>
-                <p className="notification-message-Owner-Notifications">
+                <p className="Owner-Notifications-card-description">
                   {notification.message}
                 </p>
               </div>
 
-              <div className="card-footer-Owner-Notifications">
-                <div className="notification-meta-Owner-Notifications">
-                  <div className="meta-item-Owner-Notifications">
-                    <span className="meta-label-Owner-Notifications">Date</span>
-                    <span className="meta-value-Owner-Notifications date-value-Owner-Notifications">
+              <div className="Owner-Notifications-card-footer">
+                <div className="Owner-Notifications-meta">
+                  <div className="Owner-Notifications-meta-item">
+                    <span className="Owner-Notifications-meta-label">Date</span>
+                    <span className="Owner-Notifications-meta-value">
                       <Clock size={14} />
                       {formatDate(notification.creationdate)}
                     </span>
                   </div>
-                  <div className="meta-item-Owner-Notifications">
-                    <span className="meta-label-Owner-Notifications">Status</span>
-                    <span className={`status-badge-Owner-Notifications ${notification.status === "unread" ? "status-unread-Owner-Notifications" : "status-read-Owner-Notifications"}`}>
+                  <div className="Owner-Notifications-meta-item">
+                    <span className="Owner-Notifications-meta-label">Status</span>
+                    <span className={`Owner-Notifications-status-badge ${notification.status === "unread" ? "Owner-Notifications-status-unread" : "Owner-Notifications-status-read"}`}>
                       {notification.status === "unread" ? "Unread" : "Read"}
                     </span>
                   </div>
                 </div>
 
-                <div className="notification-actions-Owner-Notifications">
+                <div className="Owner-Notifications-card-actions">
                   {notification.status === "unread" && (
                     <button
-                      className="mark-read-btn-Owner-Notifications"
+                      className="Owner-Notifications-read-btn"
                       onClick={() => markAsRead(notification.notificationid)}
                       title="Mark as read"
                     >
@@ -671,7 +631,7 @@ const OwnerNotifications = () => {
                     </button>
                   )}
                   <button
-                    className="delete-notification-btn-Owner-Notifications"
+                    className="Owner-Notifications-delete-btn"
                     onClick={() => deleteNotification(notification.notificationid)}
                     title="Delete notification"
                   >

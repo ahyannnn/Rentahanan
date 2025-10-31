@@ -107,13 +107,11 @@ body {
   transform: none;
 }
 
-/* --- Logo Box (Modified for Desktop Look) --- */
-/* .logo-box-Login (Not used in this component) */
-
 /* --- Inputs and Forms --- */
 .form-group-Login {
   margin-bottom: 1.5rem;
   text-align: left;
+  position: relative;
 }
 
 .form-group-Login label {
@@ -124,7 +122,6 @@ body {
 }
 
 .input-field-Login {
-  /* New specific class for inputs */
   width: 100%;
   padding: 1rem;
   border: 1px solid #ddd;
@@ -140,10 +137,26 @@ body {
   box-shadow: 0 0 0 1px rgba(6, 26, 83, 0.4);
 }
 
+.input-error-Login {
+  border-color: #dc3545 !important;
+}
+
+.input-error-Login:focus {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 1px rgba(220, 53, 69, 0.4) !important;
+}
+
+.error-message-Login {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  text-align: left;
+  font-weight: 500;
+}
+
 /* --- Password Specifics --- */
 .password-group-Login {
   position: relative;
-  /* Ensure the error message is positioned correctly in mobile view */
 }
 
 .password-wrapper-Login {
@@ -154,11 +167,9 @@ body {
 
 .password-wrapper-Login .input-field-Login {
   padding-right: 4rem;
-  /* Make space for the Show/Hide button */
 }
 
 .show-password-btn-Login {
-  /* Specific button class for show/hide */
   position: absolute;
   right: 10px;
   top: 50%;
@@ -179,7 +190,6 @@ body {
 
 /* --- Main Login Button --- */
 .main-login-btn-Login {
-  /* New specific button class */
   background-color: #061A53 !important;
   color: white;
   border: none;
@@ -232,13 +242,11 @@ body {
 
 /* --- Social Buttons --- */
 .social-login-Login {
-  /* Container class for social buttons */
   display: block;
   margin-top: 1.5rem;
 }
 
 .social-login-btn-Login {
-  /* Specific button class for social login */
   width: 100%;
   padding: 1rem;
   border: 1px solid #ddd;
@@ -293,14 +301,12 @@ body {
 
 /* --- Responsive (Mobile View - Final Override) --- */
 @media (max-width: 850px) {
-
-  /* Main Login Button override to white */
+  /* Main Login Button override - WHITE BACKGROUND WITH BLACK TEXT */
   .main-login-btn-Login {
     background-color: white !important;
-    color: #061A53 !important;
+    color: #000000 !important; /* Changed to black text */
     border: 2px solid white !important;
     margin-top: 1rem;
-    /* Adjusting for mobile */
     font-size: 1rem;
     padding: 0.9rem;
     margin-bottom: 1rem;
@@ -308,7 +314,7 @@ body {
 
   .main-login-btn-Login:hover {
     background-color: #f5f5f5 !important;
-    color: #061A53 !important;
+    color: #000000 !important; /* Keep black text on hover */
   }
 
   /* FORCE BLUE BACKGROUND ON ALL MAIN CONTAINERS */
@@ -353,20 +359,40 @@ body {
     color: white !important;
   }
 
-  /* Input fields: Keep background white for readability, but make text dark blue */
-  .input-field-Login {
-    /* Targeting the new input class */
-    background-color: white !important;
-    color: #061A53 !important;
-    border-color: white !important;
+  /* Input fields: Apply the dark, high-contrast style from the image */
+  .input-field-Login { 
+    background-color: rgba(0, 0, 0, 0.2) !important; 
+    color: white !important; 
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: none !important;
   }
 
-  /* Links and Buttons (use your accent color: white) */
+  /* Placeholder text styling */
+  .input-field-Login::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+  
+  .input-field-Login:focus {
+    border-color: white !important; 
+  }
 
+  /* Error states for mobile */
+  .input-error-Login {
+    border-color: #ff6b6b !important;
+  }
+
+  .error-message-Login {
+    color: #ff6b6b !important;
+  }
+
+  /* Update for the password input specifically */
+  .password-wrapper-Login .input-field-Login { 
+    padding-right: 4rem; 
+  }
+  
   /* Show/Hide Password Button */
-  .show-password-btn-Login {
-    /* Targeting the new button class */
-    color: white !important;
+  .show-password-btn-Login { 
+    color: white !important; 
   }
 
   /* Forgot Password Link */
@@ -378,12 +404,10 @@ body {
   .or-text-Login {
     color: #aaa !important;
     line-height: initial;
-    /* Reset line-height for mobile if needed */
   }
 
   /* Social Login Button (Google) override to white */
   .social-login-btn-Login {
-    /* Targeting the new button class */
     background: white !important;
     color: #061A53 !important;
     border-color: white !important;
@@ -406,7 +430,7 @@ body {
     color: white !important;
   }
 
-  /* Structural resets (kept for functionality) */
+  /* Structural resets */
   .auth-left-Login {
     display: none;
   }
@@ -435,50 +459,9 @@ body {
   }
 }
 
-
 /* NUCLEAR OPTION - Add this at the very end of your CSS file */
 @media (max-width: 850px) {
   .auth-wrapper-Login .auth-page-Login .auth-right-Login .auth-card-Login .form-group-Login label {
     color: white !important;
   }
-}
-
-@media (max-width: 850px) {
-    /* ... existing mobile styles ... */
-
-    /* FIX: Ensure labels are white in mobile view (Kept from previous) */
-    .form-group-Login label {
-      color: white !important;
-    }
-
-    /* Input fields: Apply the dark, high-contrast style from the image */
-    .input-field-Login { 
-        /* The dark, semi-transparent look from the image */
-        background-color: rgba(0, 0, 0, 0.2) !important; 
-        color: white !important; 
-        border: 1px solid rgba(255, 255, 255, 0.5) !important; /* Light border */
-        box-shadow: none !important; /* Remove any previous shadow */
-    }
-
-    /* Placeholder text styling (to make it visible on the dark background) */
-    .input-field-Login::placeholder {
-        color: rgba(255, 255, 255, 0.7) !important; /* Lighter placeholder text */
-    }
-    
-    .input-field-Login:focus {
-        /* Focus state: Make the border fully white */
-        border-color: white !important; 
-    }
-
-    /* Update for the password input specifically (within wrapper) */
-    .password-wrapper-Login .input-field-Login { 
-        padding-right: 4rem; 
-    }
-    
-    /* Show/Hide Password Button (Ensure it's visible on the dark background) */
-    .show-password-btn-Login { 
-        color: white !important; 
-    }
-
-    /* ... rest of existing mobile styles ... */
 }
