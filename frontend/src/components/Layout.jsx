@@ -65,10 +65,10 @@ const Layout = () => {
           'Registered': 'Registered',
           'Pending': 'Registered',
           'Approved': 'Active',
-          'Rejected': 'Terminated'
+          'Terminated': 'Terminated'
         };
-
-        const mappedStatus = statusMapping[data.profile.application_status] || 'Registered';
+        
+        const mappedStatus = statusMapping[data.profile.status] || 'Registered';
         setTenantStatus(mappedStatus);
         setUserRole(data.profile.role?.toLowerCase() || "tenant");
 
@@ -108,7 +108,7 @@ const Layout = () => {
       const storedUser = JSON.parse(storedUserRaw);
       const userId = storedUser.userid;
 
-      console.log("Fetching notifications for user:", userId);
+      
       
       const response = await fetch(`http://127.0.0.1:5000/api/notifications/${userId}`);
       
@@ -117,10 +117,10 @@ const Layout = () => {
       }
       
       const data = await response.json();
-      console.log("Notifications API response:", data);
+    
 
       if (data.success) {
-        console.log("Raw notifications data:", data.notifications);
+       
         setNotifications(data.notifications || []);
         
         // Calculate unread count
@@ -131,9 +131,7 @@ const Layout = () => {
         const groupNotifications = data.notifications.filter(notif => notif.isgroupnotification);
         const individualNotifications = data.notifications.filter(notif => !notif.isgroupnotification);
         
-        console.log(`Group notifications: ${groupNotifications.length}`);
-        console.log(`Individual notifications: ${individualNotifications.length}`);
-        console.log("All notifications:", data.notifications);
+        
         
       } else {
         console.error("Failed to fetch notifications:", data.message);
@@ -177,7 +175,7 @@ const Layout = () => {
     // Mark as read
     markNotificationAsRead(notification.notificationid);
 
-    console.log("Viewing notification:", notification);
+    
     navigateBasedOnNotification(notification);
   };
 
@@ -193,7 +191,7 @@ const Layout = () => {
     }
 
     try {
-      console.log("Deleting notification:", notification.notificationid);
+      
 
       const response = await fetch(`http://127.0.0.1:5000/api/notifications/${notification.notificationid}`, {
         method: 'DELETE',
@@ -202,7 +200,7 @@ const Layout = () => {
       const data = await response.json();
 
       if (data.success) {
-        console.log("Successfully deleted notification");
+       
         // Remove from local state
         setNotifications(prev => prev.filter(notif => notif.notificationid !== notification.notificationid));
         // Update unread count
@@ -254,7 +252,7 @@ const Layout = () => {
     // Mark as read
     markNotificationAsRead(notification.notificationid);
 
-    console.log("Card clicked - notification:", notification);
+    
     navigateBasedOnNotification(notification);
   };
 
@@ -263,7 +261,7 @@ const Layout = () => {
     const title = notification.title?.toLowerCase() || '';
     const message = notification.message?.toLowerCase() || '';
     
-    console.log("Navigation analysis - Title:", title, "Message:", message);
+   
 
     if (title.includes('bill') || title.includes('payment') || title.includes('invoice') || 
         message.includes('bill') || message.includes('payment') || message.includes('invoice')) {

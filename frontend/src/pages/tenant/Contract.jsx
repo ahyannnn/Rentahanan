@@ -16,7 +16,8 @@ import {
   Save,
   X,
   Download,
-  Loader
+  Loader,
+  AlertTriangle
 } from "lucide-react";
 import "../../styles/tenant/Contract.css";
 
@@ -26,7 +27,10 @@ const Contract = () => {
   const [loading, setLoading] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showTerminateModal, setShowTerminateModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [terminationDate, setTerminationDate] = useState('');
   const sigCanvas = useRef();
 
   // ✅ Get tenantid from both possible locations
@@ -85,6 +89,75 @@ const Contract = () => {
     
     fetchContract();
   }, [tenantId]);
+
+  // Calculate min and max dates for termination
+  const today = new Date();
+  const minDate = new Date(today);
+  minDate.setDate(today.getDate() + 14); // 2 weeks from now
+
+  const maxDate = new Date(today);
+  maxDate.setDate(today.getDate() + 30); // 30 days from now
+
+  const minDateString = minDate.toISOString().split('T')[0];
+  const maxDateString = maxDate.toISOString().split('T')[0];
+
+  // Function to open terminate modal
+  const openTerminateModal = () => {
+    // Calculate default termination date (2 weeks from now)
+    const defaultDate = new Date();
+    defaultDate.setDate(defaultDate.getDate() + 30);
+    const formattedDate = defaultDate.toISOString().split('T')[0];
+    
+    setTerminationDate(formattedDate);
+    setShowTerminateModal(true);
+  };
+
+  // Function to show confirmation modal
+  const showConfirmation = () => {
+    if (!terminationDate) {
+      showMessage("❌ Please select a termination date first.", true);
+      return;
+    }
+    setShowConfirmModal(true);
+  };
+
+  // Function to handle termination
+  const handleTerminateContract = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/contracts/terminate-tenant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contractid: contract.contractid,
+          tenantid: tenantId,
+          termination_date: terminationDate,
+          terminated_by: "Tenant"
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) throw new Error(result.message || "Failed to terminate contract");
+
+      // Refresh data to show updated status
+      const updatedResponse = await axios.get(`http://localhost:5000/api/contracts/tenant/${tenantId}`);
+      const updatedData = updatedResponse.data;
+      
+      if (Array.isArray(updatedData) && updatedData.length > 0) {
+        setContract(updatedData[0]);
+      }
+
+      // Show success message
+      showMessage("✅ Tenancy termination requested successfully! The landlord has been notified.");
+      setShowTerminateModal(false);
+      setShowConfirmModal(false);
+      
+    } catch (error) {
+      console.error("Error terminating contract:", error);
+      showMessage("❌ Failed to terminate tenancy. Please try again.", true);
+      setShowConfirmModal(false);
+    }
+  };
 
   const handleSignClick = () => setIsSigning(true);
   
@@ -151,7 +224,8 @@ const Contract = () => {
       "pending": <Clock className="status-icon pending" />,
       "rejected": <XCircle className="status-icon rejected" />,
       "active": <PlayCircle className="status-icon active" />,
-      "expired": <XCircle className="status-icon expired" />
+      "expired": <XCircle className="status-icon expired" />,
+      "terminated": <XCircle className="status-icon terminated" />
     };
     return icons[status?.toLowerCase()] || <FileText className="status-icon default" />;
   };
@@ -213,6 +287,7 @@ const Contract = () => {
     );
   }
 
+  const isActiveContract = contract.status === 'Active';
   const contractURL = contract.signed_contract
     ? `http://localhost:5000/uploads/signed_contracts/${contract.signed_contract}`
     : `http://localhost:5000/uploads/contracts/${contract.generated_contract}`;
@@ -289,13 +364,25 @@ const Contract = () => {
                 <p className="file-size-Contract">PDF Document</p>
               </div>
             </div>
-            <button 
-              className="open-btn-Contract" 
-              onClick={() => window.open(contractURL, "_blank")}
-            >
-              <Eye className="btn-icon" size={18} />
-              View Contract
-            </button>
+            <div className="preview-actions-Contract">
+              <button 
+                className="open-btn-Contract" 
+                onClick={() => window.open(contractURL, "_blank")}
+              >
+                <Eye className="btn-icon" size={18} />
+                View Contract
+              </button>
+              {/* Only show End Tenancy button for Active contracts */}
+              {isActiveContract && (
+                <button
+                  className="terminate-btn-Contract"
+                  onClick={openTerminateModal}
+                >
+                  <X className="btn-icon" size={18} />
+                  End Tenancy
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -412,7 +499,132 @@ const Contract = () => {
         </div>
       </div>
 
-      {/* ✅ SUCCESS MODAL (Like Owner Contract) */}
+      {/* Termination Modal */}
+      {showTerminateModal && contract && (
+        <div className="modal-overlay-Contract" onClick={() => setShowTerminateModal(false)}>
+          <div className="modal-content-Contract terminate" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header-Contract">
+              <h3 className="modal-title-Contract">End Tenancy</h3>
+              <button className="modal-close-btn-Contract" onClick={() => setShowTerminateModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="modal-body-Contract">
+              <div className="terminate-warning-Contract">
+                <div className="warning-icon-Contract">
+                  <AlertTriangle size={24} />
+                </div>
+                <div className="warning-content-Contract">
+                  <h4>You are about to request tenancy termination</h4>
+                  <p>This request will be sent to the landlord for approval. The landlord will be notified of your request.</p>
+                </div>
+              </div>
+
+              <div className="terminate-details-Contract">
+                <div className="detail-row-Contract">
+                  <span className="detail-label-Contract">Unit:</span>
+                  <span className="detail-value-Contract">{contract.unit_name}</span>
+                </div>
+                <div className="detail-row-Contract">
+                  <span className="detail-label-Contract">Current Rent:</span>
+                  <span className="detail-value-Contract">₱{parseFloat(contract.unit_price || 0).toLocaleString()}</span>
+                </div>
+                <div className="detail-row-Contract">
+                  <span className="detail-label-Contract">Current Status:</span>
+                  <span className="detail-value-Contract">{contract.status}</span>
+                </div>
+              </div>
+
+              <div className="form-group-Contract">
+                <label className="form-label-Contract">
+                  Preferred Move-out Date *
+                  <span className="date-note-Contract">(Must be between 2 weeks and 30 days from today)</span>
+                </label>
+                <input
+                  type="date"
+                  value={terminationDate}
+                  onChange={(e) => setTerminationDate(e.target.value)}
+                  className="form-input-Contract"
+                  min={minDateString}
+                  max={maxDateString}
+                />
+                <div className="date-info-Contract">
+                  <Calendar size={14} />
+                  <span>You plan to move out on: {new Date(terminationDate).toLocaleDateString()}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-footer-Contract">
+              <button 
+                className="cancel-btn-Contract" 
+                onClick={() => setShowTerminateModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="proceed-btn-Contract"
+                onClick={showConfirmation}
+                disabled={!terminationDate}
+              >
+                <X size={16} />
+                Proceed to Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && contract && (
+        <div className="modal-overlay-Contract" onClick={() => setShowConfirmModal(false)}>
+          <div className="modal-content-Contract confirm" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header-Contract">
+              <h3 className="modal-title-Contract">Confirm Termination Request</h3>
+              <button className="modal-close-btn-Contract" onClick={() => setShowConfirmModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="modal-body-Contract">
+              <div className="confirm-warning-Contract">
+                <div className="confirm-icon-Contract">
+                  <AlertTriangle size={48} />
+                </div>
+                <div className="confirm-content-Contract">
+                  <h4>Are you sure you want to request tenancy termination?</h4>
+                  <p>This action will:</p>
+                  <ul className="confirm-list-Contract">
+                    <li>Send a termination request for <strong>{contract.unit_name}</strong></li>
+                    <li>Notify the landlord of your move-out date: <strong>{new Date(terminationDate).toLocaleDateString()}</strong></li>
+                    <li>Your tenancy will remain active until the landlord approves the termination</li>
+                    <li><strong>This request cannot be undone</strong></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-footer-Contract">
+              <button 
+                className="cancel-btn-Contract" 
+                onClick={() => setShowConfirmModal(false)}
+              >
+                No, Go Back
+              </button>
+              <button 
+                className="terminate-final-btn-Contract"
+                onClick={handleTerminateContract}
+              >
+                <X size={16} />
+                Yes, Request Termination
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ SUCCESS MODAL */}
       {showSuccessModal && (
         <div className="modal-overlay-Contract" onClick={() => setShowSuccessModal(false)}>
           <div className="modal-content-Contract success" onClick={(e) => e.stopPropagation()}>
@@ -433,7 +645,7 @@ const Contract = () => {
                 <span className="success-detail-value-Contract">₱{contract.unit_price?.toLocaleString()}</span>
               </div>
               <div className="success-detail-item-Contract">
-                <span className="success-detail-label-Contract">Signed On:</span>
+                <span className="success-detail-label-Contract">Requested On:</span>
                 <span className="success-detail-value-Contract">{new Date().toLocaleDateString()}</span>
               </div>
             </div>
@@ -445,7 +657,7 @@ const Contract = () => {
                 onClick={() => setShowSuccessModal(false)}
               >
                 <Eye className="btn-icon" size={18} />
-                View Signed Contract
+                View Contract
               </button>
             </div>
           </div>
