@@ -119,6 +119,7 @@ def get_user_profile(user_id):
             db.session.query(
                 User,
                 Tenant.tenantid,
+                Tenant.status,  # ✅ ADDED: Include tenant status
                 Application.status.label("application_status")
             )
             .outerjoin(Tenant, Tenant.userid == User.userid)
@@ -130,12 +131,13 @@ def get_user_profile(user_id):
         if not user_data:
             return jsonify({"success": False, "message": "User not found"}), 404
 
-        user, tenantid, application_status = user_data
-
+        # ✅ UPDATED: Unpack all four values including tenant status
+        user, tenantid, tenant_status, application_status = user_data
 
         profile = {
             "userid": user.userid,
             "tenantid": tenantid,  # ✅ Include tenantid
+            "status": tenant_status or "Pending",  # ✅ ADDED: Include tenant status with fallback
             "firstname": user.firstname,
             "middlename": user.middlename,
             "lastname": user.lastname,

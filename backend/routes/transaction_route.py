@@ -99,20 +99,20 @@ def issue_receipt(billid):
             fontWeight='bold'
         )
 
-        # Company Header
+        # Company Header - FIXED: Use proper formatting without <b> tags
         company_header = [
-            Paragraph("<b>RENTAL MANAGEMENT SYSTEM</b>", title_style),
+            Paragraph("RENTAL MANAGEMENT SYSTEM", title_style),
             Paragraph("Official Payment Receipt", styles['Heading2']),
             Spacer(1, 20)
         ]
         story.extend(company_header)
 
-        # Receipt Details in a table format
+        # Receipt Details in a table format - FIXED: Remove HTML tags and use proper formatting
         receipt_data = [
             ['RECEIPT INFORMATION', ''],
-            ['Receipt Number:', f'<b>RMS-{bill.billid:06d}</b>'],
-            ['Issue Date:', f'<b>{datetime.now().strftime("%B %d, %Y")}</b>'],
-            ['Issue Time:', f'<b>{datetime.now().strftime("%I:%M %p")}</b>']
+            ['Receipt Number:', f'RMS-{bill.billid:06d}'],
+            ['Issue Date:', datetime.now().strftime("%B %d, %Y")],
+            ['Issue Time:', datetime.now().strftime("%I:%M %p")]
         ]
         
         receipt_table = Table(receipt_data, colWidths=[2.5*inch, 3.5*inch])
@@ -124,7 +124,8 @@ def issue_receipt(billid):
             ('FONTSIZE', (0, 0), (-1, 0), 12),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
             ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#F8F9FA')),
-            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTNAME', (0, 1), (0, -1), 'Helvetica-Bold'),  # Labels in bold
+            ('FONTNAME', (1, 1), (1, -1), 'Helvetica'),      # Values in normal
             ('FONTSIZE', (0, 1), (-1, -1), 10),
             ('TOPPADDING', (0, 1), (-1, -1), 8),
             ('BOTTOMPADDING', (0, 1), (-1, -1), 8),
@@ -135,18 +136,19 @@ def issue_receipt(billid):
         story.append(receipt_table)
         story.append(Spacer(1, 20))
 
-        # Tenant Information
+        # Tenant Information - FIXED: Remove HTML tags
         story.append(Paragraph("TENANT INFORMATION", header_style))
         tenant_data = [
-            ['Tenant ID:', f'<b>{tenant.tenantid}</b>'],
-            ['Full Name:', f'<b>{full_name}</b>'],
-            ['Bill ID:', f'<b>{bill.billid}</b>']
+            ['Tenant ID:', str(tenant.tenantid)],
+            ['Full Name:', full_name],
+            ['Bill ID:', str(bill.billid)]
         ]
         
         tenant_table = Table(tenant_data, colWidths=[1.5*inch, 4.5*inch])
         tenant_table.setStyle(TableStyle([
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),  # Labels in bold
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),       # Values in normal
             ('FONTSIZE', (0, 0), (-1, -1), 10),
             ('TOPPADDING', (0, 0), (-1, -1), 6),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
@@ -156,11 +158,15 @@ def issue_receipt(billid):
         story.append(tenant_table)
         story.append(Spacer(1, 20))
 
-        # Payment Details
+        # Payment Details - FIXED: Use proper peso sign and formatting
         story.append(Paragraph("PAYMENT DETAILS", header_style))
+        
+        # Format amount with proper peso sign - use PHP symbol instead of HTML entity
+        amount_formatted = f"PHP {float(bill.amount):,.2f}"
+        
         payment_data = [
             ['Description', 'Amount'],
-            [f'{bill.billtype} Payment', f'<b>₱{float(bill.amount):,.2f}</b>']
+            [f'{bill.billtype} Payment', amount_formatted]
         ]
         
         payment_table = Table(payment_data, colWidths=[4*inch, 2*inch])
@@ -183,9 +189,9 @@ def issue_receipt(billid):
         story.append(payment_table)
         story.append(Spacer(1, 30))
 
-        # Total Amount
+        # Total Amount - FIXED: Use proper peso sign
         total_data = [
-            ['TOTAL PAID:', f'<b>₱{float(bill.amount):,.2f}</b>']
+            ['TOTAL PAID:', amount_formatted]
         ]
         
         total_table = Table(total_data, colWidths=[4*inch, 2*inch])
@@ -202,18 +208,15 @@ def issue_receipt(billid):
         story.append(total_table)
         story.append(Spacer(1, 30))
 
-        # Footer
-        footer_text = """
-        <para alignment='center'>
-        <font color='#666666' size=8>
-        <b>Thank you for your payment!</b><br/>
-        This receipt serves as an official record of your transaction.<br/>
-        Please keep this document for your records.<br/>
-        For any inquiries, please contact our administration office.
-        </font>
-        </para>
-        """
-        story.append(Paragraph(footer_text, normal_style))
+        # Footer - FIXED: Remove HTML tags and use proper formatting
+        footer_text = """Thank you for your payment!
+        
+This receipt serves as an official record of your transaction.
+Please keep this document for your records.
+For any inquiries, please contact our administration office."""
+        
+        footer_paragraph = Paragraph(footer_text, normal_style)
+        story.append(footer_paragraph)
 
         # Build PDF
         doc.build(story)
@@ -232,24 +235,24 @@ def issue_receipt(billid):
         )
         db.session.add(transaction)
 
-        # ✅ Create notification for tenant
+        # ✅ Create notification for tenant - FIXED: Use PHP instead of peso sign
         tenant_notification = Notification(
             userid=tenant.userid,
             userrole='tenant',
             title='Payment Confirmed',
-            message=f'Your payment for {bill.billtype} (₱{float(bill.amount):,.2f}) has been confirmed. Receipt #RMS-{bill.billid:06d}',
+            message=f'Your payment for {bill.billtype} (PHP {float(bill.amount):,.2f}) has been confirmed. Receipt #RMS-{bill.billid:06d}',
             creationdate=datetime.utcnow()
         )
         db.session.add(tenant_notification)
 
-        # ✅ Create notification for ALL landlords
-        all_landlords = User.query.filter_by(role='landlord').all()
+        # ✅ Create notification for ALL landlords - FIXED: Use PHP instead of peso sign
+        all_landlords = User.query.filter_by(role='Owner').all()
         for landlord in all_landlords:
             landlord_notification = Notification(
                 userid=landlord.userid,
                 userrole='landlord',
                 title='Payment Received',
-                message=f'Tenant {full_name} has paid {bill.billtype} of ₱{float(bill.amount):,.2f}. Receipt #RMS-{bill.billid:06d}',
+                message=f'Tenant {full_name} has paid {bill.billtype} of PHP {float(bill.amount):,.2f}. Receipt #RMS-{bill.billid:06d}',
                 creationdate=datetime.utcnow()
             )
             db.session.add(landlord_notification)

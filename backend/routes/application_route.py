@@ -29,7 +29,7 @@ def apply_unit():
         return jsonify({"error": "User not found"}), 404
 
     # Get ALL landlords in the system
-    all_landlords = User.query.filter_by(role='landlord').all()
+    all_landlords = User.query.filter_by(role='Owner').all()
 
     # Base folder setup
     base_folder = current_app.config["UPLOAD_FOLDER"]
