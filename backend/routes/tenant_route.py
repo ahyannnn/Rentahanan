@@ -6,7 +6,7 @@ from models.contracts_model import Contract
 from models.units_model import House as Unit
 from models.applications_model import Application
 from models.bills_model import Bill
-from models.notifications_model import Notification  # Add this import
+from models.notifications_model import Notification
 from datetime import datetime
 
 tenant_bp = Blueprint("tenant_bp", __name__)
@@ -17,6 +17,7 @@ def get_active_tenants():
     tenants = (
         db.session.query(
             Application.applicationid,
+            User.userid,
             User.firstname,
             User.middlename,
             User.lastname,
@@ -46,6 +47,7 @@ def get_active_tenants():
     result = [
         {
             "applicationid": applicationid,
+            "userid":userid,
             "fullname": f"{firstname} {middlename + ' ' if middlename else ''}{lastname}",
             "email": email,
             "phone": phone,
@@ -58,7 +60,7 @@ def get_active_tenants():
             "brgy_clearance": brgy_clearance,
             "proof_of_income": proof_of_income,
         }
-        for applicationid, firstname, middlename, lastname, email, phone, dateofbirth, street, barangay, city, province, zipcode, image, unit_name, unit_price, valid_id, brgy_clearance, proof_of_income in tenants
+        for applicationid, userid, firstname, middlename, lastname, email, phone, dateofbirth, street, barangay, city, province, zipcode, image, unit_name, unit_price, valid_id, brgy_clearance, proof_of_income in tenants
     ]
 
     return jsonify(result)
@@ -153,25 +155,27 @@ def approve_applicant(application_id):
         contract.status = "Active"
         tenant.status = "Active"  # ✅ ADDED: Set tenant status to Active
 
-        # ✅ Create notification for tenant
+        # ✅ Create UNIFIED notification for tenant
         tenant_notification = Notification(
-            userid=tenant.userid,
-            userrole='tenant',
             title='Application Approved!',
             message='Congratulations! Your rental application has been approved. You can now move into your unit.',
-            creationdate=datetime.utcnow()
+            targetuserid=tenant.userid,  # Specific to this tenant
+            isgroupnotification=False,
+            recipientcount=1,
+            createdbyuserid=tenant.userid
         )
         db.session.add(tenant_notification)
 
-        # ✅ Create notification for ALL landlords
+        # ✅ Create UNIFIED notification for ALL landlords
         all_landlords = User.query.filter_by(role='Owner').all()
-        for landlord in all_landlords:
+        if all_landlords:
             landlord_notification = Notification(
-                userid=landlord.userid,
-                userrole='landlord',
                 title='Tenant Application Approved',
                 message=f'Tenant application #{application_id} has been approved and is now active.',
-                creationdate=datetime.utcnow()
+                targetuserrole='Owner',  # Target all landlords
+                isgroupnotification=True,
+                recipientcount=len(all_landlords),
+                createdbyuserid=tenant.userid
             )
             db.session.add(landlord_notification)
 
@@ -203,25 +207,27 @@ def reject_applicant(application_id):
         # ✅ Get tenant info for notification
         tenant = Tenant.query.filter_by(applicationid=application_id).first()
         if tenant:
-            # ✅ Create notification for tenant
+            # ✅ Create UNIFIED notification for tenant
             tenant_notification = Notification(
-                userid=tenant.userid,
-                userrole='tenant',
                 title='Application Status Update',
                 message='Your rental application has been reviewed. Unfortunately, it was not approved at this time.',
-                creationdate=datetime.utcnow()
+                targetuserid=tenant.userid,  # Specific to this tenant
+                isgroupnotification=False,
+                recipientcount=1,
+                createdbyuserid=tenant.userid
             )
             db.session.add(tenant_notification)
 
-            # ✅ Create notification for ALL landlords
+            # ✅ Create UNIFIED notification for ALL landlords
             all_landlords = User.query.filter_by(role='Owner').all()
-            for landlord in all_landlords:
+            if all_landlords:
                 landlord_notification = Notification(
-                    userid=landlord.userid,
-                    userrole='landlord',
                     title='Tenant Application Rejected',
                     message=f'Tenant application #{application_id} has been rejected.',
-                    creationdate=datetime.utcnow()
+                    targetuserrole='Owner',  # Target all landlords
+                    isgroupnotification=True,
+                    recipientcount=len(all_landlords),
+                    createdbyuserid=tenant.userid
                 )
                 db.session.add(landlord_notification)
 
@@ -234,4 +240,3 @@ def reject_applicant(application_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "message": f"Failed to reject application: {str(e)}"}), 500
-

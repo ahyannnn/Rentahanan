@@ -82,24 +82,26 @@ def apply_unit():
             db.session.flush()
             application_id = new_app.applicationid
 
-        # ✅ Create notification for ALL landlords
-        for landlord in all_landlords:
+        # ✅ Create UNIFIED notification for ALL landlords (single notification)
+        if all_landlords:
             landlord_notification = Notification(
-                userid=landlord.userid,
-                userrole='landlord',
                 title='New Rental Application',
                 message=f'{user.firstname} {user.lastname} has submitted a new rental application. Application ID: #{application_id}',
-                creationdate=datetime.utcnow()
+                targetuserrole='Owner',  # Target all landlords
+                isgroupnotification=True,
+                recipientcount=len(all_landlords),
+                createdbyuserid=user_id  # The tenant who created the application
             )
             db.session.add(landlord_notification)
 
-        # ✅ Create notification for tenant
+        # ✅ Create individual notification for tenant
         tenant_notification = Notification(
-            userid=user.userid,
-            userrole='tenant',
             title='Application Submitted',
             message=f'Your rental application has been submitted successfully. Application ID: #{application_id}',
-            creationdate=datetime.utcnow()
+            targetuserid=user_id,  # Specific to this tenant
+            isgroupnotification=False,
+            recipientcount=1,
+            createdbyuserid=user_id
         )
         db.session.add(tenant_notification)
 
@@ -114,9 +116,6 @@ def apply_unit():
                 if f.startswith(f"{user_id}_"):
                     os.remove(os.path.join(folder, f))
         return jsonify({"error": f"Failed to submit application: {str(e)}"}), 500
-
-
-
 
 # ✅ Fetch application details
 @application_bp.route("/application/<int:tenant_id>", methods=["GET"])
@@ -141,8 +140,6 @@ def get_application(tenant_id):
         "status": application.status,
         "unitid": application.unitid
     })
-
-from models.units_model import House as Unit  # ✅ add this import at the top
 
 @application_bp.route("/applicants/for-billing", methods=["GET"])
 def get_applicants_for_billing():

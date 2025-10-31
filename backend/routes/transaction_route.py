@@ -4,7 +4,7 @@ from models.bills_model import Bill
 from models.tenants_model import Tenant
 from models.transaction_model import Transaction
 from models.users_model import User
-from models.notifications_model import Notification  # Add this import
+from models.notifications_model import Notification
 from datetime import datetime
 from reportlab.pdfgen import canvas
 import os
@@ -235,25 +235,27 @@ For any inquiries, please contact our administration office."""
         )
         db.session.add(transaction)
 
-        # ✅ Create notification for tenant - FIXED: Use PHP instead of peso sign
+        # ✅ Create UNIFIED notification for tenant
         tenant_notification = Notification(
-            userid=tenant.userid,
-            userrole='tenant',
             title='Payment Confirmed',
             message=f'Your payment for {bill.billtype} (PHP {float(bill.amount):,.2f}) has been confirmed. Receipt #RMS-{bill.billid:06d}',
-            creationdate=datetime.utcnow()
+            targetuserid=tenant.userid,  # Specific to this tenant
+            isgroupnotification=False,
+            recipientcount=1,
+            createdbyuserid=tenant.userid
         )
         db.session.add(tenant_notification)
 
-        # ✅ Create notification for ALL landlords - FIXED: Use PHP instead of peso sign
+        # ✅ Create UNIFIED notification for ALL landlords
         all_landlords = User.query.filter_by(role='Owner').all()
-        for landlord in all_landlords:
+        if all_landlords:
             landlord_notification = Notification(
-                userid=landlord.userid,
-                userrole='landlord',
                 title='Payment Received',
                 message=f'Tenant {full_name} has paid {bill.billtype} of PHP {float(bill.amount):,.2f}. Receipt #RMS-{bill.billid:06d}',
-                creationdate=datetime.utcnow()
+                targetuserrole='Owner',  # Target all landlords
+                isgroupnotification=True,
+                recipientcount=len(all_landlords),
+                createdbyuserid=tenant.userid
             )
             db.session.add(landlord_notification)
 
