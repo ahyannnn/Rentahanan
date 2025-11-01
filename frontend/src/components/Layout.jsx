@@ -39,6 +39,9 @@ const Layout = () => {
   const [profileImageError, setProfileImageError] = useState(false);
   const [headerImageError, setHeaderImageError] = useState(false);
 
+
+
+
   // ✅ Enhanced Notifications State
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -49,7 +52,18 @@ const Layout = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
-
+  useEffect(() => {
+    // If current path is /tenant and user is Registered tenant, redirect to browse-units
+    if (location.pathname === '/tenant' &&
+      userRole === 'tenant' &&
+      tenantStatus === 'Registered') {
+      navigate('/tenant/browse-units', { replace: true });
+    }else if (location.pathname === '/tenant' &&
+      userRole === 'tenant' &&
+      tenantStatus === 'Terminated') {
+      navigate('/tenant/support', { replace: true });
+    }
+  }, [location.pathname, userRole, tenantStatus, navigate]);
   // Fetch user profile data from API
   const fetchUserProfile = async (userId) => {
     try {
@@ -64,10 +78,10 @@ const Layout = () => {
         const statusMapping = {
           'Registered': 'Registered',
           'Pending': 'Registered',
-          'Approved': 'Active',
+          'Active': 'Active',
           'Terminated': 'Terminated'
         };
-        
+
         const mappedStatus = statusMapping[data.profile.status] || 'Registered';
         setTenantStatus(mappedStatus);
         setUserRole(data.profile.role?.toLowerCase() || "tenant");
@@ -108,31 +122,31 @@ const Layout = () => {
       const storedUser = JSON.parse(storedUserRaw);
       const userId = storedUser.userid;
 
-      
-      
+
+
       const response = await fetch(`http://127.0.0.1:5000/api/notifications/${userId}`);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-    
+
 
       if (data.success) {
-       
+
         setNotifications(data.notifications || []);
-        
+
         // Calculate unread count
         const unread = data.notifications.filter(notif => !notif.is_read).length;
         setUnreadCount(unread);
-        
+
         // Log notification types for debugging
         const groupNotifications = data.notifications.filter(notif => notif.isgroupnotification);
         const individualNotifications = data.notifications.filter(notif => !notif.isgroupnotification);
-        
-        
-        
+
+
+
       } else {
         console.error("Failed to fetch notifications:", data.message);
         setNotifications([]);
@@ -175,7 +189,7 @@ const Layout = () => {
     // Mark as read
     markNotificationAsRead(notification.notificationid);
 
-    
+
     navigateBasedOnNotification(notification);
   };
 
@@ -191,7 +205,7 @@ const Layout = () => {
     }
 
     try {
-      
+
 
       const response = await fetch(`http://127.0.0.1:5000/api/notifications/${notification.notificationid}`, {
         method: 'DELETE',
@@ -200,7 +214,7 @@ const Layout = () => {
       const data = await response.json();
 
       if (data.success) {
-       
+
         // Remove from local state
         setNotifications(prev => prev.filter(notif => notif.notificationid !== notification.notificationid));
         // Update unread count
@@ -252,7 +266,7 @@ const Layout = () => {
     // Mark as read
     markNotificationAsRead(notification.notificationid);
 
-    
+
     navigateBasedOnNotification(notification);
   };
 
@@ -260,23 +274,23 @@ const Layout = () => {
   const navigateBasedOnNotification = (notification) => {
     const title = notification.title?.toLowerCase() || '';
     const message = notification.message?.toLowerCase() || '';
-    
-   
 
-    if (title.includes('bill') || title.includes('payment') || title.includes('invoice') || 
-        message.includes('bill') || message.includes('payment') || message.includes('invoice')) {
+
+
+    if (title.includes('bill') || title.includes('payment') || title.includes('invoice') ||
+      message.includes('bill') || message.includes('payment') || message.includes('invoice')) {
       navigate(userRole === 'owner' ? '/owner/billing' : '/tenant/bills');
-    } else if (title.includes('concern') || title.includes('support') || 
-             message.includes('concern') || message.includes('support')) {
+    } else if (title.includes('concern') || title.includes('support') ||
+      message.includes('concern') || message.includes('support')) {
       navigate(userRole === 'owner' ? '/owner/concern' : '/tenant/support');
-    } else if (title.includes('contract') || title.includes('agreement') || 
-             message.includes('contract') || message.includes('agreement')) {
+    } else if (title.includes('contract') || title.includes('agreement') ||
+      message.includes('contract') || message.includes('agreement')) {
       navigate(userRole === 'owner' ? '/owner/contract' : '/tenant/contract');
-    } else if (title.includes('application') || title.includes('apply') || 
-             message.includes('application') || message.includes('apply')) {
+    } else if (title.includes('application') || title.includes('apply') ||
+      message.includes('application') || message.includes('apply')) {
       navigate(userRole === 'owner' ? '/owner/tenants' : '/tenant/browse-units');
-    } else if (title.includes('transaction') || title.includes('receipt') || 
-             message.includes('transaction') || message.includes('receipt')) {
+    } else if (title.includes('transaction') || title.includes('receipt') ||
+      message.includes('transaction') || message.includes('receipt')) {
       navigate(userRole === 'owner' ? '/owner/transactions' : '/tenant/payment');
     } else {
       navigate(userRole === 'owner' ? '/owner/notification' : '/tenant/notification');
@@ -287,12 +301,12 @@ const Layout = () => {
   const canDeleteNotification = (notification) => {
     // Owners can delete any notification
     if (userRole === 'owner') return true;
-    
+
     // Tenants can only delete individual notifications (not group notifications)
     if (userRole === 'tenant') {
       return !notification.isgroupnotification;
     }
-    
+
     return false;
   };
 
@@ -467,7 +481,7 @@ const Layout = () => {
     const dbDate = new Date(dateString);
     const now = new Date();
     const nowUtc = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
-    
+
     const diffInMs = nowUtc - dbDate;
     const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
@@ -769,12 +783,12 @@ const Layout = () => {
                           <div className="notif-content-Layout">
                             <h5>{notif.title}</h5>
                             <p>{notif.message}</p>
-                            
+
                             {/* ✅ ADDED: Show notification target info */}
                             <div className="notif-target-info-Layout">
                               {getNotificationTargetInfo(notif)}
                             </div>
-                            
+
                             <span className="notif-time-Layout">
                               {formatNotificationTime(notif.creationdate)}
                             </span>
@@ -799,7 +813,7 @@ const Layout = () => {
                                   <Eye size={14} />
                                   View
                                 </button>
-                                
+
                                 {/* ✅ UPDATED: Conditionally show delete button */}
                                 {canDeleteNotification(notif) && (
                                   <button

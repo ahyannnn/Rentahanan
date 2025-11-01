@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Search, Home, DollarSign, Users, CheckCircle, X, Upload, FileText, User, Mail, Phone } from "lucide-react";
 import "../../styles/tenant/BrowseUnits.css";
 
+
 const BrowseUnits = () => {
   const [units, setUnits] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,7 +34,8 @@ const BrowseUnits = () => {
         const res = await fetch(`http://localhost:5000/api/application/${tenantId}`);
         if (res.ok) {
           const data = await res.json();
-          setHasApplied(!!data.unit_id);
+          const shouldSetApplied = !!data.unitid;
+          setHasApplied(shouldSetApplied);
           setApplicationStatus(data);
         } else if (res.status === 404) {
           setHasApplied(false);
@@ -223,7 +225,7 @@ const BrowseUnits = () => {
                       ₱{unit.price?.toLocaleString() || '0'}/month
                     </div>
                   </div>
-                  
+
                   <p className="unit-description-Browse">{unit.description}</p>
 
                   {unit.features && (
@@ -482,11 +484,11 @@ const BrowseUnits = () => {
                   ))}
                 </div>
               </div>
-              
+
               <h2 className="success-title-Browse">Application Submitted!</h2>
-              
+
               <p className="success-message-Browse">
-                Your application for <strong>{selectedUnit?.name}</strong> has been submitted successfully. 
+                Your application for <strong>{selectedUnit?.name}</strong> has been submitted successfully.
                 We will review your application and contact you within 2-3 business days.
               </p>
 
@@ -505,7 +507,7 @@ const BrowseUnits = () => {
                 </div>
               </div>
 
-              <button 
+              <button
                 className="success-close-btn-Browse"
                 onClick={handleCloseSuccessModal}
               >
