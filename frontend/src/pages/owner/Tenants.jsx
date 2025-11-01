@@ -24,12 +24,20 @@ import {
 
 const Tenants = () => {
   const [activeTab, setActiveTab] = useState("active");
-  const [applicantFilter, setApplicantFilter] = useState("all"); // New state for applicant filtering
+  const [applicantFilter, setApplicantFilter] = useState("all");
   const [tenants, setTenants] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedDocument, setSelectedDocument] = useState(null);
+  
+  // Modal states
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showRejectSuccessModal, setShowRejectSuccessModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  
   const navigate = useNavigate();
 
   // Fetch active tenants
@@ -93,11 +101,88 @@ const Tenants = () => {
   // Function to handle image error and fallback to initials
   const handleImageError = (e, user) => {
     e.target.style.display = 'none';
-    // Show the initials fallback
     const fallbackElement = e.target.nextSibling;
     if (fallbackElement) {
       fallbackElement.style.display = 'flex';
     }
+  };
+
+  // Approve functions
+  const handleOpenApproveModal = () => {
+    setShowApproveModal(true);
+  };
+
+  const handleApproveConfirm = async () => {
+    if (!selectedUser) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/tenants/approve/${selectedUser.applicationid}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.ok) {
+        setShowApproveModal(false);
+        setShowSuccessModal(true);
+        setApplicants((prev) =>
+          prev.filter((a) => a.applicationid !== selectedUser.applicationid)
+        );
+        closeModal();
+      } else {
+        console.error("Failed to approve application");
+      }
+    } catch (error) {
+      console.error("Error approving application:", error);
+    }
+  };
+
+  // Reject functions
+  const handleOpenRejectModal = () => {
+    setRejectReason("Incomplete requirements");
+    setShowRejectModal(true);
+  };
+
+  const handleRejectConfirm = async () => {
+    if (!selectedUser) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/tenants/reject/${selectedUser.applicationid}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reason: rejectReason }),
+        }
+      );
+
+      if (response.ok) {
+        setShowRejectModal(false);
+        setShowRejectSuccessModal(true);
+        setApplicants((prev) =>
+          prev.filter((a) => a.applicationid !== selectedUser.applicationid)
+        );
+        closeModal();
+      } else {
+        console.error("Failed to reject application");
+      }
+    } catch (error) {
+      console.error("Error rejecting application:", error);
+    }
+  };
+
+  const handleIssueContract = (applicationId) => {
+    navigate("/owner/contract", {
+      state: { openTab: "issue", selectedApplicantId: applicationId },
+    });
+  };
+
+  const handleAdvancePayment = (applicationId) => {
+    navigate("/owner/billing", {
+      state: { openApplicants: true, applicationId },
+    });
   };
 
   const renderCards = (data, type) =>
@@ -146,79 +231,6 @@ const Tenants = () => {
         </button>
       </div>
     ));
-
-  const handleApprove = async (applicationId) => {
-    if (window.confirm("Are you sure you want to approve this application?")) {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/api/tenants/approve/${applicationId}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        if (response.ok) {
-          alert("Application approved successfully!");
-          closeModal();
-          setApplicants((prev) =>
-            prev.filter((a) => a.applicationid !== applicationId)
-          );
-        } else {
-          alert("Failed to approve application.");
-        }
-      } catch (error) {
-        console.error("Error approving application:", error);
-        alert("An error occurred while approving the application.");
-      }
-    }
-  };
-
-  const handleReject = async (applicationId) => {
-    const reason = prompt(
-      "Enter reason for rejection (optional):",
-      "Incomplete requirements"
-    );
-    if (reason === null) return;
-
-    if (window.confirm("Are you sure you want to reject this application?")) {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/api/tenants/reject/${applicationId}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ reason }),
-          }
-        );
-
-        if (response.ok) {
-          alert("Application rejected successfully!");
-          closeModal();
-          setApplicants((prev) =>
-            prev.filter((a) => a.applicationid !== applicationId)
-          );
-        } else {
-          alert("Failed to reject application.");
-        }
-      } catch (error) {
-        console.error("Error rejecting application:", error);
-        alert("An error occurred while rejecting the application.");
-      }
-    }
-  };
-
-  const handleIssueContract = (applicationId) => {
-    navigate("/owner/contract", {
-      state: { openTab: "issue", selectedApplicantId: applicationId },
-    });
-  };
-
-  const handleAdvancePayment = (applicationId) => {
-    navigate("/owner/billing", {
-      state: { openApplicants: true, applicationId },
-    });
-  };
 
   // Count applicants by status for badges
   const applicantCounts = {
@@ -323,7 +335,7 @@ const Tenants = () => {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Application Detail Modal */}
       {selectedUser && (
         <div className="Owner-Tenant-modal-overlay" onClick={closeModal}>
           <div className="Owner-Tenant-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -458,7 +470,7 @@ const Tenants = () => {
                     <div className="Owner-Tenant-approval-buttons">
                       <button
                         className="Owner-Tenant-approve-btn"
-                        onClick={() => handleApprove(selectedUser.applicationid)}
+                        onClick={handleOpenApproveModal}
                         disabled={
                           selectedUser.bill_status !== "Paid" || !selectedUser.contract_signed
                         }
@@ -474,7 +486,7 @@ const Tenants = () => {
                       </button>
                       <button
                         className="Owner-Tenant-reject-btn"
-                        onClick={() => handleReject(selectedUser.applicationid)}
+                        onClick={handleOpenRejectModal}
                       >
                         <Ban size={16} /> Reject Application
                       </button>
@@ -483,6 +495,174 @@ const Tenants = () => {
                 </>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Approve Confirmation Modal */}
+      {showApproveModal && (
+        <div className="modal-overlay-transactions" onClick={() => setShowApproveModal(false)}>
+          <div className="modal-content-transactions" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn-transactions" onClick={() => setShowApproveModal(false)}>
+              <X size={24} />
+            </button>
+            
+            <div className="modal-icon-transactions modal-icon-warning">
+              <CheckCircle size={48} />
+            </div>
+            
+            <h2 className="modal-title-transactions">Approve Application</h2>
+            
+            <p className="modal-message-transactions">
+              Are you sure you want to approve <strong>{selectedUser?.fullname}</strong>'s application?
+              This will make them an active tenant.
+            </p>
+            
+            <div className="modal-bill-details-transactions">
+              <div className="bill-detail-item">
+                <span>Applicant:</span>
+                <strong>{selectedUser?.fullname}</strong>
+              </div>
+              <div className="bill-detail-item">
+                <span>Unit:</span>
+                <span>{selectedUser?.unit_name || "N/A"}</span>
+              </div>
+            </div>
+            
+            <div className="modal-actions-transactions">
+              <button 
+                className="modal-btn-transactions modal-btn-cancel"
+                onClick={() => setShowApproveModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-btn-transactions modal-btn-confirm"
+                onClick={handleApproveConfirm}
+              >
+                Yes, Approve Application
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Confirmation Modal */}
+      {showRejectModal && (
+        <div className="modal-overlay-transactions" onClick={() => setShowRejectModal(false)}>
+          <div className="modal-content-transactions" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn-transactions" onClick={() => setShowRejectModal(false)}>
+              <X size={24} />
+            </button>
+            
+            <div className="modal-icon-transactions modal-icon-danger">
+              <Ban size={48} />
+            </div>
+            
+            <h2 className="modal-title-transactions">Reject Application</h2>
+            
+            <p className="modal-message-transactions">
+              Are you sure you want to reject <strong>{selectedUser?.fullname}</strong>'s application?
+            </p>
+            
+            <div className="modal-bill-details-transactions">
+              <div className="bill-detail-item">
+                <span>Reason for Rejection:</span>
+                <input
+                  type="text"
+                  className="modal-reason-input"
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  placeholder="Enter reason for rejection..."
+                />
+              </div>
+            </div>
+            
+            <div className="modal-actions-transactions">
+              <button 
+                className="modal-btn-transactions modal-btn-cancel"
+                onClick={() => setShowRejectModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-btn-transactions modal-btn-reject"
+                onClick={handleRejectConfirm}
+                disabled={!rejectReason.trim()}
+              >
+                Yes, Reject Application
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="modal-overlay-transactions success-modal-overlay-transactions">
+          <div className="modal-content-transactions success-modal-transactions">
+            <div className="modal-icon-transactions modal-icon-success">
+              <CheckCircle size={64} />
+            </div>
+            
+            <h2 className="modal-title-transactions">Application Approved!</h2>
+            
+            <p className="modal-message-transactions">
+              <strong>{selectedUser?.fullname}</strong> has been successfully approved and is now an active tenant.
+            </p>
+            
+            <div className="modal-bill-details-transactions">
+              <div className="bill-detail-item">
+                <span>Tenant:</span>
+                <strong>{selectedUser?.fullname}</strong>
+              </div>
+              <div className="bill-detail-item">
+                <span>Unit:</span>
+                <span>{selectedUser?.unit_name || "N/A"}</span>
+              </div>
+            </div>
+            
+            <button 
+              className="modal-btn-transactions modal-btn-success"
+              onClick={() => setShowSuccessModal(false)}
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Success Modal */}
+      {showRejectSuccessModal && (
+        <div className="modal-overlay-transactions success-modal-overlay-transactions">
+          <div className="modal-content-transactions success-modal-transactions">
+            <div className="modal-icon-transactions modal-icon-danger">
+              <Ban size={64} />
+            </div>
+            
+            <h2 className="modal-title-transactions">Application Rejected!</h2>
+            
+            <p className="modal-message-transactions">
+              <strong>{selectedUser?.fullname}</strong>'s application has been rejected.
+            </p>
+            
+            <div className="modal-bill-details-transactions">
+              <div className="bill-detail-item">
+                <span>Applicant:</span>
+                <strong>{selectedUser?.fullname}</strong>
+              </div>
+              <div className="bill-detail-item">
+                <span>Reason:</span>
+                <span>{rejectReason}</span>
+              </div>
+            </div>
+            
+            <button 
+              className="modal-btn-transactions modal-btn-success"
+              onClick={() => setShowRejectSuccessModal(false)}
+            >
+              Continue
+            </button>
           </div>
         </div>
       )}

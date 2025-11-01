@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Home, Plus, X, Users, Calendar, Edit } from "lucide-react";
+import { Home, Plus, X, Users, Calendar, Edit, CheckCircle, AlertCircle, AlertTriangle } from "lucide-react";
 import "../../styles/owners/Units.css";
 
 function Units() {
@@ -7,6 +7,14 @@ function Units() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: "",
+    message: "",
+    type: "success" // success, error, warning
+  });
   const [units, setUnits] = useState([]);
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -24,6 +32,25 @@ function Units() {
     (typeof process !== "undefined" && process.env?.REACT_APP_API_URL) ||
     "http://localhost:5000";
 
+  // ✅ Show modal function
+  const showModal = (title, message, type = "success") => {
+    setModalConfig({ title, message, type });
+    if (type === "success") {
+      setShowSuccessModal(true);
+    } else if (type === "error") {
+      setShowErrorModal(true);
+    } else if (type === "warning") {
+      setShowConfirmModal(true);
+    }
+  };
+
+  // ✅ Close all modals
+  const closeAllModals = () => {
+    setShowSuccessModal(false);
+    setShowErrorModal(false);
+    setShowConfirmModal(false);
+  };
+
   // ✅ Fetch all units
   useEffect(() => {
     const fetchUnits = async () => {
@@ -34,6 +61,7 @@ function Units() {
         setUnits(data);
       } catch (err) {
         console.error("Error fetching units:", err);
+        showModal("Error", "Failed to load units. Please try again.", "error");
       } finally {
         setLoading(false);
       }
@@ -60,7 +88,7 @@ function Units() {
   // ✅ Add new unit
   const handleAddUnit = async () => {
     if (!formData.name || !formData.price || !formData.image) {
-      alert("Please fill in all required fields and select an image.");
+      showModal("Missing Information", "Please fill in all required fields and select an image.", "error");
       return;
     }
 
@@ -78,7 +106,7 @@ function Units() {
       });
 
       if (response.ok) {
-        alert("Unit added successfully!");
+        showModal("Success", "Unit added successfully!", "success");
         setShowAddModal(false);
         resetForm();
         // Refresh units
@@ -87,24 +115,24 @@ function Units() {
         );
         setUnits(updatedUnits);
       } else {
-        alert("Failed to add unit.");
+        showModal("Error", "Failed to add unit. Please try again.", "error");
       }
     } catch (err) {
       console.error("Error adding unit:", err);
-      alert("Error adding unit.");
+      showModal("Error", "An error occurred while adding the unit.", "error");
     }
   };
 
   // ✅ Edit unit
   const handleEditUnit = async () => {
     if (!formData.name || !formData.price) {
-      alert("Please fill in all required fields.");
+      showModal("Missing Information", "Please fill in all required fields.", "error");
       return;
     }
 
     // Check if selectedUnit and unitid exist
     if (!selectedUnit || !selectedUnit.id) {
-      alert("Error: Unit ID is missing. Please try again.");
+      showModal("Error", "Unit ID is missing. Please try again.", "error");
       return;
     }
 
@@ -120,15 +148,13 @@ function Units() {
     }
     
     try {
-      
-      
       const response = await fetch(`${API_URL}/api/houses/${selectedUnit.id}`, {
         method: "PUT",
         body: editFormData,
       });
 
       if (response.ok) {
-        alert("Unit updated successfully!");
+        showModal("Success", "Unit updated successfully!", "success");
         setShowEditModal(false);
         resetForm();
         // Refresh units
@@ -138,11 +164,11 @@ function Units() {
         setUnits(updatedUnits);
       } else {
         const errorData = await response.json();
-        alert(`Failed to update unit: ${errorData.error || "Unknown error"}`);
+        showModal("Error", `Failed to update unit: ${errorData.error || "Unknown error"}`, "error");
       }
     } catch (err) {
       console.error("Error updating unit:", err);
-      alert("Error updating unit.");
+      showModal("Error", "An error occurred while updating the unit.", "error");
     }
   };
 
@@ -161,7 +187,7 @@ function Units() {
   // ✅ Open edit modal with unit data
   const handleOpenEditModal = (unit) => {
     if (!unit.id) {
-      alert("Error: This unit cannot be edited because it's missing an ID.");
+      showModal("Error", "This unit cannot be edited because it's missing an ID.", "error");
       return;
     }
     
@@ -613,6 +639,75 @@ function Units() {
             <div className="Owner-Units-modal-footer">
               <button className="Owner-Units-close-detail-btn" onClick={handleCloseModal}>
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- Success Modal --- */}
+      {showSuccessModal && (
+        <div className="modal-overlay-transactions success-modal-overlay-transactions">
+          <div className="modal-content-transactions success-modal-transactions">
+            <button className="close-btn-transactions" onClick={closeAllModals}>
+              <X size={20} />
+            </button>
+            <div className="modal-icon-transactions">
+              <CheckCircle size={60} className="modal-icon-success" />
+            </div>
+            <h3 className="modal-title-transactions">{modalConfig.title}</h3>
+            <p className="modal-message-transactions">{modalConfig.message}</p>
+            <div className="modal-actions-transactions">
+              <button className="modal-btn-transactions modal-btn-success" onClick={closeAllModals}>
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- Error Modal --- */}
+      {showErrorModal && (
+        <div className="modal-overlay-transactions">
+          <div className="modal-content-transactions">
+            <button className="close-btn-transactions" onClick={closeAllModals}>
+              <X size={20} />
+            </button>
+            <div className="modal-icon-transactions">
+              <AlertCircle size={60} className="modal-icon-danger" />
+            </div>
+            <h3 className="modal-title-transactions">{modalConfig.title}</h3>
+            <p className="modal-message-transactions">{modalConfig.message}</p>
+            <div className="modal-actions-transactions">
+              <button className="modal-btn-transactions modal-btn-cancel" onClick={closeAllModals}>
+                Close
+              </button>
+              <button className="modal-btn-transactions modal-btn-confirm" onClick={closeAllModals}>
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- Warning/Confirm Modal --- */}
+      {showConfirmModal && (
+        <div className="modal-overlay-transactions">
+          <div className="modal-content-transactions">
+            <button className="close-btn-transactions" onClick={closeAllModals}>
+              <X size={20} />
+            </button>
+            <div className="modal-icon-transactions">
+              <AlertTriangle size={60} className="modal-icon-warning" />
+            </div>
+            <h3 className="modal-title-transactions">{modalConfig.title}</h3>
+            <p className="modal-message-transactions">{modalConfig.message}</p>
+            <div className="modal-actions-transactions">
+              <button className="modal-btn-transactions modal-btn-cancel" onClick={closeAllModals}>
+                Cancel
+              </button>
+              <button className="modal-btn-transactions modal-btn-confirm" onClick={closeAllModals}>
+                Confirm
               </button>
             </div>
           </div>

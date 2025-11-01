@@ -885,3 +885,253 @@
     font-size: 0.8rem;
   }
 }
+
+/* === MODAL STYLES FOR TENANTS === */
+.modal-overlay-transactions {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.modal-content-transactions {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  animation: fadeInScale-transactions 0.3s ease-out;
+  position: relative;
+}
+
+@keyframes fadeInScale-transactions {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.close-btn-transactions {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #f8fafc;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-btn-transactions:hover {
+  background: #0b3c91;
+  color: white;
+  transform: rotate(90deg);
+}
+
+.modal-icon-transactions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.modal-icon-warning {
+  color: #f59e0b;
+}
+
+.modal-icon-danger {
+  color: #dc2626;
+}
+
+.modal-icon-success {
+  color: #059669;
+}
+
+.modal-title-transactions {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.modal-message-transactions {
+  color: #64748b;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.modal-bill-details-transactions {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.bill-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.bill-detail-item:last-child {
+  border-bottom: none;
+}
+
+.bill-detail-item span:first-child {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.bill-detail-item strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.modal-reason-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.modal-reason-input:focus {
+  outline: none;
+  border-color: #0b3c91;
+  box-shadow: 0 0 0 3px rgba(11, 60, 145, 0.1);
+}
+
+.modal-actions-transactions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.modal-btn-transactions {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.modal-btn-cancel {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.modal-btn-cancel:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+.modal-btn-confirm {
+  background: #0b3c91;
+  color: white;
+}
+
+.modal-btn-confirm:hover {
+  background: #092e74;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(11, 60, 145, 0.3);
+}
+
+.modal-btn-reject {
+  background: #dc2626;
+  color: white;
+}
+
+.modal-btn-reject:hover:not(:disabled) {
+  background: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.modal-btn-reject:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.modal-btn-success {
+  background: #059669;
+  color: white;
+  width: 100%;
+  max-width: 200px;
+}
+
+.modal-btn-success:hover {
+  background: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+/* Success Modal Variants */
+.success-modal-overlay-transactions {
+  backdrop-filter: blur(12px);
+}
+
+.success-modal-transactions {
+  text-align: center;
+  padding: 50px 40px;
+}
+
+.success-modal-transactions .modal-icon-transactions {
+  margin-bottom: 24px;
+}
+
+.success-modal-transactions .modal-title-transactions {
+  margin-bottom: 16px;
+}
+
+.success-modal-transactions .modal-message-transactions {
+  margin-bottom: 24px;
+}
+
+/* Responsive Design for Modals */
+@media (max-width: 640px) {
+  .modal-content-transactions {
+    padding: 30px 24px;
+    margin: 10px;
+  }
+  
+  .modal-actions-transactions {
+    flex-direction: column;
+  }
+  
+  .modal-btn-transactions {
+    width: 100%;
+  }
+  
+  .success-modal-transactions {
+    padding: 40px 24px;
+  }
+}
