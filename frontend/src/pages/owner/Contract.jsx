@@ -1,7 +1,30 @@
 import React, { useState, useEffect, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { useLocation } from "react-router-dom";
-import { FileText, X, Download, User, Mail, Phone, Home, Calendar, DollarSign, Clock, CheckCircle, AlertTriangle, Check, Eye } from "lucide-react";
+import { 
+  FileText, 
+  X, 
+  Download, 
+  User, 
+  Mail, 
+  Phone, 
+  Home, 
+  Calendar, 
+  DollarSign, 
+  Clock, 
+  CheckCircle, 
+  AlertTriangle, 
+  Check, 
+  Eye,
+  TrendingUp,
+  Building,
+  Users,
+  AlertCircle,
+  Info,
+  ArrowRight,
+  FileCheck,
+  FileX
+} from "lucide-react";
 import "../../styles/owners/Contract.css";
 
 const OwnerContract = () => {
@@ -115,7 +138,7 @@ const OwnerContract = () => {
     const openTerminateModal = (contract) => {
         setSelectedContract(contract);
         
-        // Calculate default termination date (2 weeks from now)
+        // Calculate default termination date (30 days from now)
         const defaultDate = new Date();
         defaultDate.setDate(defaultDate.getDate() + 30);
         const formattedDate = defaultDate.toISOString().split('T')[0];
@@ -133,7 +156,7 @@ const OwnerContract = () => {
     // Function to show confirmation modal
     const showConfirmation = () => {
         if (!terminationDate) {
-            alert("❌ Please select a termination date first.");
+            alert("Please select a termination date first.");
             return;
         }
         setShowConfirmModal(true);
@@ -161,13 +184,12 @@ const OwnerContract = () => {
             await fetchData();
             
             // Show success message
-            alert("✅ Contract terminated successfully!");
             setShowTerminateModal(false);
             setShowConfirmModal(false);
             
         } catch (error) {
             console.error("Error terminating contract:", error);
-            alert("❌ Failed to terminate contract. Please try again.");
+            alert("Failed to terminate contract. Please try again.");
             setShowConfirmModal(false);
         }
     };
@@ -193,12 +215,11 @@ const OwnerContract = () => {
             await fetchData();
             
             // Show success message
-            alert("✅ Termination request approved successfully!");
             setShowApproveModal(false);
             
         } catch (error) {
             console.error("Error approving termination:", error);
-            alert("❌ Failed to approve termination request. Please try again.");
+            alert("Failed to approve termination request. Please try again.");
         }
     };
 
@@ -223,12 +244,11 @@ const OwnerContract = () => {
             await fetchData();
             
             // Show success message
-            alert("✅ Termination request rejected successfully!");
             setShowApproveModal(false);
             
         } catch (error) {
             console.error("Error rejecting termination:", error);
-            alert("❌ Failed to reject termination request. Please try again.");
+            alert("Failed to reject termination request. Please try again.");
         }
     };
 
@@ -301,19 +321,18 @@ const OwnerContract = () => {
             setShowAddModal(false);
             setShowSuccessModal(true);
 
-            // ✅ IMPORTANT: Remove the issued applicant from the applicants list
+            // Remove the issued applicant from the applicants list
             setApplicants(prevApplicants => 
                 prevApplicants.filter(app => app.tenantid !== formData.tenantid)
             );
 
         } catch (error) {
             console.error("Error issuing contract:", error);
-            alert("❌ Failed to issue contract. Please try again.");
+            alert("Failed to issue contract. Please try again.");
         }
     };
 
     const handleViewContract = () => {
-        // Use the correct PDF URL from successModalData
         if (successModalData?.pdfUrl) {
             window.open(successModalData.pdfUrl, "_blank");
         } else {
@@ -325,7 +344,6 @@ const OwnerContract = () => {
 
     const handleCloseSuccessModal = () => {
         setShowSuccessModal(false);
-        // Refresh data to get the updated contracts list
         fetchData();
     };
 
@@ -347,11 +365,11 @@ const OwnerContract = () => {
         window.open(contractUrl, "_blank");
     };
 
-    // Calculate statistics - UPDATED to use current state
+    // Calculate statistics
     const stats = {
         total: contracts.length,
         active: contracts.filter(c => c.status === 'Active').length,
-        pending: applicants.length, // This will now update in real-time
+        pending: applicants.length,
         terminationRequests: contracts.filter(c => c.status === 'Termination Requested').length
     };
 
@@ -364,7 +382,7 @@ const OwnerContract = () => {
                     <p className="Owner-Contract-subtitle">Manage tenant contracts and issue new agreements</p>
                 </div>
                 
-                {/* Statistics Cards - NOW UPDATES IN REAL-TIME */}
+                {/* Statistics Cards */}
                 <div className="Owner-Contract-stats">
                     <div className="Owner-Contract-stat-card">
                         <div className="Owner-Contract-stat-icon total">
@@ -377,7 +395,7 @@ const OwnerContract = () => {
                     </div>
                     <div className="Owner-Contract-stat-card">
                         <div className="Owner-Contract-stat-icon active">
-                            <User size={20} />
+                            <Users size={20} />
                         </div>
                         <div className="Owner-Contract-stat-info">
                             <span className="Owner-Contract-stat-number">{stats.active}</span>
@@ -405,7 +423,7 @@ const OwnerContract = () => {
                 </div>
             </div>
 
-            {/* Tabs - BADGES UPDATE IN REAL-TIME */}
+            {/* Tabs */}
             <div className="Owner-Contract-control-bar">
                 <div className="Owner-Contract-tab-group">
                     <button
@@ -515,25 +533,23 @@ const OwnerContract = () => {
                                                     View
                                                 </button>
                                                 
-                                                {/* Show End Tenancy button for Active contracts */}
                                                 {isActiveContract && (
                                                     <button
                                                         className="Owner-Contract-terminate-btn"
                                                         onClick={() => openTerminateModal(contract)}
                                                     >
-                                                        <X size={16} />
+                                                        <FileX size={16} />
                                                         End Tenancy
                                                     </button>
                                                 )}
                                                 
-                                                {/* Show Approve/Reject buttons for Termination Requested contracts */}
                                                 {isTerminationRequested && (
                                                     <div className="Owner-Contract-approval-actions">
                                                         <button
                                                             className="Owner-Contract-approve-btn"
                                                             onClick={() => openApproveModal(contract)}
                                                         >
-                                                            <Check size={16} />
+                                                            <FileCheck size={16} />
                                                             Review Request
                                                         </button>
                                                     </div>
@@ -548,7 +564,7 @@ const OwnerContract = () => {
                 </div>
             )}
 
-            {/* Issue Contracts Tab - NOW UPDATES IN REAL-TIME */}
+            {/* Issue Contracts Tab */}
             {activeTab === "issue" && (
                 <div className="Owner-Contract-content-card">
                     <div className="Owner-Contract-table-header">
@@ -677,7 +693,7 @@ const OwnerContract = () => {
                             {/* Contract Details Form */}
                             <div className="Owner-Contract-form-grid">
                                 <div className="Owner-Contract-form-group">
-                                    <label className="Owner-Contract-form-label">Start Date *</label>
+                                    <label className="Owner-Contract-form-label">Start Date</label>
                                     <input
                                         type="date"
                                         name="startdate"
@@ -688,7 +704,7 @@ const OwnerContract = () => {
                                 </div>
 
                                 <div className="Owner-Contract-form-group">
-                                    <label className="Owner-Contract-form-label">Monthly Rent (₱) *</label>
+                                    <label className="Owner-Contract-form-label">Monthly Rent (₱)</label>
                                     <input
                                         type="number"
                                         name="monthlyrent"
@@ -699,7 +715,7 @@ const OwnerContract = () => {
                                 </div>
 
                                 <div className="Owner-Contract-form-group">
-                                    <label className="Owner-Contract-form-label">Security Deposit (₱) *</label>
+                                    <label className="Owner-Contract-form-label">Security Deposit (₱)</label>
                                     <input
                                         type="number"
                                         name="deposit"
@@ -710,7 +726,7 @@ const OwnerContract = () => {
                                 </div>
 
                                 <div className="Owner-Contract-form-group">
-                                    <label className="Owner-Contract-form-label">Advance Payment (₱) *</label>
+                                    <label className="Owner-Contract-form-label">Advance Payment (₱)</label>
                                     <input
                                         type="number"
                                         name="advancepayment"
@@ -735,7 +751,7 @@ const OwnerContract = () => {
 
                             {/* Signature Section */}
                             <div className="Owner-Contract-signature-section">
-                                <label className="Owner-Contract-form-label">Owner Signature *</label>
+                                <label className="Owner-Contract-form-label">Owner Signature</label>
                                 <div className="Owner-Contract-signature-container">
                                     <SignatureCanvas
                                         ref={sigPadRef}
@@ -780,7 +796,7 @@ const OwnerContract = () => {
                         <div className="Owner-Contract-modal-body">
                             <div className="Owner-Contract-terminate-warning">
                                 <div className="Owner-Contract-warning-icon">
-                                    <X size={24} />
+                                    <AlertTriangle size={24} />
                                 </div>
                                 <div className="Owner-Contract-warning-content">
                                     <h4>You are about to end this tenancy</h4>
@@ -809,7 +825,7 @@ const OwnerContract = () => {
 
                             <div className="Owner-Contract-form-group">
                                 <label className="Owner-Contract-form-label">
-                                    Termination Date *
+                                    Termination Date
                                     <span className="Owner-Contract-date-note">(Must be between 2 weeks and 30 days from today)</span>
                                 </label>
                                 <input
@@ -839,7 +855,7 @@ const OwnerContract = () => {
                                 onClick={showConfirmation}
                                 disabled={!terminationDate}
                             >
-                                <X size={16} />
+                                <ArrowRight size={16} />
                                 Proceed to Confirm
                             </button>
                         </div>
@@ -861,7 +877,7 @@ const OwnerContract = () => {
                         <div className="Owner-Contract-modal-body">
                             <div className="Owner-Contract-confirm-warning">
                                 <div className="Owner-Contract-confirm-icon">
-                                    <AlertTriangle size={48} />
+                                    <AlertCircle size={48} />
                                 </div>
                                 <div className="Owner-Contract-confirm-content">
                                     <h4>Are you sure you want to terminate this contract?</h4>
@@ -888,7 +904,7 @@ const OwnerContract = () => {
                                 className="Owner-Contract-terminate-final-btn"
                                 onClick={handleTerminateContract}
                             >
-                                <X size={16} />
+                                <FileX size={16} />
                                 Yes, Terminate Contract
                             </button>
                         </div>
@@ -896,7 +912,7 @@ const OwnerContract = () => {
                 </div>
             )}
 
-            {/* ✅ SUCCESS MODAL */}
+            {/* Success Modal */}
             {showSuccessModal && successModalData && (
                 <div className="Owner-Contract-success-modal-overlay">
                     <div className="Owner-Contract-success-modal">
@@ -959,6 +975,13 @@ const OwnerContract = () => {
                                     <FileText size={16} />
                                     View Contract
                                 </button>
+                                <button 
+                                    className="Owner-Contract-success-close-btn"
+                                    onClick={handleCloseSuccessModal}
+                                >
+                                    <Check size={16} />
+                                    Continue
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -979,7 +1002,7 @@ const OwnerContract = () => {
                         <div className="Owner-Contract-modal-body">
                             <div className="Owner-Contract-approve-warning">
                                 <div className="Owner-Contract-warning-icon">
-                                    <AlertTriangle size={24} />
+                                    <Info size={24} />
                                 </div>
                                 <div className="Owner-Contract-warning-content">
                                     <h4>Tenant Termination Request</h4>
@@ -1033,9 +1056,6 @@ const OwnerContract = () => {
                     </div>
                 </div>
             )}
-
-            {/* All other existing modals remain the same */}
-            {/* ... */}
         </div>
     );
 };
