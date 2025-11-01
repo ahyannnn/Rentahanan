@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Search, Plus, X, FileText, Download, Eye, Calendar, DollarSign, User, Mail, Phone, Home, CheckCircle } from "lucide-react";
+import { Search, Plus, X, FileText, Download, Eye, Calendar, DollarSign, User, Mail, Phone, Home, CheckCircle, AlertCircle, AlertTriangle } from "lucide-react";
 import "../../styles/owners/Billing.css";
 
 function Billing() {
@@ -15,7 +15,14 @@ function Billing() {
     const [showViewModal, setShowViewModal] = useState(false);
     const [showTenantInvoiceModal, setShowTenantInvoiceModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [successModalData, setSuccessModalData] = useState(null);
+    const [modalConfig, setModalConfig] = useState({
+        title: "",
+        message: "",
+        type: "success" // success, error, confirm
+    });
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [selectedTenant, setSelectedTenant] = useState(null);
     const [tenants, setTenants] = useState([]);
@@ -53,6 +60,25 @@ function Billing() {
     // ✅ Helper function
     const getTodayDate = () => new Date().toISOString().split("T")[0];
 
+    // ✅ Show modal function
+    const showModal = (title, message, type = "success") => {
+        setModalConfig({ title, message, type });
+        if (type === "success") {
+            setShowSuccessModal(true);
+        } else if (type === "error") {
+            setShowErrorModal(true);
+        } else if (type === "confirm") {
+            setShowConfirmModal(true);
+        }
+    };
+
+    // ✅ Close all modals
+    const closeAllModals = () => {
+        setShowSuccessModal(false);
+        setShowErrorModal(false);
+        setShowConfirmModal(false);
+    };
+
     // Fetch tenants, applicants, tenant contracts, and issued applicant invoices
     useEffect(() => {
         const fetchData = async () => {
@@ -69,6 +95,7 @@ function Billing() {
                 setIssuedApplicantInvoices(await issuedInvoicesRes.json());
             } catch (error) {
                 console.error("Error fetching billing data:", error);
+                showModal("Error", "Failed to load billing data. Please try again.", "error");
             }
         };
         fetchData();
@@ -190,6 +217,8 @@ function Billing() {
         const errors = validateForm(formData, true);
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
+        if (!formData.tenantId || !formData.amount) {
+            showModal("Missing Information", "Please fill in all required fields.", "error");
             return;
         }
 
@@ -230,11 +259,11 @@ function Billing() {
                 setApplicants(await applicantsRes.json());
                 setIssuedApplicantInvoices(await issuedInvoicesRes.json());
             } else {
-                alert("Failed to create invoice.");
+                showModal("Error", "Failed to create invoice. Please try again.", "error");
             }
         } catch (error) {
             console.error("Error creating invoice:", error);
-            alert("An error occurred while creating the invoice.");
+            showModal("Error", "An error occurred while creating the invoice.", "error");
         }
     };
 
@@ -242,6 +271,8 @@ function Billing() {
         const errors = validateForm(tenantFormData, false);
         if (Object.keys(errors).length > 0) {
             setTenantFormErrors(errors);
+        if (!tenantFormData.tenantId || !tenantFormData.amount || !tenantFormData.billType) {
+            showModal("Missing Information", "Please fill in all required fields.", "error");
             return;
         }
 
@@ -278,11 +309,11 @@ function Billing() {
                 const tenantsRes = await fetch("http://localhost:5000/api/billing/bills");
                 setTenants(await tenantsRes.json());
             } else {
-                alert("Failed to create invoice.");
+                showModal("Error", "Failed to create invoice. Please try again.", "error");
             }
         } catch (error) {
             console.error("Error creating invoice:", error);
-            alert("An error occurred while creating the invoice.");
+            showModal("Error", "An error occurred while creating the invoice.", "error");
         }
     };
 
@@ -292,23 +323,31 @@ function Billing() {
     };
 
     const handleMarkAsPaid = async (invoiceId) => {
-        if (window.confirm("Are you sure you want to mark this invoice as paid?")) {
-            try {
-                const response = await fetch(`http://localhost:5000/api/billing/mark-paid/${invoiceId}`, {
-                    method: "PUT",
-                });
+        setSelectedInvoice(invoiceId);
+        showModal("Confirm Payment", "Are you sure you want to mark this invoice as paid?", "confirm");
+    };
 
-                if (response.ok) {
-                    alert("Invoice marked as paid successfully!");
-                    const tenantsRes = await fetch("http://localhost:5000/api/billing/bills");
-                    setTenants(await tenantsRes.json());
-                } else {
-                    alert("Failed to mark invoice as paid.");
-                }
-            } catch (error) {
-                console.error("Error marking invoice as paid:", error);
-                alert("An error occurred while marking the invoice as paid.");
+    const confirmMarkAsPaid = async () => {
+        if (!selectedInvoice) return;
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/billing/mark-paid/${selectedInvoice}`, {
+                method: "PUT",
+            });
+
+            if (response.ok) {
+                showModal("Success", "Invoice marked as paid successfully!", "success");
+                const tenantsRes = await fetch("http://localhost:5000/api/billing/bills");
+                setTenants(await tenantsRes.json());
+            } else {
+                showModal("Error", "Failed to mark invoice as paid.", "error");
             }
+        } catch (error) {
+            console.error("Error marking invoice as paid:", error);
+            showModal("Error", "An error occurred while marking the invoice as paid.", "error");
+        } finally {
+            setSelectedInvoice(null);
+            closeAllModals();
         }
     };
 
@@ -954,6 +993,54 @@ function Billing() {
                                 onClick={handleCloseSuccessModal}
                             >
                                 Continue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ✅ ERROR MODAL */}
+            {showErrorModal && (
+                <div className="modal-overlay-transactions">
+                    <div className="modal-content-transactions">
+                        <button className="close-btn-transactions" onClick={closeAllModals}>
+                            <X size={20} />
+                        </button>
+                        <div className="modal-icon-transactions">
+                            <AlertCircle size={60} className="modal-icon-danger" />
+                        </div>
+                        <h3 className="modal-title-transactions">{modalConfig.title}</h3>
+                        <p className="modal-message-transactions">{modalConfig.message}</p>
+                        <div className="modal-actions-transactions">
+                            <button className="modal-btn-transactions modal-btn-cancel" onClick={closeAllModals}>
+                                Close
+                            </button>
+                            <button className="modal-btn-transactions modal-btn-confirm" onClick={closeAllModals}>
+                                Try Again
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ✅ CONFIRM MODAL */}
+            {showConfirmModal && (
+                <div className="modal-overlay-transactions">
+                    <div className="modal-content-transactions">
+                        <button className="close-btn-transactions" onClick={closeAllModals}>
+                            <X size={20} />
+                        </button>
+                        <div className="modal-icon-transactions">
+                            <AlertTriangle size={60} className="modal-icon-warning" />
+                        </div>
+                        <h3 className="modal-title-transactions">{modalConfig.title}</h3>
+                        <p className="modal-message-transactions">{modalConfig.message}</p>
+                        <div className="modal-actions-transactions">
+                            <button className="modal-btn-transactions modal-btn-cancel" onClick={closeAllModals}>
+                                Cancel
+                            </button>
+                            <button className="modal-btn-transactions modal-btn-confirm" onClick={confirmMarkAsPaid}>
+                                Confirm
                             </button>
                         </div>
                     </div>

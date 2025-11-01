@@ -274,6 +274,80 @@ For any inquiries, please contact our administration office."""
         return jsonify({"error": f"Failed to issue receipt: {str(e)}"}), 500
 
 
+@transaction_bp.route("/transactions/reject/<int:billid>", methods=["PUT"])
+def reject_payment(billid):
+    """Reject a payment and reset bill status to Unpaid"""
+    try:
+        # Fetch the bill
+        bill = db.session.query(Bill).filter(Bill.billid == billid).first()
+        if not bill:
+            return jsonify({"error": "Bill not found"}), 404
+
+        if bill.status != "For Validation":
+            return jsonify({"error": "Bill is not in 'For Validation' status"}), 400
+
+        # Fetch the tenant
+        tenant = db.session.query(Tenant).filter(Tenant.tenantid == bill.tenantid).first()
+        if not tenant:
+            return jsonify({"error": "Tenant not found"}), 404
+
+        # Fetch associated user info
+        user = db.session.query(User).filter(User.userid == tenant.userid).first()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        # Build full name
+        firstname = getattr(user, "firstname", "")
+        middlename = getattr(user, "middlename", "")
+        lastname = getattr(user, "lastname", "")
+        full_name = f"{firstname} {middlename + ' ' if middlename else ''}{lastname}".strip()
+
+        # Reset bill status to Unpaid and clear payment details
+        bill.status = "Unpaid"
+        bill.GCash_receipt = None  # Clear the receipt
+        bill.GCash_Ref = None      # Clear the reference number
+        bill.paymenttype = None    # Clear payment type
+        
+        db.session.add(bill)
+
+        # Create notification for tenant
+        tenant_notification = Notification(
+            title='Payment Rejected',
+            message=f'Your payment for {bill.billtype} (PHP {float(bill.amount):,.2f}) has been rejected. Please check your payment details and try again.',
+            targetuserid=tenant.userid,
+            isgroupnotification=False,
+            recipientcount=1,
+            createdbyuserid=tenant.userid
+        )
+        db.session.add(tenant_notification)
+
+        # Create notification for landlords
+        all_landlords = User.query.filter_by(role='Owner').all()
+        if all_landlords:
+            landlord_notification = Notification(
+                title='Payment Rejected',
+                message=f'Payment from {full_name} for {bill.billtype} (PHP {float(bill.amount):,.2f}) has been rejected.',
+                targetuserrole='Owner',
+                isgroupnotification=True,
+                recipientcount=len(all_landlords),
+                createdbyuserid=tenant.userid
+            )
+            db.session.add(landlord_notification)
+
+        # Commit changes
+        db.session.commit()
+
+        return jsonify({
+            "message": "Payment rejected successfully",
+            "billid": billid,
+            "new_status": "Unpaid"
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Failed to reject payment: {str(e)}"}), 500
+
+
 @transaction_bp.route("/transactions/receipt/<int:billid>", methods=["GET"])
 def get_receipt(billid):
     try:
