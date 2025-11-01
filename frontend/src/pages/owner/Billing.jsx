@@ -15,11 +15,12 @@ function Billing() {
     const [showViewModal, setShowViewModal] = useState(false);
     const [showTenantInvoiceModal, setShowTenantInvoiceModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [successModalData, setSuccessModalData] = useState(null); // NEW: Store success data
+    const [successModalData, setSuccessModalData] = useState(null);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [selectedTenant, setSelectedTenant] = useState(null);
     const [tenants, setTenants] = useState([]);
     const [applicants, setApplicants] = useState([]);
+    const [issuedApplicantInvoices, setIssuedApplicantInvoices] = useState([]);
     const [tenantContracts, setTenantContracts] = useState([]);
     const [selectedApplicant, setSelectedApplicant] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -47,24 +48,34 @@ function Billing() {
     // ✅ Helper function
     const getTodayDate = () => new Date().toISOString().split("T")[0];
 
-    // Fetch tenants, applicants, and tenant contracts
+    // Fetch tenants, applicants, tenant contracts, and issued applicant invoices
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [tenantsRes, applicantsRes, contractsRes] = await Promise.all([
+                const [tenantsRes, applicantsRes, contractsRes, issuedInvoicesRes] = await Promise.all([
                     fetch("http://localhost:5000/api/billing/bills"),
                     fetch("http://localhost:5000/api/applicants/for-billing"),
-                    fetch("http://localhost:5000/api/contracts/tenants")
+                    fetch("http://localhost:5000/api/contracts/tenants"),
+                    fetch("http://localhost:5000/api/billing/issued-applicant-invoices")
                 ]);
                 setTenants(await tenantsRes.json());
                 setApplicants(await applicantsRes.json());
                 setTenantContracts(await contractsRes.json());
+                setIssuedApplicantInvoices(await issuedInvoicesRes.json());
             } catch (error) {
                 console.error("Error fetching billing data:", error);
             }
         };
         fetchData();
     }, []);
+
+    // ✅ Filter applicants to only show those without issued invoices
+    const filteredApplicants = applicants.filter(applicant => {
+        const hasIssuedInvoice = issuedApplicantInvoices.some(invoice => 
+            invoice.tenantId === applicant.applicationid
+        );
+        return !hasIssuedInvoice;
+    });
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -75,19 +86,16 @@ function Billing() {
         const { name, value } = e.target;
 
         if (name === "tenantId") {
-            // Find the selected tenant contract
             const selectedContract = tenantContracts.find(contract => contract.tenantid === parseInt(value));
             if (selectedContract) {
                 setTenantFormData(prev => ({
                     ...prev,
                     tenantId: value,
                     unitName: selectedContract.unit_name,
-                    // Auto-fill amount if bill type is Rent
                     amount: prev.billType === "Rent" ? selectedContract.unit_price : prev.amount
                 }));
             }
         } else if (name === "billType") {
-            // When bill type changes, auto-fill amount if it's Rent
             const selectedContract = tenantContracts.find(contract => contract.tenantid === parseInt(tenantFormData.tenantId));
             if (value === "Rent" && selectedContract) {
                 setTenantFormData(prev => ({
@@ -99,7 +107,7 @@ function Billing() {
                 setTenantFormData(prev => ({
                     ...prev,
                     billType: value,
-                    amount: "" // Clear amount for non-rent bills
+                    amount: ""
                 }));
             }
         } else {
@@ -137,6 +145,7 @@ function Billing() {
         setShowTenantInvoiceModal(true);
     };
 
+    
     const handleSaveInvoice = async () => {
         if (!formData.tenantId || !formData.amount) {
             alert("Please fill in all required fields.");
@@ -151,7 +160,6 @@ function Billing() {
             });
 
             if (response.ok) {
-                // Store data for success modal
                 setSuccessModalData({
                     tenantName: selectedApplicant?.fullname,
                     amount: formData.amount,
@@ -171,13 +179,14 @@ function Billing() {
                     dueDate: "",
                 });
 
-                // Refresh data
-                const [tenantsRes, applicantsRes] = await Promise.all([
+                const [tenantsRes, applicantsRes, issuedInvoicesRes] = await Promise.all([
                     fetch("http://localhost:5000/api/billing/bills"),
                     fetch("http://localhost:5000/api/applicants/for-billing"),
+                    fetch("http://localhost:5000/api/billing/issued-applicant-invoices")
                 ]);
                 setTenants(await tenantsRes.json());
                 setApplicants(await applicantsRes.json());
+                setIssuedApplicantInvoices(await issuedInvoicesRes.json());
             } else {
                 alert("Failed to create invoice.");
             }
@@ -194,14 +203,13 @@ function Billing() {
         }
 
         try {
-            const response = await fetch("http://localhost:5000/api/billing/create-tenant-invoice", {
+            const response = await fetch("http://localhost:5000/api/billing/create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(tenantFormData),
             });
 
             if (response.ok) {
-                // Store data for success modal
                 const selectedContract = tenantContracts.find(contract => contract.tenantid === parseInt(tenantFormData.tenantId));
                 setSuccessModalData({
                     tenantName: selectedContract?.fullname,
@@ -223,7 +231,6 @@ function Billing() {
                     unitName: ""
                 });
 
-                // Refresh data
                 const tenantsRes = await fetch("http://localhost:5000/api/billing/bills");
                 setTenants(await tenantsRes.json());
             } else {
@@ -249,7 +256,6 @@ function Billing() {
 
                 if (response.ok) {
                     alert("Invoice marked as paid successfully!");
-                    // Refresh tenants data
                     const tenantsRes = await fetch("http://localhost:5000/api/billing/bills");
                     setTenants(await tenantsRes.json());
                 } else {
@@ -268,7 +274,7 @@ function Billing() {
     };
 
     const filteredTenants = tenants.filter(tenant =>
-        tenant.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tenant.tenant_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         tenant.invoiceno?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         tenant.unit_name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -276,9 +282,9 @@ function Billing() {
     // Calculate statistics
     const stats = {
         total: tenants.length,
-        paid: tenants.filter(t => t.bill_status === 'Paid').length,
-        unpaid: tenants.filter(t => t.bill_status === 'Unpaid').length,
-        totalRevenue: tenants.filter(t => t.bill_status === 'Paid').reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0)
+        paid: tenants.filter(t => t.status === 'Paid' || t.status === 'PAID').length,
+        unpaid: tenants.filter(t => t.status === 'Unpaid').length,
+        totalRevenue: tenants.filter(t => t.status === 'Paid' || t.status === 'PAID').reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0)
     };
 
     return (
@@ -348,7 +354,7 @@ function Billing() {
                     >
                         <User size={16} />
                         Applicant Payments
-                        <span className="Owner-Billing-tab-badge">{applicants.length}</span>
+                        <span className="Owner-Billing-tab-badge">{filteredApplicants.length}</span>
                     </button>
                 </div>
 
@@ -401,7 +407,7 @@ function Billing() {
                                         <tr key={i} className="Owner-Billing-table-row">
                                             <td className="Owner-Billing-invoice-no">
                                                 <FileText size={14} />
-                                                {tenant.invoiceno}
+                                                {tenant.invoiceno || `INV-${tenant.billid}`}
                                             </td>
                                             <td>
                                                 <div className="Owner-Billing-tenant-info">
@@ -413,11 +419,11 @@ function Billing() {
                                             <td className="Owner-Billing-amount">
                                                 ₱{parseFloat(tenant.amount || 0).toLocaleString()}
                                             </td>
-                                            <td>{new Date(tenant.issueddate).toLocaleDateString()}</td>
+                                            <td>{new Date(tenant.issuedate).toLocaleDateString()}</td>
                                             <td>{tenant.duedate ? new Date(tenant.duedate).toLocaleDateString() : 'N/A'}</td>
                                             <td>
-                                                <span className={`Owner-Billing-status-badge ${(tenant.bill_status || tenant.status)?.toLowerCase()}`}>
-                                                    {tenant.bill_status || tenant.status}
+                                                <span className={`Owner-Billing-status-badge ${tenant.status?.toLowerCase()}`}>
+                                                    {tenant.status}
                                                 </span>
                                             </td>
                                             <td>
@@ -429,6 +435,15 @@ function Billing() {
                                                         <Eye size={14} />
                                                         View
                                                     </button>
+                                                    {tenant.status === 'Unpaid' && (
+                                                        <button
+                                                            className="Owner-Billing-mark-paid-btn"
+                                                            onClick={() => handleMarkAsPaid(tenant.billid)}
+                                                        >
+                                                            <CheckCircle size={14} />
+                                                            Mark Paid
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -468,8 +483,8 @@ function Billing() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {applicants.length > 0 ? (
-                                    applicants.map((app, i) => (
+                                {filteredApplicants.length > 0 ? (
+                                    filteredApplicants.map((app, i) => (
                                         <tr key={i} className="Owner-Billing-table-row">
                                             <td>
                                                 <div className="Owner-Billing-applicant-info">
@@ -761,9 +776,9 @@ function Billing() {
                         <div className="Owner-Billing-modal-body">
                             <div className="Owner-Billing-invoice-header">
                                 <div className="Owner-Billing-invoice-meta">
-                                    <span className="Owner-Billing-invoice-number">{selectedInvoice.invoiceno}</span>
-                                    <span className={`Owner-Billing-status-badge ${selectedInvoice.bill_status?.toLowerCase()}`}>
-                                        {selectedInvoice.bill_status}
+                                    <span className="Owner-Billing-invoice-number">{selectedInvoice.invoiceno || `INV-${selectedInvoice.billid}`}</span>
+                                    <span className={`Owner-Billing-status-badge ${selectedInvoice.status?.toLowerCase()}`}>
+                                        {selectedInvoice.status}
                                     </span>
                                 </div>
                                 <div className="Owner-Billing-invoice-amount">
@@ -787,7 +802,7 @@ function Billing() {
                                 <div className="Owner-Billing-detail-row">
                                     <span className="Owner-Billing-detail-label">Issued Date</span>
                                     <span className="Owner-Billing-detail-value">
-                                        {new Date(selectedInvoice.issueddate).toLocaleDateString()}
+                                        {new Date(selectedInvoice.issuedate).toLocaleDateString()}
                                     </span>
                                 </div>
                                 <div className="Owner-Billing-detail-row">
