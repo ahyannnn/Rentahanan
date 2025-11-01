@@ -39,9 +39,6 @@ const Layout = () => {
   const [profileImageError, setProfileImageError] = useState(false);
   const [headerImageError, setHeaderImageError] = useState(false);
 
-
-
-
   // ✅ Enhanced Notifications State
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -52,18 +49,20 @@ const Layout = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
+
   useEffect(() => {
     // If current path is /tenant and user is Registered tenant, redirect to browse-units
     if (location.pathname === '/tenant' &&
       userRole === 'tenant' &&
       tenantStatus === 'Registered') {
       navigate('/tenant/browse-units', { replace: true });
-    }else if (location.pathname === '/tenant' &&
+    } else if (location.pathname === '/tenant' &&
       userRole === 'tenant' &&
       tenantStatus === 'Terminated') {
       navigate('/tenant/support', { replace: true });
     }
   }, [location.pathname, userRole, tenantStatus, navigate]);
+
   // Fetch user profile data from API
   const fetchUserProfile = async (userId) => {
     try {
@@ -122,8 +121,6 @@ const Layout = () => {
       const storedUser = JSON.parse(storedUserRaw);
       const userId = storedUser.userid;
 
-
-
       const response = await fetch(`http://127.0.0.1:5000/api/notifications/${userId}`);
 
       if (!response.ok) {
@@ -132,9 +129,7 @@ const Layout = () => {
 
       const data = await response.json();
 
-
       if (data.success) {
-
         setNotifications(data.notifications || []);
 
         // Calculate unread count
@@ -144,8 +139,6 @@ const Layout = () => {
         // Log notification types for debugging
         const groupNotifications = data.notifications.filter(notif => notif.isgroupnotification);
         const individualNotifications = data.notifications.filter(notif => !notif.isgroupnotification);
-
-
 
       } else {
         console.error("Failed to fetch notifications:", data.message);
@@ -189,7 +182,6 @@ const Layout = () => {
     // Mark as read
     markNotificationAsRead(notification.notificationid);
 
-
     navigateBasedOnNotification(notification);
   };
 
@@ -205,8 +197,6 @@ const Layout = () => {
     }
 
     try {
-
-
       const response = await fetch(`http://127.0.0.1:5000/api/notifications/${notification.notificationid}`, {
         method: 'DELETE',
       });
@@ -214,7 +204,6 @@ const Layout = () => {
       const data = await response.json();
 
       if (data.success) {
-
         // Remove from local state
         setNotifications(prev => prev.filter(notif => notif.notificationid !== notification.notificationid));
         // Update unread count
@@ -266,7 +255,6 @@ const Layout = () => {
     // Mark as read
     markNotificationAsRead(notification.notificationid);
 
-
     navigateBasedOnNotification(notification);
   };
 
@@ -274,8 +262,6 @@ const Layout = () => {
   const navigateBasedOnNotification = (notification) => {
     const title = notification.title?.toLowerCase() || '';
     const message = notification.message?.toLowerCase() || '';
-
-
 
     if (title.includes('bill') || title.includes('payment') || title.includes('invoice') ||
       message.includes('bill') || message.includes('payment') || message.includes('invoice')) {
@@ -474,29 +460,59 @@ const Layout = () => {
     setHeaderImageError(true);
   };
 
-  // Format time for notifications
+  // ✅ FIXED: Proper timezone handling for notifications
   const formatNotificationTime = (dateString) => {
     if (!dateString) return "Recently";
 
-    const dbDate = new Date(dateString);
+    try {
+      // Parse the database date as UTC
+      const dbDate = new Date(dateString);
+      
+      // If invalid date, return fallback
+      if (isNaN(dbDate.getTime())) {
+        return "Recently";
+      }
+
+      // Get current time in local timezone
+      const now = new Date();
+      
+      // Calculate difference in milliseconds
+      const diffInMs = now - dbDate;
+      const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+      const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+      const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+      // Return relative time for recent notifications
+      if (diffInMinutes < 1) return "Just now";
+      if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+      if (diffInHours < 24) return `${diffInHours}h ago`;
+      if (diffInDays < 7) return `${diffInDays}d ago`;
+
+      // For older notifications, show the actual date in local time
+      // Convert UTC date to local time for display
+      return dbDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      });
+    } catch (error) {
+      console.error('Error formatting notification time:', error);
+      return "Recently";
+    }
+  };
+
+  // ✅ NEW: Get current time in correct timezone for debugging
+  const getCurrentTimeInfo = () => {
     const now = new Date();
-    const nowUtc = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
-
-    const diffInMs = nowUtc - dbDate;
-    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-    if (diffInMinutes < 1) return "Just now";
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInDays < 7) return `${diffInDays}d ago`;
-
-    return dbDate.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    return {
+      local: now.toString(),
+      utc: now.toUTCString(),
+      iso: now.toISOString(),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    };
   };
 
   // Get notifications to display (3 by default, 10 when expanded)
@@ -580,7 +596,8 @@ const Layout = () => {
         return date.toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
-          day: 'numeric'
+          day: 'numeric',
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
         });
       } catch (error) {
         return "N/A";

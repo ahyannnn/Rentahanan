@@ -3,7 +3,6 @@ from extensions import db
 from models.notifications_model import Notification
 from models.users_model import User
 from models.tenants_model import Tenant
-from datetime import datetime
 
 notification_bp = Blueprint('notification_bp', __name__)
 
@@ -45,17 +44,7 @@ def get_user_notifications(user_id):
 
         notifications_data = []
         for notification in notifications:
-            notifications_data.append({
-                'notificationid': notification.notificationid,
-                'title': notification.title,
-                'message': notification.message,
-                'targetuserrole': notification.targetuserrole,
-                'targetuserid': notification.targetuserid,
-                'isgroupnotification': notification.isgroupnotification,
-                'recipientcount': notification.recipientcount,
-                'createdbyuserid': notification.createdbyuserid,
-                'creationdate': notification.creationdate.isoformat() if notification.creationdate else None
-            })
+            notifications_data.append(notification.to_dict())  # ✅ Use model's to_dict method
         
         return jsonify({
             'success': True,
@@ -80,17 +69,7 @@ def get_notifications_by_role(user_role):
         
         notifications_data = []
         for notification in notifications:
-            notifications_data.append({
-                'notificationid': notification.notificationid,
-                'title': notification.title,
-                'message': notification.message,
-                'targetuserrole': notification.targetuserrole,
-                'targetuserid': notification.targetuserid,
-                'isgroupnotification': notification.isgroupnotification,
-                'recipientcount': notification.recipientcount,
-                'createdbyuserid': notification.createdbyuserid,
-                'creationdate': notification.creationdate.isoformat() if notification.creationdate else None
-            })
+            notifications_data.append(notification.to_dict())  # ✅ Use model's to_dict method
         
         return jsonify({
             'success': True,
@@ -299,8 +278,8 @@ def send_notification():
                 targetuserid=None,  # No specific user for group notifications
                 isgroupnotification=True,
                 recipientcount=recipient_count,
-                createdbyuserid=created_by_user_id,
-                creationdate=datetime.utcnow()
+                createdbyuserid=created_by_user_id
+                # ✅ creationdate is automatically handled by the model
             )
             
             db.session.add(new_notification)
@@ -330,8 +309,8 @@ def send_notification():
                 targetuserid=target_user_id,
                 isgroupnotification=False,
                 recipientcount=1,
-                createdbyuserid=created_by_user_id,
-                creationdate=datetime.utcnow()
+                createdbyuserid=created_by_user_id
+                # ✅ creationdate is automatically handled by the model
             )
             
             db.session.add(new_notification)
@@ -461,8 +440,8 @@ def bulk_send_notifications():
                             targetuserid=user.userid,
                             isgroupnotification=False,
                             recipientcount=1,
-                            createdbyuserid=created_by_user_id,
-                            creationdate=datetime.utcnow()
+                            createdbyuserid=created_by_user_id
+                            # ✅ creationdate is automatically handled by the model
                         )
                         db.session.add(new_notification)
                         successful_sends += 1
