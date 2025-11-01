@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Bell,
   Check,
-  X,
+  Trash2,
   Search,
   Clock,
   AlertCircle,
@@ -11,12 +11,11 @@ import {
   FileText,
   Calendar,
   MessageCircle,
-  Home,
   Users,
   Building,
   Plus,
   Send,
-  User
+  X
 } from "lucide-react";
 import "../../styles/owners/OwnerNotification.css";
 
@@ -357,7 +356,7 @@ const OwnerNotifications = () => {
   }
 
   return (
-    <div className="notifications-container-Owner-Notifications">
+    <div className="Owner-Notifications-container">
       {/* ===== Send Notification Modal ===== */}
       {showSendNotification && (
         <div className="modal-overlay-Owner-Notifications" onClick={closeSendNotification}>
@@ -635,7 +634,7 @@ const OwnerNotifications = () => {
                     onClick={() => deleteNotification(notification.notificationid)}
                     title="Delete notification"
                   >
-                    <X size={16} />
+                    <Trash2 size={16} />
                   </button>
                 </div>
               </div>

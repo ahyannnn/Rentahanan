@@ -1,9 +1,30 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/owners/Tenants.css";
 import { useNavigate } from "react-router-dom";
+import {
+  Search,
+  Users,
+  FileText,
+  CheckCircle,
+  Clock,
+  X,
+  FileCheck,
+  CreditCard,
+  User,
+  Mail,
+  Phone,
+  Home,
+  Calendar,
+  MapPin,
+  Download,
+  Send,
+  Ban,
+  Check
+} from "lucide-react";
 
 const Tenants = () => {
   const [activeTab, setActiveTab] = useState("active");
+  const [applicantFilter, setApplicantFilter] = useState("all"); // New state for applicant filtering
   const [tenants, setTenants] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [search, setSearch] = useState("");
@@ -30,6 +51,21 @@ const Tenants = () => {
         .catch((err) => console.error("Error fetching applicants:", err));
     }
   }, [activeTab]);
+
+  // Filter applicants based on selected filter
+  const getFilteredApplicants = () => {
+    if (applicantFilter === "all") return applicants;
+    if (applicantFilter === "contract-signed") {
+      return applicants.filter(app => app.contract_signed);
+    }
+    if (applicantFilter === "payment-pending") {
+      return applicants.filter(app => app.bill_status !== "Paid");
+    }
+    if (applicantFilter === "ready-to-approve") {
+      return applicants.filter(app => app.contract_signed && app.bill_status === "Paid");
+    }
+    return applicants;
+  };
 
   const filterData = (data) =>
     data.filter((item) =>
@@ -88,17 +124,25 @@ const Tenants = () => {
         </div>
         <div className="Owner-Tenant-info">
           <h4>{item.fullname}</h4>
-          <p>Email: {item.email}</p>
-          <p>Phone: {item.phone}</p>
-          <p>Unit: {item.unit_name || "N/A"}</p>
+          <p><Mail size={14} /> Email: {item.email}</p>
+          <p><Phone size={14} /> Phone: {item.phone}</p>
+          <p><Home size={14} /> Unit: {item.unit_name || "N/A"}</p>
           {type === "applicant" && (
-            <div className="Owner-Tenant-status-badge">
-              {item.contract_signed ? "Contract Signed" : "Pending Contract"}
+            <div className={`Owner-Tenant-status-badge ${item.contract_signed ? 'Owner-Tenant-status-complete' : 'Owner-Tenant-status-pending'}`}>
+              {item.contract_signed ? (
+                <><CheckCircle size={14} /> Contract Signed</>
+              ) : (
+                <><Clock size={14} /> Pending Contract</>
+              )}
             </div>
           )}
         </div>
         <button className="Owner-Tenant-view-profile-btn" onClick={() => openModal(item)}>
-          {type === "active" ? "View Profile" : "Review Application"}
+          {type === "active" ? (
+            <><User size={16} /> View Profile</>
+          ) : (
+            <><FileText size={16} /> Review Application</>
+          )}
         </button>
       </div>
     ));
@@ -176,6 +220,14 @@ const Tenants = () => {
     });
   };
 
+  // Count applicants by status for badges
+  const applicantCounts = {
+    all: applicants.length,
+    'contract-signed': applicants.filter(app => app.contract_signed).length,
+    'payment-pending': applicants.filter(app => app.bill_status !== "Paid").length,
+    'ready-to-approve': applicants.filter(app => app.contract_signed && app.bill_status === "Paid").length
+  };
+
   return (
     <div className="Owner-Tenant-container">
       <div className="Owner-Tenant-header-section">
@@ -190,7 +242,7 @@ const Tenants = () => {
             className={`Owner-Tenant-tab ${activeTab === "active" ? "Owner-Tenant-tab-active" : ""}`}
             onClick={() => setActiveTab("active")}
           >
-            <span className="Owner-Tenant-tab-icon">👥</span>
+            <span className="Owner-Tenant-tab-icon"><Users size={18} /></span>
             Active Tenants
             <span className="Owner-Tenant-tab-badge">{tenants.length}</span>
           </button>
@@ -198,7 +250,7 @@ const Tenants = () => {
             className={`Owner-Tenant-tab ${activeTab === "applications" ? "Owner-Tenant-tab-active" : ""}`}
             onClick={() => setActiveTab("applications")}
           >
-            <span className="Owner-Tenant-tab-icon">📋</span>
+            <span className="Owner-Tenant-tab-icon"><FileText size={18} /></span>
             Applications
             <span className="Owner-Tenant-tab-badge">{applicants.length}</span>
           </button>
@@ -211,19 +263,57 @@ const Tenants = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <span className="Owner-Tenant-search-icon">🔍</span>
+          <span className="Owner-Tenant-search-icon"><Search size={18} /></span>
         </div>
       </div>
+
+      {/* Applicant Filter Tabs */}
+      {activeTab === "applications" && (
+        <div className="Owner-Tenant-filter-tabs">
+          <button
+            className={`Owner-Tenant-filter-tab ${applicantFilter === "all" ? "Owner-Tenant-filter-tab-active" : ""}`}
+            onClick={() => setApplicantFilter("all")}
+          >
+            <FileText size={16} />
+            All Applications
+            <span className="Owner-Tenant-filter-badge">{applicantCounts.all}</span>
+          </button>
+          <button
+            className={`Owner-Tenant-filter-tab ${applicantFilter === "contract-signed" ? "Owner-Tenant-filter-tab-active" : ""}`}
+            onClick={() => setApplicantFilter("contract-signed")}
+          >
+            <FileCheck size={16} />
+            Contract Signed
+            <span className="Owner-Tenant-filter-badge">{applicantCounts['contract-signed']}</span>
+          </button>
+          <button
+            className={`Owner-Tenant-filter-tab ${applicantFilter === "payment-pending" ? "Owner-Tenant-filter-tab-active" : ""}`}
+            onClick={() => setApplicantFilter("payment-pending")}
+          >
+            <CreditCard size={16} />
+            Payment Pending
+            <span className="Owner-Tenant-filter-badge">{applicantCounts['payment-pending']}</span>
+          </button>
+          <button
+            className={`Owner-Tenant-filter-tab ${applicantFilter === "ready-to-approve" ? "Owner-Tenant-filter-tab-active" : ""}`}
+            onClick={() => setApplicantFilter("ready-to-approve")}
+          >
+            <CheckCircle size={16} />
+            Ready to Approve
+            <span className="Owner-Tenant-filter-badge">{applicantCounts['ready-to-approve']}</span>
+          </button>
+        </div>
+      )}
 
       {/* Cards Grid */}
       <div className="Owner-Tenant-grid">
         {activeTab === "active"
           ? renderCards(filterData(tenants), "active")
-          : renderCards(filterData(applicants), "applicant")}
+          : renderCards(filterData(getFilteredApplicants()), "applicant")}
         
-        {filterData(activeTab === "active" ? tenants : applicants).length === 0 && (
+        {filterData(activeTab === "active" ? tenants : getFilteredApplicants()).length === 0 && (
           <div className="Owner-Tenant-empty-state">
-            <div className="Owner-Tenant-empty-icon">📭</div>
+            <div className="Owner-Tenant-empty-icon"><Users size={64} /></div>
             <h3>No {activeTab === "active" ? "active tenants" : "applications"} found</h3>
             <p>
               {search ? "Try adjusting your search terms" : 
@@ -260,30 +350,30 @@ const Tenants = () => {
                 </div>
                 <div>
                   <h2>{selectedUser.fullname}</h2>
-                  <p className="Owner-Tenant-modal-email">{selectedUser.email}</p>
+                  <p className="Owner-Tenant-modal-email"><Mail size={14} /> {selectedUser.email}</p>
                 </div>
               </div>
               <button className="Owner-Tenant-close-btn" onClick={closeModal}>
-                ✕
+                <X size={20} />
               </button>
             </div>
 
             <div className="Owner-Tenant-modal-body">
               <div className="Owner-Tenant-info-grid">
                 <div className="Owner-Tenant-info-item">
-                  <label>Phone</label>
+                  <label><Phone size={14} /> Phone</label>
                   <span>{selectedUser.phone}</span>
                 </div>
                 <div className="Owner-Tenant-info-item">
-                  <label>Unit</label>
+                  <label><Home size={14} /> Unit</label>
                   <span>{selectedUser.unit_name || "N/A"}</span>
                 </div>
                 <div className="Owner-Tenant-info-item">
-                  <label>Date of Birth</label>
+                  <label><Calendar size={14} /> Date of Birth</label>
                   <span>{selectedUser.dateofbirth}</span>
                 </div>
                 <div className="Owner-Tenant-info-item Owner-Tenant-info-full">
-                  <label>Address</label>
+                  <label><MapPin size={14} /> Address</label>
                   <span>{selectedUser.address}</span>
                 </div>
               </div>
@@ -291,7 +381,7 @@ const Tenants = () => {
               {activeTab === "applications" && (
                 <>
                   <div className="Owner-Tenant-documents-section">
-                    <h3>Required Documents</h3>
+                    <h3><FileText size={18} /> Required Documents</h3>
                     <div className="Owner-Tenant-documents-grid">
                       <div className="Owner-Tenant-document-item">
                         <span className="Owner-Tenant-document-label">Valid ID</span>
@@ -304,7 +394,7 @@ const Tenants = () => {
                             )
                           }
                         >
-                          View Document
+                          <Download size={14} /> View Document
                         </button>
                       </div>
                       <div className="Owner-Tenant-document-item">
@@ -318,7 +408,7 @@ const Tenants = () => {
                             )
                           }
                         >
-                          View Document
+                          <Download size={14} /> View Document
                         </button>
                       </div>
                       <div className="Owner-Tenant-document-item">
@@ -332,7 +422,7 @@ const Tenants = () => {
                             )
                           }
                         >
-                          View Document
+                          <Download size={14} /> View Document
                         </button>
                       </div>
                     </div>
@@ -343,22 +433,24 @@ const Tenants = () => {
                       className="Owner-Tenant-action-btn Owner-Tenant-contract-btn"
                       onClick={() => handleIssueContract(selectedUser.applicationid)}
                     >
-                      📄 Issue Contract
+                      <Send size={16} /> Issue Contract
                     </button>
                     <button
                       className="Owner-Tenant-action-btn Owner-Tenant-payment-btn"
                       onClick={() => handleAdvancePayment(selectedUser.applicationid)}
                     >
-                      💳 Issue Initial Payment
+                      <CreditCard size={16} /> Issue Initial Payment
                     </button>
                   </div>
 
                   <div className="Owner-Tenant-approval-section">
                     <div className="Owner-Tenant-approval-status">
                       <div className={`Owner-Tenant-status-item ${selectedUser.contract_signed ? 'Owner-Tenant-status-complete' : 'Owner-Tenant-status-pending'}`}>
+                        {selectedUser.contract_signed ? <CheckCircle size={14} /> : <Clock size={14} />}
                         Contract: {selectedUser.contract_signed ? "Signed" : "Pending"}
                       </div>
                       <div className={`Owner-Tenant-status-item ${selectedUser.bill_status === 'Paid' ? 'Owner-Tenant-status-complete' : 'Owner-Tenant-status-pending'}`}>
+                        {selectedUser.bill_status === 'Paid' ? <CheckCircle size={14} /> : <Clock size={14} />}
                         Payment: {selectedUser.bill_status === 'Paid' ? "Completed" : "Pending"}
                       </div>
                     </div>
@@ -378,13 +470,13 @@ const Tenants = () => {
                               : ""
                         }
                       >
-                        ✅ Approve Application
+                        <Check size={16} /> Approve Application
                       </button>
                       <button
                         className="Owner-Tenant-reject-btn"
                         onClick={() => handleReject(selectedUser.applicationid)}
                       >
-                        ❌ Reject Application
+                        <Ban size={16} /> Reject Application
                       </button>
                     </div>
                   </div>

@@ -9,35 +9,55 @@
 
 /* === Header Section === */
 .Owner-Notifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 30px;
+  gap: 20px;
 }
 
-/* ===== Page Header ===== */
-.page-header-Owner-Notifications {
-    margin-bottom: 40px;
+.Owner-Notifications-header-content {
+  flex: 1;
 }
 
-.header-content-Owner-Notifications {
-    text-align: center;
+.Owner-Notifications-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #061a53;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #061a53 0%, #0a2d8d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
+
+.Owner-Notifications-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+  max-width: 500px;
+}
+
 /* Send Notification Button */
 .send-notification-btn-Owner-Notifications {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
   color: white;
   border: none;
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
   transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(10, 45, 141, 0.3);
 }
 
 .send-notification-btn-Owner-Notifications:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(10, 45, 141, 0.4);
 }
 
 /* Modal Styles */
@@ -47,21 +67,35 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 20px;
 }
 
 .send-notification-modal-Owner-Notifications {
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .modal-header-Owner-Notifications {
@@ -69,26 +103,29 @@
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e8ecf1;
 }
 
 .modal-header-Owner-Notifications h2 {
   margin: 0;
-  color: #1f2937;
+  color: #061a53;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .close-modal-btn-Owner-Notifications {
   background: none;
   border: none;
   cursor: pointer;
-  color: #6b7280;
-  padding: 4px;
-  border-radius: 4px;
+  color: #666;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
 .close-modal-btn-Owner-Notifications:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: #f0f0f0;
+  color: #061a53;
 }
 
 .modal-body-Owner-Notifications {
@@ -103,26 +140,29 @@
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #374151;
+  color: #061a53;
+  font-size: 0.9rem;
 }
 
 .form-input-Owner-Notifications,
 .form-textarea-Owner-Notifications,
 .form-select-Owner-Notifications {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
   font-size: 14px;
   transition: border-color 0.3s ease;
+  background: white;
+  font-family: "Inter", sans-serif;
 }
 
 .form-input-Owner-Notifications:focus,
 .form-textarea-Owner-Notifications:focus,
 .form-select-Owner-Notifications:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #0a2d8d;
+  box-shadow: 0 0 0 3px rgba(10, 45, 141, 0.1);
 }
 
 .form-textarea-Owner-Notifications {
@@ -141,46 +181,63 @@
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  font-weight: 500;
+  color: #666;
 }
 
 .radio-option-Owner-Notifications input[type="radio"] {
   margin: 0;
+  accent-color: #0a2d8d;
 }
 
 .modal-footer-Owner-Notifications {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  padding: 24px;
-  border-top: 1px solid #e5e7eb;
+  padding: 20px 24px;
+  border-top: 1px solid #e8ecf1;
 }
 
 .cancel-btn-Owner-Notifications {
-  background: #f3f4f6;
-  color: #374151;
-  border: none;
+  background: #f8f9fa;
+  color: #666;
+  border: 2px solid #e0e0e0;
   padding: 12px 24px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn-Owner-Notifications:hover {
+  background: #e9ecef;
+  border-color: #ccc;
 }
 
 .send-btn-Owner-Notifications {
-  background: #667eea;
+  background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
   color: white;
   border: none;
   padding: 12px 24px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(10, 45, 141, 0.3);
+}
+
+.send-btn-Owner-Notifications:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(10, 45, 141, 0.4);
 }
 
 .send-btn-Owner-Notifications:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
 .sending-spinner-Owner-Notifications {
@@ -195,99 +252,6 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-/* Update page header layout */
-.page-header-Owner-Notifications {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 32px;
-}
-.page-title-Owner-Notifications {
-    font-size: 2.5rem;
-    font-weight: 800;
-    margin-bottom: 12px;
-    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.page-description-Owner-Notifications {
-    color: #666;
-    font-size: 1.2rem;
-    font-weight: 500;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-/* ===== Stats Overview ===== */
-.stats-overview-Owner-Notifications {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
-    margin-bottom: 40px;
-}
-
-.stat-card-Owner-Notifications {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    box-shadow: 0 8px 30px rgba(10, 45, 141, 0.12);
-    border: 1px solid #e8edff;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.stat-card-Owner-Notifications::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(135deg, #0a2d8d 0%, #1e4fd8 100%);
-}
-
-.stat-card-Owner-Notifications:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(10, 45, 141, 0.2);
-}
-
-.stat-icon-Owner-Notifications {
-    padding: 20px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.stat-icon-Owner-Notifications.total {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.stat-icon-Owner-Notifications.pending {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.stat-icon-Owner-Notifications.resolved {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.stat-content-Owner-Notifications {
-    flex: 1;
-}
-
-.Owner-Notifications-subtitle {
-  font-size: 1.1rem;
-  color: #666;
-  margin: 0;
 }
 
 /* === Control Bar === */
@@ -632,19 +596,31 @@
   margin-bottom: 16px;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 /* === Responsive Design === */
 @media (max-width: 768px) {
   .Owner-Notifications-container {
     padding: 16px;
   }
   
+  .Owner-Notifications-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  
   .Owner-Notifications-title {
     font-size: 2rem;
+    text-align: center;
+  }
+  
+  .Owner-Notifications-subtitle {
+    text-align: center;
+    margin: 0 auto;
+  }
+  
+  .send-notification-btn-Owner-Notifications {
+    width: 100%;
+    justify-content: center;
   }
   
   .Owner-Notifications-control-bar {
@@ -683,9 +659,41 @@
   .Owner-Notifications-card-actions {
     justify-content: center;
   }
+  
+  /* Modal responsive */
+  .send-notification-modal-Owner-Notifications {
+    width: 95%;
+    margin: 10px;
+  }
+  
+  .modal-body-Owner-Notifications {
+    padding: 16px;
+  }
+  
+  .target-options-Owner-Notifications {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .modal-footer-Owner-Notifications {
+    flex-direction: column;
+  }
+  
+  .cancel-btn-Owner-Notifications,
+  .send-btn-Owner-Notifications {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
+  .Owner-Notifications-container {
+    padding: 12px;
+  }
+  
+  .Owner-Notifications-title {
+    font-size: 1.7rem;
+  }
+  
   .Owner-Notifications-card {
     padding: 0;
   }
@@ -705,5 +713,18 @@
   .Owner-Notifications-tab-btn {
     padding: 12px;
     justify-content: center;
+    font-size: 0.8rem;
+  }
+  
+  .Owner-Notifications-search-input {
+    font-size: 0.8rem;
+  }
+  
+  .modal-header-Owner-Notifications {
+    padding: 16px;
+  }
+  
+  .modal-footer-Owner-Notifications {
+    padding: 16px;
   }
 }

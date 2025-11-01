@@ -1,4 +1,4 @@
-/* === DASHBOARD LAYOUT === */
+/* === ADMIN DASHBOARD STYLING === */
 .dashboard-container-Owner-Dashboard {
     padding: 30px;
     background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
@@ -12,7 +12,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 40px;
+    margin-bottom: 32px;
     flex-wrap: wrap;
     gap: 20px;
 }
@@ -22,10 +22,6 @@
     color: #1a1f36;
     font-size: 32px;
     font-weight: 700;
-    background: linear-gradient(135deg, #0a2d8d 0%, #1e40af 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 .header-content-Owner-Dashboard p.dashboard-subtitle-Owner-Dashboard {
@@ -48,13 +44,13 @@
     gap: 8px;
     padding: 10px 16px;
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
+    border-radius: 12px;
     background: white;
     color: #475569;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .date-filter-btn-Owner-Dashboard:hover,
@@ -62,64 +58,46 @@
     border-color: #0a2d8d;
     color: #0a2d8d;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(10, 45, 141, 0.15);
-}
-
-.btn-icon-Owner-Dashboard {
-    color: currentColor;
-}
-
-.btn-text-Owner-Dashboard {
-    font-size: 14px;
-    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(10, 45, 141, 0.15);
 }
 
 /* === STATS CARDS === */
 .stats-grid-Owner-Dashboard {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
-    margin-bottom: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
 }
 
 .stat-card-Owner-Dashboard {
-    display: flex;
-    align-items: center;
-    background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+    background: white;
     border-radius: 16px;
-    padding: 28px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s ease;
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    position: relative;
-    overflow: hidden;
-}
-
-.stat-card-Owner-Dashboard::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #0a2d8d, #1e40af);
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
 }
 
 .stat-card-Owner-Dashboard:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.stat-header-Owner-Dashboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
 }
 
 .stat-icon-container-Owner-Dashboard {
-    width: 64px;
-    height: 64px;
-    border-radius: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 20px;
     color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .stat-icon-blue-Owner-Dashboard {
@@ -138,97 +116,121 @@
     background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
 }
 
-.stat-icon-Owner-Dashboard {
-    color: white;
-}
-
-.stat-info-Owner-Dashboard {
-    flex: 1;
-}
-
-.stat-label-Owner-Dashboard {
-    margin: 0 0 6px 0;
-    color: #64748b;
-    font-size: 14px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.stat-value-Owner-Dashboard {
-    margin: 0 0 8px 0;
-    color: #1a1f36;
-    font-size: 32px;
-    font-weight: 800;
-}
-
 .stat-trend-Owner-Dashboard {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 600;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
 }
 
 .stat-trend-up-Owner-Dashboard {
-    color: #059669;
+    background: #d1fae5;
+    color: #065f46;
 }
 
 .stat-trend-down-Owner-Dashboard {
-    color: #dc2626;
+    background: #fee2e2;
+    color: #991b1b;
 }
 
-.trend-icon-Owner-Dashboard {
-    color: currentColor;
+.stat-value-Owner-Dashboard {
+    margin: 0 0 4px 0;
+    color: #1a1f36;
+    font-size: 28px;
+    font-weight: 800;
 }
 
-.trend-text-Owner-Dashboard {
-    font-size: 13px;
+.stat-label-Owner-Dashboard {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
 }
 
-/* === TABLE SECTIONS === */
+/* === TWO COLUMN TABLES === */
 .tables-grid-Owner-Dashboard {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
 }
 
 .table-card-Owner-Dashboard {
-    background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+    background: white;
     border-radius: 16px;
     padding: 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
     overflow: hidden;
 }
 
-.table-header-Owner-Dashboard {
-    padding: 24px 24px 0 24px;
+.table-header-section-Owner-Dashboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px;
     border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.table-header-content-Owner-Dashboard {
+    flex: 1;
 }
 
 .table-title-Owner-Dashboard {
-    margin: 0;
+    margin: 0 0 4px 0;
     color: #1a1f36;
     font-size: 18px;
     font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
-/* === SEARCH & FILTER === */
+.table-subtitle-Owner-Dashboard {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.view-all-btn-Owner-Dashboard {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: transparent;
+    color: #0a2d8d;
+    border: 1px solid #0a2d8d;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-all-btn-Owner-Dashboard:hover {
+    background: #0a2d8d;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.table-actions-Owner-Dashboard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .search-container-Owner-Dashboard {
     display: flex;
     gap: 12px;
-    padding: 20px 24px;
     align-items: center;
 }
 
 .search-box-Owner-Dashboard {
-    flex: 1;
     position: relative;
-    max-width: 400px;
+    min-width: 250px;
 }
 
 .search-icon-Owner-Dashboard {
@@ -241,7 +243,7 @@
 
 .search-input-Owner-Dashboard {
     width: 100%;
-    padding: 12px 16px 12px 42px;
+    padding: 10px 16px 10px 42px;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
     background: white;
@@ -256,7 +258,7 @@
 }
 
 .filter-btn-Owner-Dashboard {
-    padding: 12px;
+    padding: 10px;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
     background: white;
@@ -268,14 +270,9 @@
 .filter-btn-Owner-Dashboard:hover {
     border-color: #0a2d8d;
     color: #0a2d8d;
-    transform: translateY(-1px);
 }
 
-.filter-icon-Owner-Dashboard {
-    color: currentColor;
-}
-
-/* === TABLE STYLES - PAREHAS SA PENDING APPLICATIONS === */
+/* === TABLE STYLES === */
 .table-container-Owner-Dashboard {
     overflow-x: auto;
 }
@@ -284,11 +281,10 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
-    table-layout: fixed;
 }
 
 .table-head-Owner-Dashboard {
-    background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+    background: #f8faff;
 }
 
 .table-header-Owner-Dashboard {
@@ -298,87 +294,6 @@
     color: #475569;
     border-bottom: 1px solid #e2e8f0;
     white-space: nowrap;
-    vertical-align: middle;
-}
-
-/* PAREHAS NA COLUMN WIDTHS FOR BOTH TABLES */
-.table-col-name-Owner-Dashboard { 
-    width: 25%; 
-    min-width: 180px; 
-    text-align: left;
-}
-
-.table-col-unit-Owner-Dashboard,
-.table-col-date-Owner-Dashboard,
-.table-col-amount-Owner-Dashboard,
-.table-col-status-Owner-Dashboard,
-.table-col-invoice-Owner-Dashboard { 
-    width: 15%; 
-    min-width: 120px; 
-    text-align: left;
-}
-
-.table-col-action-Owner-Dashboard { 
-    width: 15%; 
-    min-width: 100px; 
-    text-align: center;
-}
-
-/* LAHAT LEFT ALIGN PARA PANTAY-PANTAY */
-.table-data-Owner-Dashboard {
-    padding: 16px 12px;
-    vertical-align: middle;
-    color: #475569;
-    font-weight: 500;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: left;
-}
-
-/* STATUS BADGES - CENTERED */
-.table-col-status-Owner-Dashboard .table-data-Owner-Dashboard {
-    text-align: center;
-    padding: 8px 12px;
-}
-
-/* ACTION BUTTONS - CENTERED */
-.table-col-action-Owner-Dashboard .table-data-Owner-Dashboard {
-    text-align: center;
-    padding: 8px 12px;
-}
-
-.sortable-header-Owner-Dashboard {
-    cursor: pointer;
-    transition: all 0.3s ease;
-    user-select: none;
-}
-
-.sortable-header-Owner-Dashboard:hover {
-    background: rgba(10, 45, 141, 0.05);
-    color: #0a2d8d;
-}
-
-.header-content-Owner-Dashboard {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
-}
-
-.sort-icons-Owner-Dashboard {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.sort-icon-Owner-Dashboard {
-    color: #cbd5e1;
-    transition: color 0.3s ease;
-}
-
-.active-sort-Owner-Dashboard {
-    color: #0a2d8d;
 }
 
 .table-body-Owner-Dashboard .table-row-Owner-Dashboard {
@@ -387,21 +302,23 @@
 }
 
 .table-body-Owner-Dashboard .table-row-Owner-Dashboard:hover {
-    background: linear-gradient(90deg, rgba(10, 45, 141, 0.03) 0%, rgba(10, 45, 141, 0.01) 100%);
+    background: #f8faff;
 }
 
-.data-text-Owner-Dashboard {
-    display: block;
-    width: 100%;
+.table-data-Owner-Dashboard {
+    padding: 16px 12px;
+    color: #475569;
+    font-weight: 500;
+    text-align: left;
 }
 
 /* === ACTION BUTTONS === */
-.view-btn-Owner-Dashboard {
+.review-btn-Owner-Dashboard {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     padding: 8px 16px;
-    background: linear-gradient(135deg, #0a2d8d 0%, #1e40af 100%);
+    background: #0a2d8d;
     color: white;
     border: none;
     border-radius: 8px;
@@ -409,25 +326,11 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(10, 45, 141, 0.3);
-    white-space: nowrap;
-    min-width: 80px;
-    justify-content: center;
 }
 
-.view-btn-Owner-Dashboard:hover {
-    background: linear-gradient(135deg, #1e40af 0%, #0a2d8d 100%);
+.review-btn-Owner-Dashboard:hover {
+    background: #1e40af;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(10, 45, 141, 0.4);
-}
-
-.view-icon-Owner-Dashboard {
-    color: white;
-}
-
-.view-text-Owner-Dashboard {
-    font-size: 13px;
-    font-weight: 600;
 }
 
 /* === STATUS BADGES === */
@@ -441,222 +344,104 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
     min-width: 80px;
-    white-space: nowrap;
 }
 
 .status-pending-Owner-Dashboard {
-    background: linear-gradient(135deg, #fef3c7 0%, #fef7cd 100%);
+    background: #fef3c7;
     color: #92400e;
-    border: 1px solid #fed7aa;
 }
 
 .status-paid-Owner-Dashboard {
-    background: linear-gradient(135deg, #d1fae5 0%, #dcfce7 100%);
+    background: #d1fae5;
     color: #065f46;
-    border: 1px solid #a7f3d0;
 }
 
 .status-overdue-Owner-Dashboard {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    background: #fee2e2;
     color: #991b1b;
-    border: 1px solid #fca5a5;
+}
+
+/* === CHART SECTION === */
+.chart-card-Owner-Dashboard {
+    background: white;
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+}
+
+.chart-header-Owner-Dashboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.chart-header-content-Owner-Dashboard {
+    flex: 1;
+}
+
+.chart-title-Owner-Dashboard {
+    margin: 0 0 4px 0;
+    color: #1a1f36;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.chart-subtitle-Owner-Dashboard {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.chart-container-Owner-Dashboard {
+    padding: 24px;
+    height: 350px;
 }
 
 /* === RESPONSIVE DESIGN === */
 @media (max-width: 1200px) {
-    .dashboard-container-Owner-Dashboard {
-        padding: 20px;
-    }
-    
-    .stats-grid-Owner-Dashboard {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
+    .tables-grid-Owner-Dashboard {
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 768px) {
+    .dashboard-container-Owner-Dashboard {
+        padding: 20px;
+    }
+    
     .dashboard-header-Owner-Dashboard {
         flex-direction: column;
-        align-items: stretch;
-        gap: 16px;
     }
     
     .header-actions-Owner-Dashboard {
+        width: 100%;
         justify-content: flex-start;
     }
     
     .stats-grid-Owner-Dashboard {
         grid-template-columns: 1fr;
-        gap: 16px;
     }
     
-    .stat-card-Owner-Dashboard {
-        padding: 20px;
-    }
-    
-    .search-container-Owner-Dashboard {
+    .table-header-section-Owner-Dashboard,
+    .chart-header-Owner-Dashboard {
         flex-direction: column;
         align-items: stretch;
     }
     
     .search-box-Owner-Dashboard {
-        max-width: none;
+        min-width: auto;
     }
     
-    /* Mobile table styles */
-    .table-container-Owner-Dashboard {
-        border-radius: 0 0 16px 16px;
-    }
-    
-    .data-table-Owner-Dashboard,
-    .data-table-Owner-Dashboard thead,
-    .data-table-Owner-Dashboard tbody,
-    .data-table-Owner-Dashboard th,
-    .data-table-Owner-Dashboard td,
-    .data-table-Owner-Dashboard tr {
-        display: block;
-    }
-    
-    .data-table-Owner-Dashboard thead {
-        display: none;
-    }
-    
-    .data-table-Owner-Dashboard tr {
-        background: white;
-        margin: 0 16px 12px 16px;
-        border-radius: 12px;
-        padding: 16px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
-    
-    .data-table-Owner-Dashboard td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 0;
-        border: none;
-        border-bottom: 1px solid #f1f5f9;
-        text-align: left;
-        width: 100% !important;
-    }
-    
-    .data-table-Owner-Dashboard td:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-    
-    .data-table-Owner-Dashboard td::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: #475569;
-        flex: 0 0 120px;
-        text-align: left;
-        font-size: 13px;
-    }
-    
-    .data-table-Owner-Dashboard td .data-text-Owner-Dashboard {
-        flex: 1;
-        text-align: right;
-        font-weight: 500;
-    }
-    
-    /* Mobile action buttons */
-    .table-col-action-Owner-Dashboard .table-data-Owner-Dashboard {
-        justify-content: space-between;
-    }
-    
-    .view-btn-Owner-Dashboard {
-        width: auto;
-        min-width: 70px;
-    }
-    
-    /* Mobile status badges */
-    .status-badge-Owner-Dashboard {
-        padding: 4px 10px;
-        font-size: 10px;
-        min-width: 70px;
-    }
-}
-
-@media (max-width: 480px) {
-    .dashboard-container-Owner-Dashboard {
+    .chart-container-Owner-Dashboard {
+        height: 300px;
         padding: 16px;
     }
-    
-    .header-content-Owner-Dashboard h1 {
-        font-size: 24px;
-    }
-    
-    .stat-card-Owner-Dashboard {
-        flex-direction: column;
-        text-align: center;
-        gap: 16px;
-    }
-    
-    .stat-icon-container-Owner-Dashboard {
-        margin-right: 0;
-    }
-    
-    .table-header-Owner-Dashboard {
-        padding: 20px 16px 0 16px;
-    }
-    
-    .search-container-Owner-Dashboard {
-        padding: 16px;
-    }
-    
-    .data-table-Owner-Dashboard tr {
-        margin: 0 8px 8px 8px;
-        padding: 12px;
-    }
-    
-    .view-btn-Owner-Dashboard {
-        padding: 6px 12px;
-        font-size: 12px;
-        min-width: 60px;
-    }
-    
-    .data-table-Owner-Dashboard td::before {
-        flex: 0 0 100px;
-        font-size: 12px;
-    }
-}
-
-/* === LOADING ANIMATION === */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.stat-card-Owner-Dashboard,
-.table-card-Owner-Dashboard {
-    animation: fadeInUp 0.6s ease-out;
-}
-
-/* === SCROLLBAR STYLING === */
-.table-container-Owner-Dashboard::-webkit-scrollbar {
-    height: 8px;
-}
-
-.table-container-Owner-Dashboard::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 4px;
-}
-
-.table-container-Owner-Dashboard::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
-}
-
-.table-container-Owner-Dashboard::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
 }

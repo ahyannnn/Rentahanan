@@ -786,3 +786,102 @@
     color: #fff !important;
     fill: #fff !important;
 }
+
+/* Add these styles to your existing Owner-Tenant.css */
+
+/* === FILTER TABS === */
+.Owner-Tenant-filter-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 25px;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  flex-wrap: wrap;
+}
+
+.Owner-Tenant-filter-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  color: #666;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.Owner-Tenant-filter-tab:hover {
+  border-color: #0a2d8d;
+  color: #0a2d8d;
+  transform: translateY(-1px);
+}
+
+.Owner-Tenant-filter-tab-active {
+  background: linear-gradient(135deg, #0a2d8d 0%, #061a53 100%);
+  border-color: #0a2d8d;
+  color: white;
+  box-shadow: 0 4px 15px rgba(10, 45, 141, 0.3);
+}
+
+.Owner-Tenant-filter-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+/* Update existing styles for better icon alignment */
+.Owner-Tenant-tab-icon,
+.Owner-Tenant-search-icon,
+.Owner-Tenant-filter-tab svg {
+  color: inherit;
+}
+
+.Owner-Tenant-info p,
+.Owner-Tenant-modal-email,
+.Owner-Tenant-info-item label,
+.Owner-Tenant-document-label,
+.Owner-Tenant-status-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.Owner-Tenant-view-profile-btn,
+.Owner-Tenant-action-btn,
+.Owner-Tenant-document-btn,
+.Owner-Tenant-approve-btn,
+.Owner-Tenant-reject-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Responsive design for filter tabs */
+@media (max-width: 768px) {
+  .Owner-Tenant-filter-tabs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .Owner-Tenant-filter-tab {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .Owner-Tenant-filter-tab {
+    padding: 10px 16px;
+    font-size: 0.8rem;
+  }
+}
