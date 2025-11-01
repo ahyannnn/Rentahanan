@@ -141,12 +141,12 @@ function Units() {
     editFormData.append("description", formData.description);
     editFormData.append("price", formData.price);
     editFormData.append("status", formData.status);
-    
+
     // Only append image if a new one was selected
     if (formData.image) {
       editFormData.append("image", formData.image);
     }
-    
+
     try {
       const response = await fetch(`${API_URL}/api/houses/${selectedUnit.id}`, {
         method: "PUT",
@@ -190,7 +190,7 @@ function Units() {
       showModal("Error", "This unit cannot be edited because it's missing an ID.", "error");
       return;
     }
-    
+
     setSelectedUnit(unit);
     setFormData({
       name: unit.name,
@@ -225,7 +225,7 @@ function Units() {
     const total = units.length;
     const available = units.filter(unit => unit.status.toLowerCase() === 'available').length;
     const occupied = units.filter(unit => unit.status.toLowerCase() === 'occupied').length;
-    
+
     return { total, available, occupied };
   };
 
@@ -294,6 +294,7 @@ function Units() {
       </div>
 
       {/* --- Units Grid --- */}
+      {/* --- Units Grid --- */}
       {loading ? (
         <div className="Owner-Units-loading">
           <div className="Owner-Units-loading-spinner"></div>
@@ -329,7 +330,7 @@ function Units() {
                   <p className="Owner-Units-card-description">
                     {unit.description || "No description available"}
                   </p>
-                  
+
                   <div className="Owner-Units-price-section">
                     <span className="Owner-Units-price">
                       ₱{Number(unit.price).toLocaleString()}
@@ -348,8 +349,10 @@ function Units() {
                       View
                     </button>
                     <button
-                      className="Owner-Units-edit-btn"
-                      onClick={() => handleOpenEditModal(unit)}
+                      className={`Owner-Units-edit-btn ${unit.status.toLowerCase() === 'occupied' ? 'Owner-Units-edit-btn-disabled' : ''}`}
+                      onClick={() => unit.status.toLowerCase() !== 'occupied' && handleOpenEditModal(unit)}
+                      disabled={unit.status.toLowerCase() === 'occupied'}
+                      title={unit.status.toLowerCase() === 'occupied' ? 'Cannot edit occupied units' : 'Edit unit'}
                     >
                       <Edit size={16} />
                       Edit
@@ -447,7 +450,7 @@ function Units() {
                     Choose Image
                   </div>
                 </div>
-                
+
                 {previewImage && (
                   <div className="Owner-Units-preview-container">
                     <img src={previewImage} alt="Preview" className="Owner-Units-preview-image" />
@@ -547,19 +550,19 @@ function Units() {
                     {previewImage ? "Change Image" : "Choose Image"}
                   </div>
                 </div>
-                
+
                 {previewImage && (
                   <div className="Owner-Units-preview-container">
                     <img src={previewImage} alt="Preview" className="Owner-Units-preview-image" />
                     <p className="Owner-Units-preview-note">New image selected</p>
                   </div>
                 )}
-                
+
                 {!previewImage && selectedUnit.imagepath && (
                   <div className="Owner-Units-current-image">
                     <p className="Owner-Units-current-image-label">Current Image:</p>
-                    <img 
-                      src={`${API_URL}/uploads/houseimages/${selectedUnit.imagepath}`} 
+                    <img
+                      src={`${API_URL}/uploads/houseimages/${selectedUnit.imagepath}`}
                       alt={selectedUnit.name}
                       className="Owner-Units-preview-image"
                     />
@@ -612,21 +615,21 @@ function Units() {
                   <span className="Owner-Units-detail-label">Unit Name</span>
                   <span className="Owner-Units-detail-value">{selectedUnit.name}</span>
                 </div>
-                
+
                 <div className="Owner-Units-detail-row">
                   <span className="Owner-Units-detail-label">Description</span>
                   <span className="Owner-Units-detail-value">
                     {selectedUnit.description || "No description provided"}
                   </span>
                 </div>
-                
+
                 <div className="Owner-Units-detail-row">
                   <span className="Owner-Units-detail-label">Monthly Price</span>
                   <span className="Owner-Units-detail-value Owner-Units-detail-price">
                     ₱{Number(selectedUnit.price).toLocaleString()}
                   </span>
                 </div>
-                
+
                 <div className="Owner-Units-detail-row">
                   <span className="Owner-Units-detail-label">Status</span>
                   <span className={`Owner-Units-detail-status ${selectedUnit.status.toLowerCase()}`}>

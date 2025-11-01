@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/LandingPage.css";
 import { Link } from "react-router-dom";
+import { MapPin, Phone, Mail, Clock, Home } from "lucide-react";
 
 function LandingPage() {
   const [houses, setHouses] = useState([]);
@@ -43,7 +44,7 @@ function LandingPage() {
 
       {/* Houses Section */}
       <section className="houses-section-Layout">
-        <h2 className="section-title-Layout">Houses</h2>
+        <h2 className="section-title-Layout">Available Properties</h2>
         <div className="houses-container-Layout">
           {houses.map((house) => (
             <div
@@ -116,6 +117,75 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* Location & Contact Section */}
+      <section className="contact-section-Layout">
+        <div className="contact-container-Layout">
+          <div className="contact-info-Layout">
+            <h2 className="section-title-Layout">Visit Us Today</h2>
+            <div className="contact-details-Layout">
+              <div className="contact-item-Layout">
+                <MapPin className="contact-icon-Layout" />
+                <div>
+                  <h3>Location</h3>
+                  <p>Abangan Sur Marilao</p>
+                  <p>Bulacan Philippines</p>
+                </div>
+              </div>
+              <div className="contact-item-Layout">
+                <Phone className="contact-icon-Layout" />
+                <div>
+                  <h3>Phone Number</h3>
+                  <p>+63 (2) 8123-4567</p>
+                  <p>+63 912 345 6789 (Globe)</p>
+                  <p>+63 918 765 4321 (Smart)</p>
+                </div>
+              </div>
+              <div className="contact-item-Layout">
+                <Mail className="contact-icon-Layout" />
+                <div>
+                  <h3>Email Address</h3>
+                  <p>info@rentahanan.com</p>
+                  <p>support@rentahanan.com</p>
+                </div>
+              </div>
+              <div className="contact-item-Layout">
+                <Clock className="contact-icon-Layout" />
+                <div>
+                  <h3>Business Hours</h3>
+                  <p>Monday - Friday: 8:00 AM - 6:00 PM</p>
+                  <p>Saturday: 9:00 AM - 3:00 PM</p>
+                  <p>Sunday: Closed</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="map-section-Layout">
+            <h3>Find Us Here</h3>
+            <div className="map-image-container-Layout">
+              <img 
+                src="/images/map-location.jpg" 
+                alt="RenTahanan Location - Abangan Sur Marilao, Bulacan"
+                className="map-image-Layout"
+                onError={(e) => {
+                  e.target.src = "/images/default-map.jpg";
+                }}
+              />
+            </div>
+            <div className="location-details-Layout">
+              <h4>Prime Location Features:</h4>
+              <ul>
+                <li>✓ Near Kaps Tapsi</li>
+                <li>✓ Walking distance to malls and markets</li>
+                <li>✓ Safe and accessible neighborhood</li>
+                <li>✓ Close to schools and universities</li>
+                <li>✓ 24/7 security in the area</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* About Section */}
       <section className="about-section-Layout">
         <h2 className="section-title-Layout">About RENTAHANAN</h2>
@@ -129,7 +199,35 @@ function LandingPage() {
 
       {/* Footer */}
       <footer className="footer-Layout">
-        <p className="footer-text-Layout">&copy; 2025 RENTAHANAN. All Rights Reserved.</p>
+        <div className="footer-content-Layout">
+          <div className="footer-section-Layout">
+            <h3>RenTahanan</h3>
+            <p>Your trusted partner in finding the perfect home. We connect tenants with quality rental properties across Metro Manila.</p>
+          </div>
+          
+          <div className="footer-section-Layout">
+            <h4>Contact Info</h4>
+            <div className="footer-contact-Layout">
+              <p><MapPin size={16} /> Abangan Sur Marilao</p>
+              <p><Phone size={16} /> +63 (2) 8123-4567</p>
+              <p><Mail size={16} /> info@rentahanan.com</p>
+            </div>
+          </div>
+          
+          <div className="footer-section-Layout">
+            <h4>Follow Us</h4>
+            <div className="social-links-Layout">
+              <a href="#" aria-label="Facebook">Facebook</a>
+              <a href="#" aria-label="Instagram">Instagram</a>
+              <a href="#" aria-label="Twitter">Twitter</a>
+            </div>
+          </div>
+        </div>
+        
+        <div className="footer-bottom-Layout">
+          <p>&copy; 2025 RENTAHANAN. All Rights Reserved.</p>
+          
+        </div>
       </footer>
     </div>
   );

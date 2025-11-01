@@ -234,8 +234,8 @@ def generate_contract_pdf():
         # Parties Table
         parties_data = [
             ['PARTY', 'INFORMATION'],
-            ['LANDLORD/Owner:', 'RenTahanan Property Management<br/>Duly represented by its authorized agent'],
-            ['TENANT/Lessee:', f'{tenant_name}<br/>Tenant ID: {tenant_id}']
+            ['LANDLORD/Owner:', 'RenTahanan Property Management'],
+            ['TENANT/Lessee:', f'{tenant_name} Tenant ID: {tenant_id}']
         ]
         
         parties_table = Table(parties_data, colWidths=[2*inch, 4*inch])
@@ -251,7 +251,7 @@ def generate_contract_pdf():
         ]))
         
         story.append(parties_table)
-        story.append(Spacer(1, 20))
+        story.append(Spacer(1, 5))
 
         # Property Details Section - FIXED: Replace peso sign with PHP
         story.append(Paragraph("PROPERTY DETAILS", section_style))
@@ -284,62 +284,27 @@ def generate_contract_pdf():
         
         if remarks and remarks.strip():
             story.append(Spacer(1, 10))
-            remarks_para = Paragraph(f"<b>Special Remarks:</b> {remarks}", normal_style)
+            remarks_para = Paragraph(f"Special Remarks: {remarks}", normal_style)
             story.append(remarks_para)
-
-        story.append(Spacer(1, 20))
+        story.append(Spacer(1, 5))
 
         # Terms and Conditions
         story.append(Paragraph("TERMS AND CONDITIONS", section_style))
         
+        # Add some sample terms (you can customize these)
         terms = [
             "1. The Tenant shall pay the monthly rent on or before the 5th day of each month.",
-            "2. The security deposit shall be refundable upon termination, subject to property inspection.",
-            "3. The Tenant shall maintain the property in good condition and report any damages promptly.",
-            "4. Subletting or assignment of the property requires prior written consent from the Landlord.",
-            "5. The Landlord reserves the right to conduct property inspections with reasonable notice.",
-            "6. Utilities and other charges shall be the responsibility of the Tenant unless otherwise stated.",
-            "7. Early termination of this Agreement may result in forfeiture of the security deposit.",
-            "8. The Tenant shall comply with all building rules and regulations."
+            "2. The Security Deposit shall be refundable upon termination of this agreement.",
+            "3. The Tenant shall maintain the premises in good condition.",
+            "4. The Landlord shall be responsible for major repairs and maintenance of the property.",
         ]
         
         for term in terms:
             story.append(Paragraph(term, normal_style))
             story.append(Spacer(1, 5))
 
-        story.append(Spacer(1, 30))
-
-        # Signatures Section - FIXED: Add more space to prevent overlap
-        story.append(Paragraph("ACKNOWLEDGED AND AGREED", section_style))
+        story.append(Spacer(1, 5))
         
-        # Create signature table with proper spacing
-        sig_data = [
-            ['', 'TENANT', 'LANDLORD'],
-            ['Name:', tenant_name, 'RenTahanan Property Management'],
-            ['Signature:', '', ''],
-            ['', '', ''],  # Extra row for signature space
-            ['', '', ''],
-            ['Date:', datetime.now().strftime("%Y-%m-%d"), datetime.now().strftime("%Y-%m-%d")]
-        ]
-        
-        sig_table = Table(sig_data, colWidths=[1.5*inch, 2.5*inch, 2.5*inch])
-        sig_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 11),
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#ECF0F1')),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('TOPPADDING', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
-            ('LEFTPADDING', (0, 0), (-1, -1), 8),
-            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#DDDDDD')),
-            ('SPAN', (2, 3), (2, 4)),  # Span signature rows for landlord
-            ('SPAN', (1, 3), (1, 4)),  # Span signature rows for tenant
-        ]))
-        
-        story.append(sig_table)
-        story.append(Spacer(1, 60))  # Increased space after signatures
-
         # Build the PDF
         doc.build(story)
 
@@ -365,9 +330,13 @@ def generate_contract_pdf():
                 img_buffer.seek(0)
                 signature_reader = ImageReader(img_buffer)
 
-                # FIXED: Position for landlord signature - moved to avoid overlap
-                # Adjusted coordinates to place signature in the designated area
-                can.drawImage(signature_reader, 320, 100, width=120, height=40, mask='auto')
+                # UPDATED: Position for landlord signature - aligned horizontally with tenant
+                can.drawImage(signature_reader, 390, 65, width=120, height=40, mask='auto')
+                
+                # ADDED: Tenant and Landlord labels
+                can.setFont("Helvetica-Bold", 10)
+                can.drawString(100, 50, "Tenant")  # Position for Tenant label
+                can.drawString(430, 50, "Landlord")  # Position for Landlord label
                 
                 can.save()
 
@@ -505,7 +474,7 @@ def get_contracts_by_tenant(tenant_id):
     return jsonify(result)
 
 
-# ✅ Tenant sign contract (upload signed PDF) - FIXED: Adjusted signature position
+# ✅ Tenant sign contract (upload signed PDF) - UPDATED: Adjusted signature position for horizontal alignment
 @contract_bp.route("/contracts/sign", methods=["POST"])
 def sign_contract():
     from io import BytesIO
@@ -553,8 +522,8 @@ def sign_contract():
         # ✅ Create signature overlay PDF
         packet = BytesIO()
         c = canvas.Canvas(packet, pagesize=A4)
-        # FIXED: Adjusted signature position to avoid overlap
-        c.drawImage(sig_temp_path, 110, 140, width=150, height=60, mask='auto')  # moved higher
+        # UPDATED: Adjusted signature position for horizontal alignment with landlord
+        c.drawImage(sig_temp_path, 50, 65, width=150, height=60, mask='auto')  # moved to align horizontally
         c.save()
         packet.seek(0)
 
