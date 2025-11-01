@@ -76,18 +76,14 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     border: 1px solid #f1f5f9;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
 }
 
 .stat-card-Owner-Dashboard:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-.stat-header-Owner-Dashboard {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
 }
 
 .stat-icon-container-Owner-Dashboard {
@@ -98,6 +94,7 @@
     align-items: center;
     justify-content: center;
     color: white;
+    flex-shrink: 0;
 }
 
 .stat-icon-blue-Owner-Dashboard {
@@ -116,24 +113,8 @@
     background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
 }
 
-.stat-trend-Owner-Dashboard {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.stat-trend-up-Owner-Dashboard {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.stat-trend-down-Owner-Dashboard {
-    background: #fee2e2;
-    color: #991b1b;
+.stat-info-Owner-Dashboard {
+    flex: 1;
 }
 
 .stat-value-Owner-Dashboard {
@@ -144,193 +125,372 @@
 }
 
 .stat-label-Owner-Dashboard {
-    margin: 0;
+    margin: 0 0 8px 0;
     color: #64748b;
     font-size: 14px;
     font-weight: 500;
 }
 
-/* === TWO COLUMN TABLES === */
-.tables-grid-Owner-Dashboard {
+.stat-trend-Owner-Dashboard {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.stat-trend-up-Owner-Dashboard {
+    color: #065f46;
+}
+
+.stat-trend-down-Owner-Dashboard {
+    color: #991b1b;
+}
+
+.trend-icon-Owner-Dashboard {
+    width: 16px;
+    height: 16px;
+}
+
+.trend-text-Owner-Dashboard {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* === CHARTS SECTION === */
+.charts-grid-Owner-Dashboard {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     gap: 24px;
     margin-bottom: 24px;
 }
 
-.table-card-Owner-Dashboard {
+.chart-card-Owner-Dashboard {
     background: white;
+    border: 1px solid #e2e8f0;
     border-radius: 16px;
-    padding: 0;
+    padding: 24px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-    border: 1px solid #f1f5f9;
-    overflow: hidden;
 }
 
-.table-header-section-Owner-Dashboard {
+.chart-header-Owner-Dashboard {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    padding: 24px;
-    border-bottom: 1px solid #f1f5f9;
-    flex-wrap: wrap;
-    gap: 16px;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.table-header-content-Owner-Dashboard {
+.chart-title-section-Owner-Dashboard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chart-icon-Owner-Dashboard {
+    color: #6b7280;
+}
+
+.chart-title-Owner-Dashboard {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.chart-subtitle-Owner-Dashboard {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.chart-container-Owner-Dashboard {
+    height: 300px;
+    position: relative;
+}
+
+/* Bar Chart Styles */
+.bar-chart-Owner-Dashboard {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-bars-container-Owner-Dashboard {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 80%;
+    position: relative;
+    z-index: 2;
+}
+
+.bar-chart-item-Owner-Dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+}
+
+.bar-wrapper-Owner-Dashboard {
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    width: 40px;
+}
+
+.bar-fill-Owner-Dashboard {
+    background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+    border-radius: 6px 6px 0 0;
+    width: 100%;
+    position: relative;
+    transition: all 0.3s ease;
+    min-height: 4px;
+}
+
+.bar-fill-Owner-Dashboard:hover {
+    transform: scale(1.05);
+}
+
+.bar-value-Owner-Dashboard {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.bar-fill-Owner-Dashboard:hover .bar-value-Owner-Dashboard {
+    opacity: 1;
+}
+
+.bar-label-Owner-Dashboard {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.chart-grid-Owner-Dashboard {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 1;
+}
+
+.grid-line-Owner-Dashboard {
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Donut Chart Styles */
+.donut-chart-Owner-Dashboard {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 100%;
+}
+
+.donut-chart-visual-Owner-Dashboard {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    flex-shrink: 0;
+}
+
+.donut-svg-Owner-Dashboard {
+    width: 100%;
+    height: 100%;
+}
+
+.donut-segment-Owner-Dashboard {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.donut-segment-Owner-Dashboard:hover {
+    stroke-width: 22;
+    opacity: 0.9;
+}
+
+.donut-center-Owner-Dashboard {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.donut-total-Owner-Dashboard {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
+}
+
+.donut-label-Owner-Dashboard {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.donut-legend-Owner-Dashboard {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.legend-item-Owner-Dashboard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.legend-item-Owner-Dashboard:hover {
+    background-color: #f8fafc;
+}
+
+.legend-color-Owner-Dashboard {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.legend-info-Owner-Dashboard {
+    display: flex;
+    flex-direction: column;
     flex: 1;
 }
 
-.table-title-Owner-Dashboard {
-    margin: 0 0 4px 0;
-    color: #1a1f36;
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.table-subtitle-Owner-Dashboard {
-    margin: 0;
-    color: #64748b;
+.legend-label-Owner-Dashboard {
     font-size: 14px;
-    font-weight: 400;
-}
-
-.view-all-btn-Owner-Dashboard {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    background: transparent;
-    color: #0a2d8d;
-    border: 1px solid #0a2d8d;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.view-all-btn-Owner-Dashboard:hover {
-    background: #0a2d8d;
-    color: white;
-    transform: translateY(-1px);
-}
-
-.table-actions-Owner-Dashboard {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.search-container-Owner-Dashboard {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-.search-box-Owner-Dashboard {
-    position: relative;
-    min-width: 250px;
-}
-
-.search-icon-Owner-Dashboard {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #64748b;
-}
-
-.search-input-Owner-Dashboard {
-    width: 100%;
-    padding: 10px 16px 10px 42px;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    background: white;
-    font-size: 14px;
-    transition: all 0.3s ease;
-}
-
-.search-input-Owner-Dashboard:focus {
-    outline: none;
-    border-color: #0a2d8d;
-    box-shadow: 0 0 0 3px rgba(10, 45, 141, 0.1);
-}
-
-.filter-btn-Owner-Dashboard {
-    padding: 10px;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    background: white;
-    color: #64748b;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.filter-btn-Owner-Dashboard:hover {
-    border-color: #0a2d8d;
-    color: #0a2d8d;
-}
-
-/* === TABLE STYLES === */
-.table-container-Owner-Dashboard {
-    overflow-x: auto;
-}
-
-.data-table-Owner-Dashboard {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-
-.table-head-Owner-Dashboard {
-    background: #f8faff;
-}
-
-.table-header-Owner-Dashboard {
-    padding: 16px 12px;
-    text-align: left;
-    font-weight: 600;
-    color: #475569;
-    border-bottom: 1px solid #e2e8f0;
-    white-space: nowrap;
-}
-
-.table-body-Owner-Dashboard .table-row-Owner-Dashboard {
-    transition: all 0.3s ease;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.table-body-Owner-Dashboard .table-row-Owner-Dashboard:hover {
-    background: #f8faff;
-}
-
-.table-data-Owner-Dashboard {
-    padding: 16px 12px;
-    color: #475569;
     font-weight: 500;
-    text-align: left;
+    color: #374151;
 }
 
-/* === ACTION BUTTONS === */
-.review-btn-Owner-Dashboard {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    background: #0a2d8d;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 13px;
+.legend-value-Owner-Dashboard {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* === QUICK OVERVIEW SECTION === */
+.overview-grid-Owner-Dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.overview-card-Owner-Dashboard {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.overview-header-Owner-Dashboard {
+    margin-bottom: 16px;
+}
+
+.overview-title-Owner-Dashboard {
+    font-size: 16px;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    color: #1f2937;
+    margin: 0;
 }
 
-.review-btn-Owner-Dashboard:hover {
-    background: #1e40af;
-    transform: translateY(-1px);
+.overview-content-Owner-Dashboard {
+    height: 200px;
+    overflow-y: auto;
+}
+
+/* Activity List */
+.activity-list-Owner-Dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.activity-item-Owner-Dashboard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.activity-dot-Owner-Dashboard {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    flex-shrink: 0;
+}
+
+.activity-info-Owner-Dashboard {
+    flex: 1;
+}
+
+.activity-text-Owner-Dashboard {
+    font-size: 14px;
+    color: #374151;
+    margin: 0 0 4px 0;
+}
+
+.activity-date-Owner-Dashboard {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.activity-amount-Owner-Dashboard {
+    font-size: 14px;
+    font-weight: 600;
+    color: #059669;
+}
+
+/* Stats List */
+.stats-list-Owner-Dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.stat-item-Owner-Dashboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.stat-item-Owner-Dashboard:last-child {
+    border-bottom: none;
+}
+
+.stat-item-label-Owner-Dashboard {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.stat-item-value-Owner-Dashboard {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
 }
 
 /* === STATUS BADGES === */
@@ -362,53 +522,73 @@
     color: #991b1b;
 }
 
-/* === CHART SECTION === */
-.chart-card-Owner-Dashboard {
-    background: white;
-    border-radius: 16px;
-    padding: 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-    border: 1px solid #f1f5f9;
-    overflow: hidden;
-}
-
-.chart-header-Owner-Dashboard {
+/* === NO DATA STATES === */
+.no-chart-data-Owner-Dashboard {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 24px;
-    border-bottom: 1px solid #f1f5f9;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-.chart-header-content-Owner-Dashboard {
-    flex: 1;
-}
-
-.chart-title-Owner-Dashboard {
-    margin: 0 0 4px 0;
-    color: #1a1f36;
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.chart-subtitle-Owner-Dashboard {
-    margin: 0;
-    color: #64748b;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6b7280;
+    text-align: center;
     font-size: 14px;
-    font-weight: 400;
 }
 
-.chart-container-Owner-Dashboard {
-    padding: 24px;
-    height: 350px;
+.no-activity-Owner-Dashboard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.loading-state,
+.error-state,
+.no-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    color: #6b7280;
+    font-size: 16px;
+    text-align: center;
+}
+
+.error-state {
+    color: #dc2626;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.error-state button {
+    padding: 8px 16px;
+    background: #0a2d8d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
 }
 
 /* === RESPONSIVE DESIGN === */
 @media (max-width: 1200px) {
-    .tables-grid-Owner-Dashboard {
+    .charts-grid-Owner-Dashboard {
         grid-template-columns: 1fr;
+    }
+    
+    .overview-grid-Owner-Dashboard {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 1024px) {
+    .donut-chart-Owner-Dashboard {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .donut-legend-Owner-Dashboard {
+        width: 100%;
     }
 }
 
@@ -419,6 +599,7 @@
     
     .dashboard-header-Owner-Dashboard {
         flex-direction: column;
+        align-items: stretch;
     }
     
     .header-actions-Owner-Dashboard {
@@ -430,18 +611,73 @@
         grid-template-columns: 1fr;
     }
     
-    .table-header-section-Owner-Dashboard,
+    .chart-container-Owner-Dashboard {
+        height: 250px;
+    }
+    
     .chart-header-Owner-Dashboard {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .donut-chart-visual-Owner-Dashboard {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .overview-content-Owner-Dashboard {
+        height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-container-Owner-Dashboard {
+        padding: 16px;
+    }
+    
+    .dashboard-title-Owner-Dashboard {
+        font-size: 24px;
+    }
+    
+    .stat-card-Owner-Dashboard {
+        padding: 20px;
+    }
+    
+    .chart-card-Owner-Dashboard {
+        padding: 16px;
+    }
+    
+    .overview-card-Owner-Dashboard {
+        padding: 16px;
+    }
+    
+    .header-actions-Owner-Dashboard {
         flex-direction: column;
         align-items: stretch;
     }
     
-    .search-box-Owner-Dashboard {
-        min-width: auto;
+    .date-filter-btn-Owner-Dashboard,
+    .export-btn-Owner-Dashboard {
+        justify-content: center;
     }
-    
-    .chart-container-Owner-Dashboard {
-        height: 300px;
-        padding: 16px;
-    }
+}
+
+/* Scrollbar Styling */
+.overview-content-Owner-Dashboard::-webkit-scrollbar {
+    width: 4px;
+}
+
+.overview-content-Owner-Dashboard::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+}
+
+.overview-content-Owner-Dashboard::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+.overview-content-Owner-Dashboard::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }

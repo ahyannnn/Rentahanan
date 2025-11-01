@@ -13,7 +13,13 @@ const MyBills = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [loading, setLoading] = useState(true); // ✅ DAGDAG MO ITO
+  const [loading, setLoading] = useState(true);
+  const [successModalData, setSuccessModalData] = useState({
+    totalAmount: 0,
+    billCount: 0,
+    paymentMethod: "cash",
+    gcashRef: ""
+  });
 
   const storedUser = JSON.parse(localStorage.getItem("user")) || {};
   const tenantId = storedUser.tenantid || storedUser.userid || null;
@@ -21,7 +27,7 @@ const MyBills = () => {
   useEffect(() => {
     if (!tenantId) {
       console.warn("Tenant ID is missing!");
-      setLoading(false); // ✅ DAGDAG MO ITO
+      setLoading(false);
       return;
     }
 
@@ -33,14 +39,13 @@ const MyBills = () => {
       } catch (error) {
         console.error("Error fetching bills:", error);
       } finally {
-        setLoading(false); // ✅ DAGDAG MO ITO
+        setLoading(false);
       }
     };
 
     fetchBills();
   }, [tenantId]);
 
-  // ✅ DITO MO ILAGAY YUNG LOADING CHECK
   if (loading) {
     return (
       <div className="loading-container-Tenant-Bills">
@@ -112,9 +117,16 @@ const MyBills = () => {
         if (!response.ok) throw new Error(result.error || "Payment update failed");
       }
 
+      // Set success modal data before showing the modal
+      setSuccessModalData({
+        totalAmount: selectedTotalAmount,
+        billCount: selectedBills.length,
+        paymentMethod: paymentMethod,
+        gcashRef: gcashRef
+      });
+
       setShowSuccessModal(true);
       handleCloseModal();
-      setSelectedBills([]);
 
       // Refresh bills data
       const res = await fetch(`http://localhost:5000/api/bills/${tenantId}`);
@@ -130,6 +142,11 @@ const MyBills = () => {
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
+    // Clear selected bills after success modal is closed
+    setSelectedBills([]);
+    setPaymentMethod("cash");
+    setGcashRef("");
+    setGcashReceipt(null);
   };
 
   const handleViewReceipt = async (billId) => {
@@ -173,10 +190,6 @@ const MyBills = () => {
   };
 
   return (
-
-
-
-
     <div className="bills-invoice-container-Tenant-Bills">
       {/* Header Section */}
       <div className="bills-header-Tenant-Bills">
@@ -621,8 +634,8 @@ const MyBills = () => {
               <h2 className="success-title-Tenant-Bills">Payment Submitted Successfully!</h2>
 
               <p className="success-message-Tenant-Bills">
-                Your payment of <strong>{formatCurrency(selectedTotalAmount)}</strong> has been submitted for validation.
-                {paymentMethod === "gcash"
+                Your payment of <strong>{formatCurrency(successModalData.totalAmount)}</strong> has been submitted for validation.
+                {successModalData.paymentMethod === "gcash"
                   ? " Your GCash payment is being processed and will be verified shortly."
                   : " Please prepare the cash amount for your next meeting with the owner."
                 }
@@ -631,22 +644,26 @@ const MyBills = () => {
               <div className="success-details-Tenant-Bills">
                 <div className="success-detail-item-Tenant-Bills">
                   <span className="detail-label-Tenant-Bills">Payment Method:</span>
-                  <span className="detail-value-Tenant-Bills">{paymentMethod === "cash" ? "Cash" : "GCash"}</span>
+                  <span className="detail-value-Tenant-Bills">
+                    {successModalData.paymentMethod === "cash" ? "Cash" : "GCash"}
+                  </span>
                 </div>
-                {paymentMethod === "gcash" && gcashRef && (
+                {successModalData.paymentMethod === "gcash" && successModalData.gcashRef && (
                   <div className="success-detail-item-Tenant-Bills">
                     <span className="detail-label-Tenant-Bills">Reference Number:</span>
-                    <span className="detail-value-Tenant-Bills">{gcashRef}</span>
+                    <span className="detail-value-Tenant-Bills">{successModalData.gcashRef}</span>
                   </div>
                 )}
                 <div className="success-detail-item-Tenant-Bills">
                   <span className="detail-label-Tenant-Bills">Bills Paid:</span>
-                  <span className="detail-value-Tenant-Bills">{selectedBills.length} bill{selectedBills.length > 1 ? 's' : ''}</span>
+                  <span className="detail-value-Tenant-Bills">
+                    {successModalData.billCount} bill{successModalData.billCount > 1 ? 's' : ''}
+                  </span>
                 </div>
                 <div className="success-detail-item-Tenant-Bills">
                   <span className="detail-label-Tenant-Bills">Total Amount:</span>
                   <span className="detail-value-Tenant-Bills amount-highlight-Tenant-Bills">
-                    {formatCurrency(selectedTotalAmount)}
+                    {formatCurrency(successModalData.totalAmount)}
                   </span>
                 </div>
               </div>

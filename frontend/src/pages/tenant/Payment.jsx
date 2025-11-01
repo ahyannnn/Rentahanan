@@ -244,7 +244,7 @@ const Payment = () => {
                                 <div className="payment-card-content-tenant-p">
                                     <div className="payment-main-info-tenant-p">
                                         <h3 className="payment-amount-tenant-p">
-                                            ₱{payment.amount?.toLocaleString() || '0.00'}
+                                            {payment.amount?.toLocaleString() || '0.00'}
                                         </h3>
                                         <p className="payment-description-tenant-p">
                                             {payment.description || `Payment for ${payment.billType}`}

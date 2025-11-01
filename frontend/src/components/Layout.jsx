@@ -526,7 +526,6 @@ const Layout = () => {
       { name: "Browse Units", to: "/tenant/browse-units", icon: Building2 },
       { name: "My Bills", to: "/tenant/bills", icon: CreditCard },
       { name: "Contract", to: "/tenant/contract", icon: ClipboardList },
-      { name: "Concern", to: "/tenant/support", icon: HelpCircle },
       { name: "Notifications", to: "/tenant/notification", icon: Bell },
     ],
     Active: [
@@ -538,7 +537,7 @@ const Layout = () => {
       { name: "Notifications", to: "/tenant/notification", icon: Bell },
     ],
     Terminated: [
-      { name: "Concern", to: "/tenant/support", icon: HelpCircle },
+      { name: "Payment History", to: "/tenant/payment", icon: FileText },
     ],
   };
 

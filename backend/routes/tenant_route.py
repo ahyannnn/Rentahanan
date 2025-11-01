@@ -149,11 +149,16 @@ def approve_applicant(application_id):
         paid_bill = Bill.query.filter_by(tenantid=tenant.tenantid, status="Paid").first()
         if not paid_bill:
             return jsonify({"success": False, "message": "Initial payment not completed"}), 400
+        
+        unit = Unit.query.filter_by(unitid=contract.unitid).first()
+        if not unit:
+            return jsonify({"success": False, "message": "unit not found"}), 404
 
         # Update statuses
         application.status = "Approved"
         contract.status = "Active"
         tenant.status = "Active"  # ✅ ADDED: Set tenant status to Active
+        unit.status = "Occupied"
 
         # ✅ Create UNIFIED notification for tenant
         tenant_notification = Notification(
