@@ -321,7 +321,22 @@
   gap: 6px;
   margin-bottom: 16px;
 }
+/* Disabled edit button styles */
+.Owner-Units-edit-btn-disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
+  background-color: #f1f1f1 !important;
+  color: #999 !important;
+  border-color: #ddd !important;
+}
 
+.Owner-Units-edit-btn-disabled:hover {
+  background-color: #f1f1f1 !important;
+  color: #999 !important;
+  border-color: #ddd !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
 .Owner-Units-price {
   font-size: 1.3rem;
   font-weight: 800;

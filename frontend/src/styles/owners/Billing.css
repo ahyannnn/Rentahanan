@@ -15,7 +15,103 @@
 .Owner-Billing-header-content {
     margin-bottom: 24px;
 }
+/* Automated billing styles */
+.Owner-Billing-automated-modal {
+  max-width: 600px;
+}
 
+.Owner-Billing-automated-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 20px;
+}
+
+.Owner-Billing-warning-icon {
+  color: #f39c12;
+}
+
+.Owner-Billing-automated-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.Owner-Billing-automated-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: #f8f9fa;
+}
+
+.Owner-Billing-automated-info {
+  flex: 1;
+}
+
+.Owner-Billing-automated-info strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.Owner-Billing-automated-info span {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.Owner-Billing-bill-type {
+  background: #007bff;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.Owner-Billing-automated-amount {
+  font-weight: bold;
+  color: #28a745;
+  margin: 0 15px;
+}
+
+.Owner-Billing-auto-create-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.Owner-Billing-auto-create-btn:hover {
+  background: #218838;
+}
+
+.Owner-Billing-automated-badge {
+  background: #dc3545;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+}
 .Owner-Billing-title {
     font-size: 2.5rem;
     font-weight: 800;

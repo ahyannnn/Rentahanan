@@ -417,7 +417,7 @@ const Contract = () => {
             <div className="signature-canvas-container-Contract">
               <SignatureCanvas
                 ref={sigCanvas}
-                penColor="#0a2d8d"
+                penColor="#000000ff"
                 backgroundColor="#f8faff"
                 canvasProps={{
                   width: 500,
