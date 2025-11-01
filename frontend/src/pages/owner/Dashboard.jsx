@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Users,
   Home,
@@ -7,54 +7,98 @@ import {
   TrendingUp,
   Calendar,
   Download,
-  Search,
-  Filter,
-  Eye,
-  MoreHorizontal,
-  ChevronDown,
-  ChevronUp
+  PieChart,
+  BarChart3
 } from "lucide-react";
 import "../../styles/owners/Dashboard.css";
 
 const Dashboard = () => {
-  const [pendingApplications, setPendingApplications] = useState([
-    { id: 1, name: "Juan Dela Cruz 1", unit: "House 1", applied: "2024-01-11", status: "PENDING" },
-    { id: 2, name: "Juan Dela Cruz 2", unit: "House 2", applied: "2024-01-12", status: "PENDING" },
-    { id: 3, name: "Juan Dela Cruz 3", unit: "House 3", applied: "2024-01-13", status: "PENDING" },
-    { id: 4, name: "Juan Dela Cruz 4", unit: "House 4", applied: "2024-01-14", status: "PENDING" }
-  ]);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const [recentInvoices, setRecentInvoices] = useState([
-    { id: 1, tenant: "Maria Santos 1", dueDate: "2024-01-16", amount: "₱15,500", status: "PAID", invoiceNo: "INV-2024-001" },
-    { id: 2, tenant: "Maria Santos 2", dueDate: "2024-01-17", amount: "₱16,000", status: "OVERDUE", invoiceNo: "INV-2024-002" },
-    { id: 3, tenant: "Maria Santos 3", dueDate: "2024-01-18", amount: "₱16,500", status: "PAID", invoiceNo: "INV-2024-003" },
-    { id: 4, tenant: "Maria Santos 4", dueDate: "2024-01-19", amount: "₱17,000", status: "PAID", invoiceNo: "INV-2024-004" }
-  ]);
+  // Fetch dashboard data from API
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:5000/api/owner/dashboard');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch dashboard data');
+        }
+        
+        const data = await response.json();
+        setDashboardData(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const [pendingSearch, setPendingSearch] = useState("");
-  const [invoicesSearch, setInvoicesSearch] = useState("");
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+    fetchDashboardData();
+  }, []);
 
-  const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
+  // Calculate stats from real data
+  const totalTenants = dashboardData?.tenantsData?.length || 0;
+  const totalProperties = dashboardData?.dashboardStats?.totalProperties || 0;
+  const vacantProperties = dashboardData?.dashboardStats?.vacantProperties || 0;
+  const pendingApplications = dashboardData?.dashboardStats?.pendingApplications || 0;
+  const monthlyIncome = dashboardData?.dashboardStats?.monthlyRevenue || 0;
 
-  const filteredPendingApplications = pendingApplications.filter(app =>
-    app.name.toLowerCase().includes(pendingSearch.toLowerCase()) ||
-    app.unit.toLowerCase().includes(pendingSearch.toLowerCase()) ||
-    app.applied.includes(pendingSearch)
-  );
+  // Prepare data for charts
+  const financialData = dashboardData?.financialData || [];
+  const propertiesData = dashboardData?.propertiesData || [];
 
-  const filteredRecentInvoices = recentInvoices.filter(invoice =>
-    invoice.tenant.toLowerCase().includes(invoicesSearch.toLowerCase()) ||
-    invoice.invoiceNo.toLowerCase().includes(invoicesSearch.toLowerCase()) ||
-    invoice.amount.includes(invoicesSearch) ||
-    invoice.status.toLowerCase().includes(invoicesSearch.toLowerCase())
-  );
+  // Calculate property status distribution for donut chart
+  const propertyStatusCount = propertiesData.reduce((acc, property) => {
+    const status = property.status;
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {});
+
+  const propertyStatusData = Object.entries(propertyStatusCount).map(([status, count]) => ({
+    status,
+    count,
+    percentage: ((count / totalProperties) * 100).toFixed(1)
+  }));
+
+  // Calculate revenue trend data
+  const revenueData = financialData.map(item => ({
+    month: item.month,
+    revenue: item.value
+  }));
+
+  // Calculate occupancy rate
+  const occupancyRate = totalProperties > 0 ? 
+    Math.round(((totalProperties - vacantProperties) / totalProperties) * 100) : 0;
+
+  if (loading) {
+    return (
+      <div className="dashboard-container-Owner-Dashboard">
+        <div className="loading-state">Loading dashboard...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard-container-Owner-Dashboard">
+        <div className="error-state">
+          Error loading dashboard: {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (!dashboardData) {
+    return (
+      <div className="dashboard-container-Owner-Dashboard">
+        <div className="no-data">No dashboard data available</div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-container-Owner-Dashboard">
@@ -64,16 +108,7 @@ const Dashboard = () => {
           <h1 className="dashboard-title-Owner-Dashboard">Dashboard Overview</h1>
           <p className="dashboard-subtitle-Owner-Dashboard">Welcome back! Here's what's happening today.</p>
         </div>
-        <div className="header-actions-Owner-Dashboard">
-          <button className="date-filter-btn-Owner-Dashboard">
-            <Calendar className="btn-icon-Owner-Dashboard" size={18} />
-            <span className="btn-text-Owner-Dashboard">This Month</span>
-          </button>
-          <button className="export-btn-Owner-Dashboard">
-            <Download className="btn-icon-Owner-Dashboard" size={18} />
-            <span className="btn-text-Owner-Dashboard">Export</span>
-          </button>
-        </div>
+        
       </div>
 
       {/* ==== STATS CARDS ==== */}
@@ -84,10 +119,10 @@ const Dashboard = () => {
           </div>
           <div className="stat-info-Owner-Dashboard">
             <p className="stat-label-Owner-Dashboard">Total Tenants</p>
-            <h2 className="stat-value-Owner-Dashboard">24</h2>
+            <h2 className="stat-value-Owner-Dashboard">{totalTenants}</h2>
             <div className="stat-trend-Owner-Dashboard stat-trend-up-Owner-Dashboard">
               <TrendingUp className="trend-icon-Owner-Dashboard" size={16} />
-              <span className="trend-text-Owner-Dashboard">+12% this month</span>
+              <span className="trend-text-Owner-Dashboard">Active tenants</span>
             </div>
           </div>
         </div>
@@ -98,9 +133,9 @@ const Dashboard = () => {
           </div>
           <div className="stat-info-Owner-Dashboard">
             <p className="stat-label-Owner-Dashboard">Vacant Units</p>
-            <h2 className="stat-value-Owner-Dashboard">3</h2>
+            <h2 className="stat-value-Owner-Dashboard">{vacantProperties}</h2>
             <div className="stat-trend-Owner-Dashboard stat-trend-down-Owner-Dashboard">
-              <span className="trend-text-Owner-Dashboard">-2 from last month</span>
+              <span className="trend-text-Owner-Dashboard">Out of {totalProperties} total</span>
             </div>
           </div>
         </div>
@@ -110,10 +145,10 @@ const Dashboard = () => {
             <FileWarning className="stat-icon-Owner-Dashboard" size={28} />
           </div>
           <div className="stat-info-Owner-Dashboard">
-            <p className="stat-label-Owner-Dashboard">Pending Bills</p>
-            <h2 className="stat-value-Owner-Dashboard">5</h2>
+            <p className="stat-label-Owner-Dashboard">Pending Applications</p>
+            <h2 className="stat-value-Owner-Dashboard">{pendingApplications}</h2>
             <div className="stat-trend-Owner-Dashboard stat-trend-up-Owner-Dashboard">
-              <span className="trend-text-Owner-Dashboard">+3 overdue</span>
+              <span className="trend-text-Owner-Dashboard">Waiting for review</span>
             </div>
           </div>
         </div>
@@ -124,231 +159,224 @@ const Dashboard = () => {
           </div>
           <div className="stat-info-Owner-Dashboard">
             <p className="stat-label-Owner-Dashboard">Monthly Income</p>
-            <h2 className="stat-value-Owner-Dashboard">₱85,500</h2>
+            <h2 className="stat-value-Owner-Dashboard">₱{monthlyIncome.toLocaleString('en-PH')}</h2>
             <div className="stat-trend-Owner-Dashboard stat-trend-up-Owner-Dashboard">
               <TrendingUp className="trend-icon-Owner-Dashboard" size={16} />
-              <span className="trend-text-Owner-Dashboard">+8% from last month</span>
+              <span className="trend-text-Owner-Dashboard">This month's revenue</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ==== TABLE SECTIONS ==== */}
-      <div className="tables-grid-Owner-Dashboard">
-        {/* Pending Applications Table */}
-        <div className="table-card-Owner-Dashboard">
-          <div className="table-header-Owner-Dashboard">
-            <h3 className="table-title-Owner-Dashboard">PENDING APPLICATIONS</h3>
-          </div>
-          
-          {/* Search Box */}
-          <div className="search-container-Owner-Dashboard">
-            <div className="search-box-Owner-Dashboard">
-              <Search className="search-icon-Owner-Dashboard" size={18} />
-              <input
-                type="text"
-                placeholder="Search applications..."
-                className="search-input-Owner-Dashboard"
-                value={pendingSearch}
-                onChange={(e) => setPendingSearch(e.target.value)}
-              />
+      {/* ==== CHARTS SECTION ==== */}
+      <div className="charts-grid-Owner-Dashboard">
+        {/* Revenue Trend Chart */}
+        <div className="chart-card-Owner-Dashboard">
+          <div className="chart-header-Owner-Dashboard">
+            <div className="chart-title-section-Owner-Dashboard">
+              <BarChart3 className="chart-icon-Owner-Dashboard" size={20} />
+              <h3 className="chart-title-Owner-Dashboard">Revenue Trend</h3>
             </div>
-            <button className="filter-btn-Owner-Dashboard">
-              <Filter className="filter-icon-Owner-Dashboard" size={18} />
-            </button>
+            <span className="chart-subtitle-Owner-Dashboard">Last 6 months</span>
           </div>
-
-          <div className="table-container-Owner-Dashboard">
-            <table className="data-table-Owner-Dashboard">
-              <thead className="table-head-Owner-Dashboard">
-                <tr className="table-row-Owner-Dashboard">
-                  <th 
-                    className="table-header-Owner-Dashboard table-col-name-Owner-Dashboard sortable-header-Owner-Dashboard"
-                    onClick={() => handleSort('name')}
-                  >
-                    <div className="header-content-Owner-Dashboard">
-                      NAME
-                      <div className="sort-icons-Owner-Dashboard">
-                        <ChevronUp className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'name' && sortConfig.direction === 'asc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                        <ChevronDown className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'name' && sortConfig.direction === 'desc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
+          <div className="chart-container-Owner-Dashboard">
+            {revenueData.length > 0 ? (
+              <div className="bar-chart-Owner-Dashboard">
+                <div className="chart-bars-container-Owner-Dashboard">
+                  {revenueData.map((item, index) => {
+                    const maxRevenue = Math.max(...revenueData.map(r => r.revenue));
+                    const height = maxRevenue > 0 ? (item.revenue / maxRevenue) * 100 : 0;
+                    
+                    return (
+                      <div key={index} className="bar-chart-item-Owner-Dashboard">
+                        <div className="bar-wrapper-Owner-Dashboard">
+                          <div 
+                            className="bar-fill-Owner-Dashboard" 
+                            style={{ height: `${height}%` }}
+                            data-amount={`₱${item.revenue.toLocaleString('en-PH')}`}
+                          >
+                            <div className="bar-value-Owner-Dashboard">₱{item.revenue.toLocaleString('en-PH')}</div>
+                          </div>
+                        </div>
+                        <div className="bar-label-Owner-Dashboard">{item.month}</div>
                       </div>
-                    </div>
-                  </th>
-                  <th 
-                    className="table-header-Owner-Dashboard table-col-unit-Owner-Dashboard sortable-header-Owner-Dashboard"
-                    onClick={() => handleSort('unit')}
-                  >
-                    <div className="header-content-Owner-Dashboard">
-                      UNIT
-                      <div className="sort-icons-Owner-Dashboard">
-                        <ChevronUp className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'unit' && sortConfig.direction === 'asc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                        <ChevronDown className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'unit' && sortConfig.direction === 'desc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                      </div>
-                    </div>
-                  </th>
-                  <th 
-                    className="table-header-Owner-Dashboard table-col-date-Owner-Dashboard sortable-header-Owner-Dashboard"
-                    onClick={() => handleSort('applied')}
-                  >
-                    <div className="header-content-Owner-Dashboard">
-                      APPLIED
-                      <div className="sort-icons-Owner-Dashboard">
-                        <ChevronUp className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'applied' && sortConfig.direction === 'asc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                        <ChevronDown className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'applied' && sortConfig.direction === 'desc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                      </div>
-                    </div>
-                  </th>
-                  <th className="table-header-Owner-Dashboard table-col-status-Owner-Dashboard">
-                    STATUS
-                  </th>
-                  <th className="table-header-Owner-Dashboard table-col-action-Owner-Dashboard">
-                    ACTION
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="table-body-Owner-Dashboard">
-                {filteredPendingApplications.map((application) => (
-                  <tr className="table-row-Owner-Dashboard" key={application.id}>
-                    <td className="table-data-Owner-Dashboard table-col-name-Owner-Dashboard" data-label="NAME">
-                      <span className="data-text-Owner-Dashboard">{application.name}</span>
-                    </td>
-                    <td className="table-data-Owner-Dashboard table-col-unit-Owner-Dashboard" data-label="UNIT">
-                      <span className="data-text-Owner-Dashboard">{application.unit}</span>
-                    </td>
-                    <td className="table-data-Owner-Dashboard table-col-date-Owner-Dashboard" data-label="APPLIED">
-                      <span className="data-text-Owner-Dashboard">{application.applied}</span>
-                    </td>
-                    <td className="table-data-Owner-Dashboard table-col-status-Owner-Dashboard" data-label="STATUS">
-                      <span className="status-badge-Owner-Dashboard status-pending-Owner-Dashboard">
-                        {application.status}
-                      </span>
-                    </td>
-                    <td className="table-data-Owner-Dashboard table-col-action-Owner-Dashboard" data-label="ACTION">
-                      <button className="view-btn-Owner-Dashboard">
-                        <Eye className="view-icon-Owner-Dashboard" size={16} />
-                        <span className="view-text-Owner-Dashboard">View</span>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    );
+                  })}
+                </div>
+                <div className="chart-grid-Owner-Dashboard">
+                  <div className="grid-line-Owner-Dashboard"></div>
+                  <div className="grid-line-Owner-Dashboard"></div>
+                  <div className="grid-line-Owner-Dashboard"></div>
+                  <div className="grid-line-Owner-Dashboard"></div>
+                </div>
+              </div>
+            ) : (
+              <div className="no-chart-data-Owner-Dashboard">
+                <p>No revenue data available</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Recent Invoices Table */}
-        <div className="table-card-Owner-Dashboard">
-          <div className="table-header-Owner-Dashboard">
-            <h3 className="table-title-Owner-Dashboard">RECENT INVOICES</h3>
-          </div>
-          
-          {/* Search Box */}
-          <div className="search-container-Owner-Dashboard">
-            <div className="search-box-Owner-Dashboard">
-              <Search className="search-icon-Owner-Dashboard" size={18} />
-              <input
-                type="text"
-                placeholder="Search invoices..."
-                className="search-input-Owner-Dashboard"
-                value={invoicesSearch}
-                onChange={(e) => setInvoicesSearch(e.target.value)}
-              />
+        {/* Property Status Distribution - Donut Chart */}
+        <div className="chart-card-Owner-Dashboard">
+          <div className="chart-header-Owner-Dashboard">
+            <div className="chart-title-section-Owner-Dashboard">
+              <PieChart className="chart-icon-Owner-Dashboard" size={20} />
+              <h3 className="chart-title-Owner-Dashboard">Property Status</h3>
             </div>
-            <button className="filter-btn-Owner-Dashboard">
-              <Filter className="filter-icon-Owner-Dashboard" size={18} />
-            </button>
+            <span className="chart-subtitle-Owner-Dashboard">Current distribution</span>
           </div>
+          <div className="chart-container-Owner-Dashboard">
+            {propertyStatusData.length > 0 ? (
+              <div className="donut-chart-Owner-Dashboard">
+                <div className="donut-chart-visual-Owner-Dashboard">
+                  <svg width="160" height="160" viewBox="0 0 160 160" className="donut-svg-Owner-Dashboard">
+                    {/* Background circle */}
+                    <circle cx="80" cy="80" r="70" fill="none" stroke="#f3f4f6" strokeWidth="20" />
+                    
+                    {/* Segments */}
+                    {propertyStatusData.map((item, index, array) => {
+                      const percentage = (item.count / totalProperties) * 100;
+                      const circumference = 2 * Math.PI * 70;
+                      const strokeDasharray = `${(percentage / 100) * circumference} ${circumference}`;
+                      const previousPercentages = array.slice(0, index).reduce((sum, prevItem) => 
+                        sum + (prevItem.count / totalProperties) * 100, 0
+                      );
+                      const strokeDashoffset = -((previousPercentages / 100) * circumference);
+                      
+                      return (
+                        <circle
+                          key={index}
+                          cx="80"
+                          cy="80"
+                          r="70"
+                          fill="none"
+                          stroke={getStatusColor(item.status)}
+                          strokeWidth="20"
+                          strokeDasharray={strokeDasharray}
+                          strokeDashoffset={strokeDashoffset}
+                          strokeLinecap="round"
+                          transform="rotate(-90 80 80)"
+                          className="donut-segment-Owner-Dashboard"
+                        />
+                      );
+                    })}
+                  </svg>
+                  
+                  {/* Center label */}
+                  <div className="donut-center-Owner-Dashboard">
+                    <div className="donut-total-Owner-Dashboard">{totalProperties}</div>
+                    <div className="donut-label-Owner-Dashboard">Total Properties</div>
+                  </div>
+                </div>
+                
+                <div className="donut-legend-Owner-Dashboard">
+                  {propertyStatusData.map((item, index) => (
+                    <div key={index} className="legend-item-Owner-Dashboard">
+                      <div 
+                        className="legend-color-Owner-Dashboard" 
+                        style={{ backgroundColor: getStatusColor(item.status) }}
+                      ></div>
+                      <div className="legend-info-Owner-Dashboard">
+                        <span className="legend-label-Owner-Dashboard">{item.status}</span>
+                        <span className="legend-value-Owner-Dashboard">
+                          {item.count} units ({item.percentage}%)
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="no-chart-data-Owner-Dashboard">
+                <p>No property data available</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
-          <div className="table-container-Owner-Dashboard">
-            <table className="data-table-Owner-Dashboard">
-              <thead className="table-head-Owner-Dashboard">
-                <tr className="table-row-Owner-Dashboard">
-                  <th 
-                    className="table-header-Owner-Dashboard table-col-name-Owner-Dashboard sortable-header-Owner-Dashboard"
-                    onClick={() => handleSort('tenant')}
-                  >
-                    <div className="header-content-Owner-Dashboard">
-                      TENANT
-                      <div className="sort-icons-Owner-Dashboard">
-                        <ChevronUp className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'tenant' && sortConfig.direction === 'asc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                        <ChevronDown className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'tenant' && sortConfig.direction === 'desc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                      </div>
-                    </div>
-                  </th>
-                  <th 
-                    className="table-header-Owner-Dashboard table-col-date-Owner-Dashboard sortable-header-Owner-Dashboard"
-                    onClick={() => handleSort('dueDate')}
-                  >
-                    <div className="header-content-Owner-Dashboard">
-                      DUE DATE
-                      <div className="sort-icons-Owner-Dashboard">
-                        <ChevronUp className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'dueDate' && sortConfig.direction === 'asc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                        <ChevronDown className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'dueDate' && sortConfig.direction === 'desc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                      </div>
-                    </div>
-                  </th>
-                  <th 
-                    className="table-header-Owner-Dashboard table-col-amount-Owner-Dashboard sortable-header-Owner-Dashboard"
-                    onClick={() => handleSort('amount')}
-                  >
-                    <div className="header-content-Owner-Dashboard">
-                      AMOUNT
-                      <div className="sort-icons-Owner-Dashboard">
-                        <ChevronUp className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'amount' && sortConfig.direction === 'asc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                        <ChevronDown className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'amount' && sortConfig.direction === 'desc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                      </div>
-                    </div>
-                  </th>
-                  <th className="table-header-Owner-Dashboard table-col-status-Owner-Dashboard">
-                    STATUS
-                  </th>
-                  <th 
-                    className="table-header-Owner-Dashboard table-col-invoice-Owner-Dashboard sortable-header-Owner-Dashboard"
-                    onClick={() => handleSort('invoiceNo')}
-                  >
-                    <div className="header-content-Owner-Dashboard">
-                      INVOICE NO.
-                      <div className="sort-icons-Owner-Dashboard">
-                        <ChevronUp className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'invoiceNo' && sortConfig.direction === 'asc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                        <ChevronDown className={`sort-icon-Owner-Dashboard ${sortConfig.key === 'invoiceNo' && sortConfig.direction === 'desc' ? 'active-sort-Owner-Dashboard' : ''}`} size={14} />
-                      </div>
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="table-body-Owner-Dashboard">
-                {filteredRecentInvoices.map((invoice) => (
-                  <tr className="table-row-Owner-Dashboard" key={invoice.id}>
-                    <td className="table-data-Owner-Dashboard table-col-name-Owner-Dashboard" data-label="TENANT">
-                      <span className="data-text-Owner-Dashboard">{invoice.tenant}</span>
-                    </td>
-                    <td className="table-data-Owner-Dashboard table-col-date-Owner-Dashboard" data-label="DUE DATE">
-                      <span className="data-text-Owner-Dashboard">{invoice.dueDate}</span>
-                    </td>
-                    <td className="table-data-Owner-Dashboard table-col-amount-Owner-Dashboard" data-label="AMOUNT">
-                      <span className="data-text-Owner-Dashboard">{invoice.amount}</span>
-                    </td>
-                    <td className="table-data-Owner-Dashboard table-col-status-Owner-Dashboard" data-label="STATUS">
-                      <span className={`status-badge-Owner-Dashboard ${
-                        invoice.status === 'PAID' ? 'status-paid-Owner-Dashboard' : 
-                        invoice.status === 'OVERDUE' ? 'status-overdue-Owner-Dashboard' : 
-                        'status-pending-Owner-Dashboard'
-                      }`}>
-                        {invoice.status}
+      {/* ==== QUICK OVERVIEW ==== */}
+      <div className="overview-grid-Owner-Dashboard">
+        <div className="overview-card-Owner-Dashboard">
+          <div className="overview-header-Owner-Dashboard">
+            <h4 className="overview-title-Owner-Dashboard">Recent Activity</h4>
+          </div>
+          <div className="overview-content-Owner-Dashboard">
+            {dashboardData.recentActivity && dashboardData.recentActivity.length > 0 ? (
+              <div className="activity-list-Owner-Dashboard">
+                {dashboardData.recentActivity.slice(0, 5).map((activity, index) => (
+                  <div key={index} className="activity-item-Owner-Dashboard">
+                    <div className="activity-dot-Owner-Dashboard"></div>
+                    <div className="activity-info-Owner-Dashboard">
+                      <p className="activity-text-Owner-Dashboard">
+                        Payment from {activity.tenant_name}
+                      </p>
+                      <span className="activity-date-Owner-Dashboard">
+                        {activity.payment_date}
                       </span>
-                    </td>
-                    <td className="table-data-Owner-Dashboard table-col-invoice-Owner-Dashboard" data-label="INVOICE NO.">
-                      <span className="data-text-Owner-Dashboard">{invoice.invoiceNo}</span>
-                    </td>
-                  </tr>
+                    </div>
+                    <div className="activity-amount-Owner-Dashboard">
+                      ₱{activity.amount_paid?.toLocaleString('en-PH') || '0'}
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            ) : (
+              <div className="no-activity-Owner-Dashboard">
+                <p>No recent activity</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="overview-card-Owner-Dashboard">
+          <div className="overview-header-Owner-Dashboard">
+            <h4 className="overview-title-Owner-Dashboard">Quick Stats</h4>
+          </div>
+          <div className="overview-content-Owner-Dashboard">
+            <div className="stats-list-Owner-Dashboard">
+              <div className="stat-item-Owner-Dashboard">
+                <span className="stat-item-label-Owner-Dashboard">Occupancy Rate</span>
+                <span className="stat-item-value-Owner-Dashboard">
+                  {occupancyRate}%
+                </span>
+              </div>
+              <div className="stat-item-Owner-Dashboard">
+                <span className="stat-item-label-Owner-Dashboard">Avg. Monthly Revenue</span>
+                <span className="stat-item-value-Owner-Dashboard">
+                  ₱{dashboardData?.dashboardStats?.averageMonthlyRevenue?.toLocaleString('en-PH') || '0'}
+                </span>
+              </div>
+              <div className="stat-item-Owner-Dashboard">
+                <span className="stat-item-label-Owner-Dashboard">YTD Revenue</span>
+                <span className="stat-item-value-Owner-Dashboard">
+                  ₱{dashboardData?.dashboardStats?.ytdRevenue?.toLocaleString('en-PH') || '0'}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
+};
+
+// Helper function to get colors for status
+const getStatusColor = (status) => {
+  switch (status.toLowerCase()) {
+    case 'occupied':
+      return '#10b981'; // Green
+    case 'vacant':
+      return '#ef4444'; // Red
+    case 'available':
+      return '#3b82f6'; // Blue
+    case 'maintenance':
+      return '#f59e0b'; // Orange
+    default:
+      return '#6b7280'; // Gray
+  }
 };
 
 export default Dashboard;

@@ -189,7 +189,7 @@ const formatDate = (dateString) => {
   
   // Get current time in UTC to match the database timezone
   const now = new Date();
-  const nowUtc = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
+  const nowUtc = new Date(now.getTime());
   
   // Calculate difference in milliseconds
   const diffInMs = nowUtc - dbDate;

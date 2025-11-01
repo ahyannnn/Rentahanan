@@ -24,6 +24,11 @@ function Billing() {
     const [tenantContracts, setTenantContracts] = useState([]);
     const [selectedApplicant, setSelectedApplicant] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
+    
+    // Form validation states
+    const [formErrors, setFormErrors] = useState({});
+    const [tenantFormErrors, setTenantFormErrors] = useState({});
+    
     const [formData, setFormData] = useState({
         tenantId: "",
         invoiceNo: "",
@@ -77,9 +82,38 @@ function Billing() {
         return !hasIssuedInvoice;
     });
 
+    const validateForm = (formData, isApplicant = true) => {
+        const errors = {};
+        
+        if (!formData.tenantId) {
+            errors.tenantId = "Tenant/Applicant is required";
+        }
+        if (!formData.amount || parseFloat(formData.amount) <= 0) {
+            errors.amount = "Valid amount is required";
+        }
+        if (!formData.issuedDate) {
+            errors.issuedDate = "Issued date is required";
+        }
+        if (!formData.dueDate) {
+            errors.dueDate = "Due date is required";
+        } else if (formData.issuedDate && formData.dueDate < formData.issuedDate) {
+            errors.dueDate = "Due date cannot be before issued date";
+        }
+        if (!formData.billType) {
+            errors.billType = "Bill type is required";
+        }
+
+        return errors;
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
+        
+        // Clear error when user starts typing
+        if (formErrors[name]) {
+            setFormErrors(prev => ({ ...prev, [name]: '' }));
+        }
     };
 
     const handleTenantInputChange = (e) => {
@@ -113,6 +147,11 @@ function Billing() {
         } else {
             setTenantFormData(prev => ({ ...prev, [name]: value }));
         }
+
+        // Clear error when user starts typing
+        if (tenantFormErrors[name]) {
+            setTenantFormErrors(prev => ({ ...prev, [name]: '' }));
+        }
     };
 
     const openInvoiceModal = (applicant) => {
@@ -127,6 +166,7 @@ function Billing() {
             issuedDate: today,
             dueDate: "",
         });
+        setFormErrors({});
         setShowAddModal(true);
     };
 
@@ -142,13 +182,14 @@ function Billing() {
             dueDate: "",
             unitName: ""
         });
+        setTenantFormErrors({});
         setShowTenantInvoiceModal(true);
     };
 
-    
     const handleSaveInvoice = async () => {
-        if (!formData.tenantId || !formData.amount) {
-            alert("Please fill in all required fields.");
+        const errors = validateForm(formData, true);
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors);
             return;
         }
 
@@ -178,6 +219,7 @@ function Billing() {
                     issuedDate: "",
                     dueDate: "",
                 });
+                setFormErrors({});
 
                 const [tenantsRes, applicantsRes, issuedInvoicesRes] = await Promise.all([
                     fetch("http://localhost:5000/api/billing/bills"),
@@ -197,8 +239,9 @@ function Billing() {
     };
 
     const handleSaveTenantInvoice = async () => {
-        if (!tenantFormData.tenantId || !tenantFormData.amount || !tenantFormData.billType) {
-            alert("Please fill in all required fields.");
+        const errors = validateForm(tenantFormData, false);
+        if (Object.keys(errors).length > 0) {
+            setTenantFormErrors(errors);
             return;
         }
 
@@ -230,6 +273,7 @@ function Billing() {
                     dueDate: "",
                     unitName: ""
                 });
+                setTenantFormErrors({});
 
                 const tenantsRes = await fetch("http://localhost:5000/api/billing/bills");
                 setTenants(await tenantsRes.json());
@@ -575,6 +619,9 @@ function Billing() {
                                         <option>Advance Rent Only</option>
                                         <option>Security Deposit Only</option>
                                     </select>
+                                    {formErrors.billType && (
+                                        <span className="Owner-Billing-error-text">{formErrors.billType}</span>
+                                    )}
                                 </div>
 
                                 <div className="Owner-Billing-form-group">
@@ -584,9 +631,12 @@ function Billing() {
                                         name="amount"
                                         value={formData.amount}
                                         onChange={handleInputChange}
-                                        className="Owner-Billing-form-input"
+                                        className={`Owner-Billing-form-input ${formErrors.amount ? 'error' : ''}`}
                                         placeholder="Enter amount"
                                     />
+                                    {formErrors.amount && (
+                                        <span className="Owner-Billing-error-text">{formErrors.amount}</span>
+                                    )}
                                 </div>
 
                                 <div className="Owner-Billing-form-group">
@@ -596,20 +646,27 @@ function Billing() {
                                         name="issuedDate"
                                         value={formData.issuedDate}
                                         onChange={handleInputChange}
-                                        className="Owner-Billing-form-input"
+                                        className={`Owner-Billing-form-input ${formErrors.issuedDate ? 'error' : ''}`}
                                     />
+                                    {formErrors.issuedDate && (
+                                        <span className="Owner-Billing-error-text">{formErrors.issuedDate}</span>
+                                    )}
                                 </div>
 
                                 <div className="Owner-Billing-form-group">
-                                    <label className="Owner-Billing-form-label">Due Date</label>
+                                    <label className="Owner-Billing-form-label">Due Date *</label>
                                     <input
                                         type="date"
                                         name="dueDate"
                                         value={formData.dueDate}
                                         onChange={handleInputChange}
-                                        className="Owner-Billing-form-input"
+                                        className={`Owner-Billing-form-input ${formErrors.dueDate ? 'error' : ''}`}
+                                        min={formData.issuedDate}
                                         required
                                     />
+                                    {formErrors.dueDate && (
+                                        <span className="Owner-Billing-error-text">{formErrors.dueDate}</span>
+                                    )}
                                 </div>
                             </div>
 
@@ -658,7 +715,7 @@ function Billing() {
                                         name="tenantId"
                                         value={tenantFormData.tenantId}
                                         onChange={handleTenantInputChange}
-                                        className="Owner-Billing-form-select"
+                                        className={`Owner-Billing-form-select ${tenantFormErrors.tenantId ? 'error' : ''}`}
                                         required
                                     >
                                         <option value="">Select a tenant</option>
@@ -668,6 +725,9 @@ function Billing() {
                                             </option>
                                         ))}
                                     </select>
+                                    {tenantFormErrors.tenantId && (
+                                        <span className="Owner-Billing-error-text">{tenantFormErrors.tenantId}</span>
+                                    )}
                                 </div>
 
                                 <div className="Owner-Billing-form-group">
@@ -688,7 +748,7 @@ function Billing() {
                                         name="billType"
                                         value={tenantFormData.billType}
                                         onChange={handleTenantInputChange}
-                                        className="Owner-Billing-form-select"
+                                        className={`Owner-Billing-form-select ${tenantFormErrors.billType ? 'error' : ''}`}
                                     >
                                         <option value="Rent">Rent</option>
                                         <option value="Water">Water</option>
@@ -696,6 +756,9 @@ function Billing() {
                                         <option value="Maintenance">Maintenance</option>
                                         <option value="Other">Other</option>
                                     </select>
+                                    {tenantFormErrors.billType && (
+                                        <span className="Owner-Billing-error-text">{tenantFormErrors.billType}</span>
+                                    )}
                                 </div>
 
                                 <div className="Owner-Billing-form-group">
@@ -705,10 +768,13 @@ function Billing() {
                                         name="amount"
                                         value={tenantFormData.amount}
                                         onChange={handleTenantInputChange}
-                                        className="Owner-Billing-form-input"
+                                        className={`Owner-Billing-form-input ${tenantFormErrors.amount ? 'error' : ''}`}
                                         placeholder="Enter amount"
                                         required
                                     />
+                                    {tenantFormErrors.amount && (
+                                        <span className="Owner-Billing-error-text">{tenantFormErrors.amount}</span>
+                                    )}
                                 </div>
 
                                 <div className="Owner-Billing-form-group">
@@ -718,9 +784,12 @@ function Billing() {
                                         name="issuedDate"
                                         value={tenantFormData.issuedDate}
                                         onChange={handleTenantInputChange}
-                                        className="Owner-Billing-form-input"
+                                        className={`Owner-Billing-form-input ${tenantFormErrors.issuedDate ? 'error' : ''}`}
                                         required
                                     />
+                                    {tenantFormErrors.issuedDate && (
+                                        <span className="Owner-Billing-error-text">{tenantFormErrors.issuedDate}</span>
+                                    )}
                                 </div>
 
                                 <div className="Owner-Billing-form-group">
@@ -730,9 +799,13 @@ function Billing() {
                                         name="dueDate"
                                         value={tenantFormData.dueDate}
                                         onChange={handleTenantInputChange}
-                                        className="Owner-Billing-form-input"
+                                        className={`Owner-Billing-form-input ${tenantFormErrors.dueDate ? 'error' : ''}`}
+                                        min={tenantFormData.issuedDate}
                                         required
                                     />
+                                    {tenantFormErrors.dueDate && (
+                                        <span className="Owner-Billing-error-text">{tenantFormErrors.dueDate}</span>
+                                    )}
                                 </div>
                             </div>
 
