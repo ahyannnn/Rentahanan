@@ -816,3 +816,58 @@
     padding: 16px;
   }
 }
+
+/* === Success Modal Variants === */
+.success-modal-overlay-transactions {
+  backdrop-filter: blur(12px);
+}
+
+.success-modal-transactions {
+  text-align: center;
+  padding: 50px 40px;
+}
+
+.success-modal-transactions .modal-icon-transactions {
+  margin-bottom: 24px;
+}
+
+.success-modal-transactions .modal-title-transactions {
+  margin-bottom: 16px;
+}
+
+.success-modal-transactions .modal-message-transactions {
+  margin-bottom: 24px;
+}
+
+/* === Modal Icon Colors === */
+.modal-icon-success {
+  color: #059669;
+}
+
+.modal-icon-danger {
+  color: #dc2626;
+}
+
+.modal-icon-warning {
+  color: #f59e0b;
+}
+
+/* === Responsive Design for Modals === */
+@media (max-width: 640px) {
+  .modal-content-transactions {
+    padding: 30px 24px;
+    margin: 10px;
+  }
+  
+  .modal-actions-transactions {
+    flex-direction: column;
+  }
+  
+  .modal-btn-transactions {
+    width: 100%;
+  }
+  
+  .success-modal-transactions {
+    padding: 40px 24px;
+  }
+}

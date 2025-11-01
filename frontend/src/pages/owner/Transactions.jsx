@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CheckCircle, XCircle, FileText, Search, Download, Eye } from "lucide-react";
+import { CheckCircle, XCircle, FileText, Search, Download, Eye, X } from "lucide-react";
 import "../../styles/owners/Transactions.css";
 
 function Transactions() {
@@ -7,6 +7,13 @@ function Transactions() {
   const [bills, setBills] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Modal states
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showRejectSuccessModal, setShowRejectSuccessModal] = useState(false);
+  const [selectedBill, setSelectedBill] = useState(null);
 
   useEffect(() => {
     const fetchBills = async () => {
@@ -36,62 +43,89 @@ function Transactions() {
       b.tenant_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-  const handleIssueReceipt = async (billid) => {
-    if (!window.confirm("Approve this payment and issue receipt?")) return;
+  // Approve functions
+  const handleOpenApproveModal = (bill) => {
+    setSelectedBill(bill);
+    setShowApproveModal(true);
+  };
+
+  const handleApproveConfirm = async () => {
+    if (!selectedBill) return;
 
     const prevBills = [...bills];
     setBills((prev) =>
       prev.map((b) =>
-        b.billid === billid ? { ...b, status: "Paid" } : b
+        b.billid === selectedBill.billid ? { ...b, status: "Paid" } : b
       )
     );
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/transactions/issue-receipt/${billid}`,
+        `http://localhost:5000/api/transactions/issue-receipt/${selectedBill.billid}`,
         { method: "POST" }
       );
 
       if (res.ok) {
         const data = await res.json();
-        alert("Receipt issued!");
-
+        
         setBills((prev) =>
           prev.map((b) =>
-            b.billid === billid ? { ...b, GCash_receipt: data.receipt } : b
+            b.billid === selectedBill.billid ? { ...b, GCash_receipt: data.receipt } : b
           )
         );
 
+        setShowApproveModal(false);
+        setShowSuccessModal(true);
         setActiveTab("paid");
       } else {
         throw new Error("Failed to issue receipt");
       }
     } catch (err) {
       console.error(err);
-      alert("Error issuing receipt. Rolling back status.");
+      // Rollback on error
       setBills(prevBills);
+      setShowApproveModal(false);
     }
   };
 
-  const handleReject = async (billid) => {
-    if (!window.confirm("Reject this payment?")) return;
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/bills/reject/${billid}`,
-        { method: "PUT" }
-      );
-      if (res.ok) {
-        alert("Bill rejected.");
-        setBills((prev) =>
-          prev.map((b) =>
-            b.billid === billid ? { ...b, status: "Unpaid" } : b
-          )
-        );
-      }
-    } catch (err) {
-      console.error(err);
-    }
+  // Reject functions - SIMPLE VERSION LIKE YOUR ORIGINAL CODE
+  const handleOpenRejectModal = (bill) => {
+    setSelectedBill(bill);
+    setShowRejectModal(true);
   };
+
+  const handleRejectConfirm = async () => {
+  if (!selectedBill) return;
+  
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/transactions/reject/${selectedBill.billid}`,
+      { method: "PUT" }
+    );
+    
+    if (res.ok) {
+      setBills((prev) =>
+        prev.map((b) =>
+          b.billid === selectedBill.billid ? { 
+            ...b, 
+            status: "Unpaid",
+            GCash_receipt: null,
+            GCash_Ref: null,
+            paymenttype: null
+          } : b
+        )
+      );
+      
+      setShowRejectModal(false);
+      setShowRejectSuccessModal(true);
+    } else {
+      throw new Error("Failed to reject payment");
+    }
+  } catch (err) {
+    console.error("Reject error:", err);
+    setShowRejectModal(false);
+  }
+};
 
   const handleViewReceipt = async (billId) => {
     try {
@@ -99,15 +133,13 @@ function Transactions() {
       const receiptData = await response.json();
 
       if (response.ok && receiptData.receiptUrl) {
-        // Construct the URL using your existing uploads route
         const receiptFullUrl = `http://localhost:5000/uploads/receipts/${receiptData.receiptUrl}`;
         window.open(receiptFullUrl, '_blank');
       } else {
-        alert(receiptData.error || `No receipt available for bill ${billId}`);
+        console.log(receiptData.error || `No receipt available for bill ${billId}`);
       }
     } catch (error) {
       console.error('Error fetching receipt:', error);
-      alert('Error loading receipt. Please try again.');
     }
   };
 
@@ -148,7 +180,7 @@ function Transactions() {
         <button
           key="approve"
           className="action-button action-button-primary"
-          onClick={() => handleIssueReceipt(bill.billid)}
+          onClick={() => handleOpenApproveModal(bill)}
         >
           <CheckCircle size={16} />
           Approve
@@ -158,7 +190,7 @@ function Transactions() {
         <button
           key="reject"
           className="action-button action-button-reject"
-          onClick={() => handleReject(bill.billid)}
+          onClick={() => handleOpenRejectModal(bill)}
         >
           <XCircle size={16} />
           Reject
@@ -329,6 +361,174 @@ function Transactions() {
           )}
         </div>
       </div>
+
+      {/* Approve Confirmation Modal */}
+      {showApproveModal && (
+        <div className="modal-overlay-transactions" onClick={() => setShowApproveModal(false)}>
+          <div className="modal-content-transactions" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn-transactions" onClick={() => setShowApproveModal(false)}>
+              <X size={24} />
+            </button>
+            
+            <div className="modal-icon-transactions modal-icon-warning">
+              <CheckCircle size={48} />
+            </div>
+            
+            <h2 className="modal-title-transactions">Approve Payment</h2>
+            
+            <p className="modal-message-transactions">
+              Are you sure you want to approve this payment and issue receipt for 
+              <strong> {selectedBill?.tenant_name}</strong> - Bill #{selectedBill?.billid}?
+            </p>
+            
+            <div className="modal-bill-details-transactions">
+              <div className="bill-detail-item">
+                <span>Amount:</span>
+                <strong>{selectedBill && formatCurrency(parseFloat(selectedBill.amount))}</strong>
+              </div>
+              <div className="bill-detail-item">
+                <span>Payment Method:</span>
+                <span>{selectedBill?.paymenttype || "N/A"}</span>
+              </div>
+            </div>
+            
+            <div className="modal-actions-transactions">
+              <button 
+                className="modal-btn-transactions modal-btn-cancel"
+                onClick={() => setShowApproveModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-btn-transactions modal-btn-confirm"
+                onClick={handleApproveConfirm}
+              >
+                Yes, Approve Payment
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Confirmation Modal */}
+      {showRejectModal && (
+        <div className="modal-overlay-transactions" onClick={() => setShowRejectModal(false)}>
+          <div className="modal-content-transactions" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn-transactions" onClick={() => setShowRejectModal(false)}>
+              <X size={24} />
+            </button>
+            
+            <div className="modal-icon-transactions modal-icon-danger">
+              <XCircle size={48} />
+            </div>
+            
+            <h2 className="modal-title-transactions">Reject Payment</h2>
+            
+            <p className="modal-message-transactions">
+              Are you sure you want to reject this payment from 
+              <strong> {selectedBill?.tenant_name}</strong> - Bill #{selectedBill?.billid}?
+            </p>
+            
+            <div className="modal-bill-details-transactions">
+              <div className="bill-detail-item">
+                <span>Amount:</span>
+                <strong>{selectedBill && formatCurrency(parseFloat(selectedBill.amount))}</strong>
+              </div>
+              <div className="bill-detail-item">
+                <span>Payment Method:</span>
+                <span>{selectedBill?.paymenttype || "N/A"}</span>
+              </div>
+            </div>
+            
+            <div className="modal-actions-transactions">
+              <button 
+                className="modal-btn-transactions modal-btn-cancel"
+                onClick={() => setShowRejectModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-btn-transactions modal-btn-reject"
+                onClick={handleRejectConfirm}
+              >
+                Yes, Reject Payment
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="modal-overlay-transactions success-modal-overlay-transactions">
+          <div className="modal-content-transactions success-modal-transactions">
+            <div className="modal-icon-transactions modal-icon-success">
+              <CheckCircle size={64} />
+            </div>
+            
+            <h2 className="modal-title-transactions">Payment Approved!</h2>
+            
+            <p className="modal-message-transactions">
+              Receipt has been successfully issued for 
+              <strong> {selectedBill?.tenant_name}</strong> - Bill #{selectedBill?.billid}.
+            </p>
+            
+            <div className="modal-bill-details-transactions">
+              <div className="bill-detail-item">
+                <span>Amount:</span>
+                <strong>{selectedBill && formatCurrency(parseFloat(selectedBill.amount))}</strong>
+              </div>
+              <div className="bill-detail-item">
+                <span>Status:</span>
+                <span className="status-approved">Paid</span>
+              </div>
+            </div>
+            
+            <button 
+              className="modal-btn-transactions modal-btn-success"
+              onClick={() => setShowSuccessModal(false)}
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Success Modal */}
+      {showRejectSuccessModal && (
+        <div className="modal-overlay-transactions success-modal-overlay-transactions">
+          <div className="modal-content-transactions success-modal-transactions">
+            <div className="modal-icon-transactions modal-icon-danger">
+              <XCircle size={64} />
+            </div>
+            
+            <h2 className="modal-title-transactions">Payment Rejected!</h2>
+            
+            <p className="modal-message-transactions">
+              Payment from <strong> {selectedBill?.tenant_name}</strong> has been rejected.
+              The bill status has been reset to Unpaid.
+            </p>
+            
+            <div className="modal-bill-details-transactions">
+              <div className="bill-detail-item">
+                <span>Bill ID:</span>
+                <strong>#{selectedBill?.billid}</strong>
+              </div>
+              <div className="bill-detail-item">
+                <span>Status:</span>
+                <span className="status-unpaid">Unpaid</span>
+              </div>
+            </div>
+            
+            <button 
+              className="modal-btn-transactions modal-btn-success"
+              onClick={() => setShowRejectSuccessModal(false)}
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

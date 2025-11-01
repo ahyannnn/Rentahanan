@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Search, Home, DollarSign, Users, CheckCircle, X, Upload, FileText, User, Mail, Phone } from "lucide-react";
 import "../../styles/tenant/BrowseUnits.css";
 
-
 const BrowseUnits = () => {
   const [units, setUnits] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -119,7 +118,6 @@ const BrowseUnits = () => {
       .then((data) => {
         setShowApplyForm(false);
         setShowSuccessModal(true);
-        setSelectedUnit(null);
         setHasApplied(true);
       })
       .catch((err) => {
@@ -130,12 +128,7 @@ const BrowseUnits = () => {
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-  };
-
-  const statsData = {
-    total: units.length,
-    available: units.filter(unit => unit.status === "Available").length,
-    occupied: units.filter(unit => unit.status === "Occupied").length
+    setSelectedUnit(null);
   };
 
   return (
@@ -146,7 +139,6 @@ const BrowseUnits = () => {
           <h2 className="page-header-Browse">Browse Units 🏘️</h2>
           <p className="page-subtext-Browse">Discover available rental units that match your lifestyle and budget</p>
         </div>
-
       </div>
 
       {/* Search and Filter Section */}
@@ -259,9 +251,17 @@ const BrowseUnits = () => {
       {selectedUnit && !showApplyForm && (
         <div className="modal-overlay-Browse" onClick={() => setSelectedUnit(null)}>
           <div className="modal-content-Browse" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn-Browse" onClick={() => setSelectedUnit(null)}>
-              <X size={24} />
-            </button>
+            <div className="modal-header-section-Browse">
+              <div className="modal-header-Browse">
+                <h2 className="modal-title-Browse">{selectedUnit.name}</h2>
+                <div className={`unit-status-Browse unit-status-${selectedUnit.status.toLowerCase()}-Browse modal-status-Browse`}>
+                  {selectedUnit.status}
+                </div>
+              </div>
+              <button className="close-btn-Browse" onClick={() => setSelectedUnit(null)}>
+                <X size={24} />
+              </button>
+            </div>
 
             <div className="modal-image-container-Browse">
               {selectedUnit.imagepath ? (
@@ -276,13 +276,6 @@ const BrowseUnits = () => {
                   <span>No Image Available</span>
                 </div>
               )}
-            </div>
-
-            <div className="modal-header-Browse">
-              <h2 className="modal-title-Browse">{selectedUnit.name}</h2>
-              <div className={`unit-status-Browse unit-status-${selectedUnit.status.toLowerCase()}-Browse`}>
-                {selectedUnit.status}
-              </div>
             </div>
 
             <div className="modal-details-Browse">
@@ -340,13 +333,14 @@ const BrowseUnits = () => {
       {selectedUnit && showApplyForm && (
         <div className="modal-overlay-Browse" onClick={() => setShowApplyForm(false)}>
           <div className="modal-content-Browse form-modal-Browse" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn-Browse" onClick={() => setShowApplyForm(false)}>
-              <X size={24} />
-            </button>
-
-            <div className="form-header-Browse">
-              <h2 className="form-title-Browse">Application for {selectedUnit.name}</h2>
-              <p className="form-subtitle-Browse">Please fill out the application form below</p>
+            <div className="modal-header-section-Browse">
+              <div className="form-header-Browse">
+                <h2 className="form-title-Browse">Application for {selectedUnit.name}</h2>
+                <p className="form-subtitle-Browse">Please fill out the application form below</p>
+              </div>
+              <button className="close-btn-Browse" onClick={() => setShowApplyForm(false)}>
+                <X size={24} />
+              </button>
             </div>
 
             <form className="application-form-Browse" onSubmit={handleFormSubmit}>
@@ -474,36 +468,25 @@ const BrowseUnits = () => {
         <div className="modal-overlay-Browse success-modal-overlay-Browse">
           <div className="success-modal-Browse">
             <div className="success-modal-content-Browse">
-              <div className="success-animation-container-Browse">
-                <div className="success-checkmark-Browse">
-                  <CheckCircle size={80} className="check-icon-Browse" />
-                </div>
-                <div className="success-confetti-Browse">
-                  {[...Array(12)].map((_, i) => (
-                    <div key={i} className="confetti-piece-Browse"></div>
-                  ))}
-                </div>
+              <div className="success-checkmark-Browse">
+                <CheckCircle size={80} className="check-icon-Browse" />
               </div>
 
               <h2 className="success-title-Browse">Application Submitted!</h2>
 
               <p className="success-message-Browse">
-                Your application for <strong>{selectedUnit?.name}</strong> has been submitted successfully.
-                We will review your application and contact you within 2-3 business days.
+                Your application has been submitted successfully. We will review your
+                application and contact you within 2–3 business days.
               </p>
 
               <div className="success-details-Browse">
                 <div className="success-detail-item-Browse">
-                  <span className="detail-label-Browse">Property:</span>
-                  <span className="detail-value-Browse">{selectedUnit?.name}</span>
+                  <strong>Property:</strong>
+                  <span className="detail-value-Browse">{selectedUnit?.name || "Unit Name"}</span>
                 </div>
                 <div className="success-detail-item-Browse">
-                  <span className="detail-label-Browse">Monthly Rent:</span>
-                  <span className="detail-value-Browse">₱{selectedUnit?.price?.toLocaleString()}</span>
-                </div>
-                <div className="success-detail-item-Browse">
-                  <span className="detail-label-Browse">Application Date:</span>
-                  <span className="detail-value-Browse">{new Date().toLocaleDateString()}</span>
+                  <strong>Monthly Rent:</strong>
+                  <span className="detail-value-Browse">₱{selectedUnit?.price?.toLocaleString() || '0'}</span>
                 </div>
               </div>
 
